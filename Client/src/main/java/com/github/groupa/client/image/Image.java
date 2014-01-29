@@ -1,4 +1,4 @@
-package com.github.groupa.client;
+package com.github.groupa.client.image;
 
 /***
  * 
