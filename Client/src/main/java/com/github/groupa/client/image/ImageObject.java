@@ -3,6 +3,7 @@ package com.github.groupa.client.image;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
 
 import com.github.groupa.client.communication.ServerResponse;
 import com.github.groupa.client.communication.ServerConnection;
@@ -14,9 +15,7 @@ import com.github.groupa.client.communication.ServerConnection;
  *   Can store downloaded pictures in various sizes
  * Unique ID
  * Actual Image objects (Can be null if unavailable)
- * Metadata
  * Changes done by client since last refresh. Used to generate server commands on Upload/Commit
- * Changes done by server since last refresh. Used when there are conflicts.
  * Checksum or other form of version control (Timestamp?)
  * 
  * Instances should provide methods to:
@@ -41,36 +40,33 @@ import com.github.groupa.client.communication.ServerConnection;
  * Reset locally done changes
  */
 public class ImageObject implements ImageManipulationInterface {
-	private static final String ROTATE90CW = "rotate90";
+	private static final String ROTATE90CW = "rotate90CW";
 	private static final String ROTATE90CCW = "rotate90CCW";
-	
-	private static final String MAIN_IMAGE = "Original";
 
-	private long uniqueId = -1l;
-	private ServerImageObject serverImageObject = null;
+	public static final String MAIN_IMAGE = "Original";
+	public static final String COMPRESSED_IMAGE = "Compressed";
+
+	private transient long uniqueId = -1l;
+	private transient ServerImageObject serverImageObject = null;
 	
 	private LinkedList<String> changeLog = new LinkedList<>();
-	private Map<String, Image> images = null;
+	private Map<String, Image> images = new HashMap<>();
 	
-	public boolean isViewable() { return images != null; }
+	public boolean isViewable() { return !images.isEmpty() || !serverImageObject.images.isEmpty(); }
 	public boolean isUploaded() { return uniqueId != -1l; }
+	public boolean isModified() { return !changeLog.isEmpty(); }
 	
 	//TODO: makeViewable()
-	
-	public void setUniqueId(long uuid) { this.uniqueId = uuid; }
-	
+
 	public ImageObject(Image image) {
 		uniqueId = -1l;
 		serverImageObject = null;
-		images = new HashMap<String, Image>();
 		images.put(MAIN_IMAGE, image);
 	}
 	
 	public ImageObject(ServerResponse response) {
 		uniqueId = response.uniqueId;
 		serverImageObject = new ServerImageObject(response);
-		
-		//TODO: Import images from ServerImageObject, if there are any
 	}
 	
 	/***
@@ -81,12 +77,9 @@ public class ImageObject implements ImageManipulationInterface {
 			changeLog.removeLast();
 		}
 		else {
-			addChange(ROTATE90CW);
+			changeLog.add(ROTATE90CW);
 		}
-		if (images == null) return;
-		for (Image image : images.values()) {
-			image.rotate90CW();
-		}
+		modifyImages(images, ROTATE90CW);
 	}
 	
 	/***
@@ -97,15 +90,11 @@ public class ImageObject implements ImageManipulationInterface {
 			changeLog.removeLast();
 		}
 		else {
-			addChange(ROTATE90CCW);
+			changeLog.add(ROTATE90CCW);
 		}
-		if (images == null) return;
-		for (Image image : images.values()) {
-			image.rotate90CCW();
-		}
+		modifyImages(images, ROTATE90CCW);
 	}
 	
-
 	/***
 	 * Download changelog from server
 	 */
@@ -119,27 +108,31 @@ public class ImageObject implements ImageManipulationInterface {
 			//TODO: Notify GUI
 			return;
 		} else {
-			serverImageObject.refresh(result);
-			//TODO: Import changes from ServerImageObject
+			if (serverImageObject.refresh(result)) {
+				//TODO: Import changes from ServerImageObject
+			} // No changes
 		}
 	}
 	
 	/***
-	 * Upload changelog to server
+	 * Commit changes and upload changelog to server
 	 */
 	public void commit() {
 		if (serverImageObject == null) {
 			//TODO: Can not commit changes to an image when it is not associated with an image on the server (Not yet uploaded)
 			return;
 		}
-		if (changeLog == null) return; // No changes to notify server about
+		if (changeLog.isEmpty()) return; // No changes to notify server about
 		ServerResponse result = ServerConnection.commit(uniqueId, changeLog);
 		if (!result.ok) {
 			//TODO: Notify GUI
 			return;
-		} else {
+		} else { // Success
 			//TODO: Export changes to ServerImageObject
-			changeLog = new LinkedList<>();
+			for (String change : changeLog) {
+				modifyImages(serverImageObject.images,change);
+			}
+			changeLog.clear();
 		}
 	}
 	
@@ -152,8 +145,8 @@ public class ImageObject implements ImageManipulationInterface {
 			throw new RuntimeException("Implementation error");
 		}
 		Image image;
-		if ((images == null) || ((image = images.get(MAIN_IMAGE))) == null) {
-			// Don't try to upload an image if it does not exist
+		if ((image = images.get(MAIN_IMAGE)) == null) {
+			// Don't try to upload an image if it is not the main image
 			throw new RuntimeException("Implementation error");
 		}
 		ServerResponse response = ServerConnection.upload(image);
@@ -163,38 +156,36 @@ public class ImageObject implements ImageManipulationInterface {
 		} else {
 			uniqueId = response.uniqueId;
 			serverImageObject = new ServerImageObject(response);
+			//TODO: Clone and put serverImageObject.images.put(MAIN_IMAGE, images.get(MAIN_IMAGE));
 		}
 	}
 	
 	public void undoLastChange() {
-		LinkedList<String> oldChangeLog = changeLog;
-		oldChangeLog.removeLast();
-		resetChanges();
-		for (String change : oldChangeLog) {
-			modify(change);
+		changeLog.removeLast();
+		Set<String> keys = images.keySet();
+		images.clear();
+		for (String key : keys) {
+			//TODO: Clone images from serverImageObject and generate new one matching keys
+			for (String change : changeLog) {
+				modifyImages(images, change);
+			}
 		}
 	}
 	
-	public void resetChanges() {
-		changeLog = new LinkedList<String>();
-		images = null;
-	}
-
-
 	/***
-	 * Adds change to the end of changelog
-	 * @param change
+	 * Reset all changes. This will clear image cache, so GUI should ask for a new one afterwards
 	 */
-	private void addChange(String change) {
-		changeLog.add(change);
+	public void resetChanges() {
+		changeLog.clear();
+		images.clear();
 	}
 
-	private void modify(String changes) {
-		if (changes.compareTo(ROTATE90CW) == 0) {
-			rotate90CW();
+	private void modifyImages(Map<String, Image> images, String change) {
+		if (ROTATE90CW.equals(change)) {
+			for (Image image : images.values()) image.rotate90CW();
 		}
-		else if (changes.compareTo(ROTATE90CCW) == 0) {
-			rotate90CCW();
+		else if (ROTATE90CCW.equals(change)) {
+			for (Image image : images.values()) image.rotate90CCW();
 		}
 		else throw new RuntimeException("Missing implementation");
 	}
