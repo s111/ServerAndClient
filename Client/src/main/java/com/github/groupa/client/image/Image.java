@@ -17,4 +17,7 @@ public class Image implements ImageManipulationInterface {
 		
 	}
 	
+	public Image clone() {
+		return this; //TODO: Return a new Image object
+	}
 }

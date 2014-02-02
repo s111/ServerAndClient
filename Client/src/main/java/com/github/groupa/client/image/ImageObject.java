@@ -3,7 +3,6 @@ package com.github.groupa.client.image;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
-import java.util.Set;
 
 import com.github.groupa.client.communication.ServerResponse;
 import com.github.groupa.client.communication.ServerConnection;
@@ -40,28 +39,32 @@ import com.github.groupa.client.communication.ServerConnection;
  * Reset locally done changes
  */
 public class ImageObject implements ImageManipulationInterface {
+	private static final long DEFAULT_UNIQUEID = -1l;
+	
 	private static final String ROTATE90CW = "rotate90CW";
 	private static final String ROTATE90CCW = "rotate90CCW";
 
 	public static final String MAIN_IMAGE = "Original";
 	public static final String COMPRESSED_IMAGE = "Compressed";
 
-	private transient long uniqueId = -1l;
+	private transient long uniqueId = DEFAULT_UNIQUEID;
 	private transient ServerImageObject serverImageObject = null;
 	
 	private LinkedList<String> changeLog = new LinkedList<>();
 	private Map<String, Image> images = new HashMap<>();
+	private Image localImage = null;
 	
 	public boolean isViewable() { return !images.isEmpty() || !serverImageObject.images.isEmpty(); }
-	public boolean isUploaded() { return uniqueId != -1l; }
+	public boolean isUploaded() { return uniqueId != DEFAULT_UNIQUEID; }
 	public boolean isModified() { return !changeLog.isEmpty(); }
 	
-	//TODO: makeViewable()
+	//TODO: Metadata ....
 
 	public ImageObject(Image image) {
-		uniqueId = -1l;
+		uniqueId = DEFAULT_UNIQUEID;
 		serverImageObject = null;
-		images.put(MAIN_IMAGE, image);
+		localImage = image.clone();
+		images.put(MAIN_IMAGE, image.clone());
 	}
 	
 	public ImageObject(ServerResponse response) {
@@ -104,7 +107,7 @@ public class ImageObject implements ImageManipulationInterface {
 			return;
 		}
 		ServerResponse result = ServerConnection.getInfo(uniqueId);
-		if (!result.ok) {
+		if (!result.connectionSucceeded()) {
 			//TODO: Notify GUI
 			return;
 		} else {
@@ -123,14 +126,17 @@ public class ImageObject implements ImageManipulationInterface {
 			return;
 		}
 		if (changeLog.isEmpty()) return; // No changes to notify server about
-		ServerResponse result = ServerConnection.commit(uniqueId, changeLog);
-		if (!result.ok) {
+		ServerResponse response = ServerConnection.commit(uniqueId, changeLog);
+		if (!response.connectionSucceeded()) {
 			//TODO: Notify GUI
 			return;
-		} else { // Success
-			//TODO: Export changes to ServerImageObject
+		} else if (response.type != ServerResponse.Type.SUCCESS) {
+			//TODO Check what went wrong
+			throw new RuntimeException("Implementation error");
+		} else { // SUCESS
+			//TODO: Export metadata to ServerImageObject
 			for (String change : changeLog) {
-				modifyImages(serverImageObject.images,change);
+				modifyImages(serverImageObject.images, change);
 			}
 			changeLog.clear();
 		}
@@ -150,26 +156,32 @@ public class ImageObject implements ImageManipulationInterface {
 			throw new RuntimeException("Implementation error");
 		}
 		ServerResponse response = ServerConnection.upload(image);
-		if (!response.ok){
+		if (!response.connectionSucceeded() || response.uniqueId == DEFAULT_UNIQUEID) {
 			//TODO: Notify GUI
 			return;
-		} else {
+		} else if (response.type != ServerResponse.Type.SUCCESS) {
+			//TODO Check what went wrong
+			throw new RuntimeException("Implementation error");
+		} else { // SUCCESS
+			//TODO: Export metadata to ServerImageObject
 			uniqueId = response.uniqueId;
 			serverImageObject = new ServerImageObject(response);
-			//TODO: Clone and put serverImageObject.images.put(MAIN_IMAGE, images.get(MAIN_IMAGE));
+			serverImageObject.images.put(MAIN_IMAGE, images.get(MAIN_IMAGE).clone());
+			localImage = null;
 		}
 	}
 	
 	public void undoLastChange() {
 		changeLog.removeLast();
-		Set<String> keys = images.keySet();
 		images.clear();
-		for (String key : keys) {
-			//TODO: Clone images from serverImageObject and generate new one matching keys
-			for (String change : changeLog) {
-				modifyImages(images, change);
+		if (serverImageObject == null) { // Local undo
+			if (localImage != null) {
+				images.put(MAIN_IMAGE, localImage.clone());
+			} else {
+				throw new RuntimeException("Implementation error");
 			}
 		}
+		//TODO: Notify GUI
 	}
 	
 	/***
