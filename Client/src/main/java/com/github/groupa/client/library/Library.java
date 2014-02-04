@@ -1,4 +1,4 @@
-package library;
+package com.github.groupa.client.library;
 
 import java.util.ArrayList;
 import java.util.Iterator;

@@ -133,7 +133,7 @@ public class ImageObject implements ImageManipulationInterface {
 		} else if (response.type != ServerResponse.Type.SUCCESS) {
 			//TODO Check what went wrong
 			throw new RuntimeException("Implementation error");
-		} else { // SUCESS
+		} else { // SUCCESS
 			//TODO: Export metadata to ServerImageObject
 			for (String change : changeLog) {
 				modifyImages(serverImageObject.images, change);
