@@ -29,7 +29,7 @@ public class Library {
 	public static List<ImageObject> getRemote() {
 		List<ImageObject> list = new ArrayList<>();
 		for (ImageObject img : images) {
-			if (img.isUploaded()) list.add(img);
+			if (img.hasRemoteSource()) list.add(img);
 		}
 		return list;
 	}
@@ -39,7 +39,7 @@ public class Library {
 	public static List<ImageObject> getLocal() {
 		List<ImageObject> list = new ArrayList<>();
 		for (ImageObject img : images) {
-			if (!img.isUploaded()) list.add(img);
+			if (!img.hasRemoteSource()) list.add(img);
 		}
 		return list;
 	}

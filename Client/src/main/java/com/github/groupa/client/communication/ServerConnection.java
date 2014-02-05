@@ -7,17 +7,27 @@ import java.util.Queue;
  * Layer between different available protocols
  */
 public class ServerConnection {
-	public static ServerResponse commit(long uniqueId, Queue<String> changeLog) {
+	public ServerResponse commit(long uniqueId, Queue<String> changeLog) {
 		ServerResponse response = null;
 		return response;
 	}
 	
-	public static ServerResponse getInfo(long uniqueId) {
+	public ServerResponse getImage(long uniqueId, String param) {
 		ServerResponse response = null;
 		return response;
 	}
 	
-	public static ServerResponse upload(Image image) {
+	public ServerResponse upload(long uniqueId, Image image) { //TODO Use stream
+		ServerResponse response = null;
+		return response;
+	}
+	
+	public ServerResponse getInfo(long uniqueId) {
+		ServerResponse response = null;
+		return response;
+	}
+	
+	public ServerResponse upload(Image image) { //TODO Use stream
 		ServerResponse response = null;
 		return response;
 	}

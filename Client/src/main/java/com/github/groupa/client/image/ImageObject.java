@@ -4,72 +4,70 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
 
-import com.github.groupa.client.communication.ServerResponse;
-import com.github.groupa.client.communication.ServerConnection;
-
 /***
  * Instances should store:
- * ServerImageObject : This stores only what is on the server.
- *   For a simple refresh/fetch it will only contain pointers on how to get get the image
- *   Can store downloaded pictures in various sizes
- * Unique ID
- * Actual Image objects (Can be null if unavailable)
- * Changes done by client since last refresh. Used to generate server commands on Upload/Commit
- * Checksum or other form of version control (Timestamp?)
- * 
+ * Actual Image objects cloned from synchronizedImageObject (Can be null if unavailable)
  * Instances should provide methods to:
- * Get a Image object in a specified dimension (Used by GUI) *BLOCKING OPERATION*
+ * Retrieve Image object with specific size
+ * Make temporary changes to images
  * 
- * Make changes to images
+ * Commit temporary changes to all ImageSource objects thus making them permanent
  * 
- * Download changes from server (Additions to Refresh)
- *   Client modified && Server not modified 	-> Do nothing (Changes already visible in gui)
- *   Client modified && Server modified 		-> Alert GUI about the conflict
- *   Client not modified && Server not modified -> Do nothing
- *   Client not modified && Server modified		-> Automatically import changes from ServerImageObject
- *   
- * Upload changes to server (Commit)
- *   Client modified && Server not modified		-> Automatically export changes to ServerImageObject
- *   Client modified && Server modified			-> Alert GUI about the conflict
- *   Client not modified && Server not modified	-> Do nothing
- *   Client not modified && Server modified		-> Do nothing
- * 
- * Upload image to server
- * 
- * Reset locally done changes
+ * Check if ImageSource objects are synchronized
  */
 public class ImageObject implements ImageManipulationInterface {
-	private static final long DEFAULT_UNIQUEID = -1l;
-	
-	private static final String ROTATE90CW = "rotate90CW";
-	private static final String ROTATE90CCW = "rotate90CCW";
-
-	public static final String MAIN_IMAGE = "Original";
-	public static final String COMPRESSED_IMAGE = "Compressed";
-
-	private transient long uniqueId = DEFAULT_UNIQUEID;
-	private transient ServerImageObject serverImageObject = null;
-	
 	private LinkedList<String> changeLog = new LinkedList<>();
 	private Map<String, Image> images = new HashMap<>();
-	private Image localImage = null;
 	
-	public boolean isViewable() { return !images.isEmpty() || !serverImageObject.images.isEmpty(); }
-	public boolean isUploaded() { return uniqueId != DEFAULT_UNIQUEID; }
+	public boolean isViewable() { return false; }
 	public boolean isModified() { return !changeLog.isEmpty(); }
 	
-	//TODO: Metadata ....
-
-	public ImageObject(Image image) {
-		uniqueId = DEFAULT_UNIQUEID;
-		serverImageObject = null;
-		localImage = image.clone();
-		images.put(MAIN_IMAGE, image.clone());
+	public boolean hasRemoteSource() {
+		for (ImageSource src : imageSources) {
+			if (src instanceof RemoteImageSource) return true;
+		}
+		return false;
 	}
 	
-	public ImageObject(ServerResponse response) {
-		uniqueId = response.uniqueId;
-		serverImageObject = new ServerImageObject(response);
+	private LinkedList<ImageSource> imageSources = new LinkedList<>();
+	
+	// The synchronizedImageObject forces other ImageSources to be synchronized with it
+	private ImageSource synchronizedImageSource;
+	
+	public ImageObject (ImageSource obj) {
+		imageSources.add(obj);
+		synchronizedImageSource = obj;
+	}
+	
+	/***
+	 * Add a new ImageSource, and synchronize it from synchronizedImageSource
+	 * @param src
+	 */
+	public void addImageSource(ImageSource src) {
+		imageSources.add(src);
+		src.synchronizeFrom(synchronizedImageSource);
+	}
+
+	/***
+	 * Set synchronizedImageSource to src
+	 * @param src
+	 */
+	public void setSynchronizedSource(ImageSource src) {
+		if (imageSources.contains(src)) {
+			synchronizedImageSource = src;
+		} else {
+			addImageSource(src);
+			synchronizedImageSource = src;
+		}
+	}
+
+	public boolean isSynchronized() {
+		for (ImageSource src : imageSources) {
+			if (!src.isSynchronized()) {
+				return false;
+			}
+		}
+		return true;
 	}
 	
 	/***
@@ -99,89 +97,19 @@ public class ImageObject implements ImageManipulationInterface {
 	}
 	
 	/***
-	 * Download changelog from server
-	 */
-	public void refresh() {
-		if (serverImageObject == null) {
-			//TODO: Can not run refresh when an image is not associated with an image on the server (Not yet uploaded)
-			return;
-		}
-		ServerResponse result = ServerConnection.getInfo(uniqueId);
-		if (!result.connectionSucceeded()) {
-			//TODO: Notify GUI
-			return;
-		} else {
-			if (serverImageObject.refresh(result)) {
-				//TODO: Import changes from ServerImageObject
-			} // No changes
-		}
-	}
-	
-	/***
-	 * Commit changes and upload changelog to server
+	 * Commit changes and ensure synchronizedImageObject is synchronized
 	 */
 	public void commit() {
-		if (serverImageObject == null) {
-			//TODO: Can not commit changes to an image when it is not associated with an image on the server (Not yet uploaded)
-			return;
+		if (changeLog.isEmpty()) return; // No changes are to be made
+		for (ImageSource obj : imageSources) {
+			obj.commit(changeLog); // Tell source to modify available images (This do
 		}
-		if (changeLog.isEmpty()) return; // No changes to notify server about
-		ServerResponse response = ServerConnection.commit(uniqueId, changeLog);
-		if (!response.connectionSucceeded()) {
-			//TODO: Notify GUI
-			return;
-		} else if (response.type != ServerResponse.Type.SUCCESS) {
-			//TODO Check what went wrong
-			throw new RuntimeException("Implementation error");
-		} else { // SUCCESS
-			//TODO: Export metadata to ServerImageObject
-			for (String change : changeLog) {
-				modifyImages(serverImageObject.images, change);
-			}
-			changeLog.clear();
-		}
-	}
-	
-	/***
-	 * Upload a NEW image to the server
-	 */
-	public void upload() {
-		if (serverImageObject != null) {
-			//TODO: Don't upload an image when it already exists on server. Use commit instead
-			throw new RuntimeException("Implementation error");
-		}
-		Image image;
-		if ((image = images.get(MAIN_IMAGE)) == null) {
-			// Don't try to upload an image if it is not the main image
-			throw new RuntimeException("Implementation error");
-		}
-		ServerResponse response = ServerConnection.upload(image);
-		if (!response.connectionSucceeded() || response.uniqueId == DEFAULT_UNIQUEID) {
-			//TODO: Notify GUI
-			return;
-		} else if (response.type != ServerResponse.Type.SUCCESS) {
-			//TODO Check what went wrong
-			throw new RuntimeException("Implementation error");
-		} else { // SUCCESS
-			//TODO: Export metadata to ServerImageObject
-			uniqueId = response.uniqueId;
-			serverImageObject = new ServerImageObject(response);
-			serverImageObject.images.put(MAIN_IMAGE, images.get(MAIN_IMAGE).clone());
-			localImage = null;
-		}
+		synchronizedImageSource.synchronize();
 	}
 	
 	public void undoLastChange() {
 		changeLog.removeLast();
 		images.clear();
-		if (serverImageObject == null) { // Local undo
-			if (localImage != null) {
-				images.put(MAIN_IMAGE, localImage.clone());
-			} else {
-				throw new RuntimeException("Implementation error");
-			}
-		}
-		//TODO: Notify GUI
 	}
 	
 	/***
@@ -199,6 +127,6 @@ public class ImageObject implements ImageManipulationInterface {
 		else if (ROTATE90CCW.equals(change)) {
 			for (Image image : images.values()) image.rotate90CCW();
 		}
-		else throw new RuntimeException("Missing implementation");
+		else throw new RuntimeException("Unknown operation: " + change);
 	}
 }

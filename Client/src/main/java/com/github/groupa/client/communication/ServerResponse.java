@@ -12,6 +12,8 @@ public class ServerResponse {
 	public Type type = Type.UNKNOWN_ERROR;
 	private boolean connectionSucceeded = false;
 	
+	Object content = null;
+	
 	public long uniqueId;
 	
 	public boolean connectionSucceeded() {
@@ -19,5 +21,10 @@ public class ServerResponse {
 	}
 	public void setConnectionSucceeded() {
 		connectionSucceeded = true;
+	}
+	
+	public Object getContent()
+	{
+		return content;
 	}
 }
