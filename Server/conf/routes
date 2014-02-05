@@ -3,7 +3,34 @@
 # ~~~~
 
 # Home page
-GET     /                           controllers.Application.index()
+GET      /                                         controllers.Application.index()
+
+# Upload image
+POST     /api/image                                controllers.ImageIO.uploadImage()
+# Search for a image
+POST     /api/image/search                         controllers.ImageController.search()
+# Get image, respons will contain tags, comments, link to thumbnails etc ...
+GET      /api/image/:imageId                       controllers.ImageController.getImage(imageId: Long)
+# Remove image
+DELETE   /api/image/:imageId                       controllers.ImageIO.removeImage(imageId: Long)
+# Get list of comments
+GET      /api/image/:imageId/comments              controllers.ImageController.getComments(imageId: Long)
+# Create comment
+POST     /api/image/:imageId/comments              controllers.ImageController.addComment(imageId: Long)
+# Remove comment
+DELETE   /api/image/:imageId/comments/:commentId   controllers.ImageController.removeComment(imageId: Long, commentId: Long)
+
+# Get list of tags
+GET      /api/image/:imageId/tags                  controllers.ImageController.getTags(imageId: Long)
+# Add tag
+POST     /api/image/:imageId/tags                  controllers.ImageController.addTag(imageId: Long)
+# Remove tag
+DELETE   /api/image/:imageId/tags/:tagName         controllers.ImageController.removeTag(imageId: Long, tagName: String)
+
+# Rate image
+POST     /api/image/:imageId/rate                  controllers.ImageController.setRating(imageId: Long)
+# Remove rating
+DELETE   /api/image/:imageId/rate                  controllers.ImageController.removeRating(imageId: Long)
 
 # Map static resources from the /public folder to the /assets URL path
-GET     /assets/*file               controllers.Assets.at(path="/public", file)
+GET      /assets/*file                             controllers.Assets.at(path="/public", file)
