@@ -2,14 +2,15 @@ package com.github.groupa.client.image;
 
 import java.util.LinkedList;
 
-import com.github.groupa.client.communication.ServerConnection;
+import com.github.groupa.client.communication.HTTPConnection;
+import com.github.groupa.client.communication.RemoteConnection;
 import com.github.groupa.client.communication.ServerResponse;
 
 /***
  * Should store everything about an image as received from server
  */
 public class RemoteImageSource extends ImageSource {
-	private ServerConnection connection;
+	private RemoteConnection connection;
 	private LinkedList<String> changeBackLog = new LinkedList<>();
 	
 	private final long uniqueId;

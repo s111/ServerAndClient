@@ -1,4 +1,5 @@
 package com.github.groupa.client.communication;
+
 import com.github.groupa.client.image.Image;
 
 import java.util.Queue;
@@ -6,29 +7,39 @@ import java.util.Queue;
 /***
  * Layer between different available protocols
  */
-public class ServerConnection {
+public class HTTPConnection extends RemoteConnection {
+	
+	private String host;
+	
+	public HTTPConnection(String host) {
+		this.host = host;
+	}
+	
 	public ServerResponse commit(long uniqueId, Queue<String> changeLog) {
 		ServerResponse response = null;
 		return response;
 	}
-	
+
 	public ServerResponse getImage(long uniqueId, String param) {
 		ServerResponse response = null;
 		return response;
 	}
-	
-	public ServerResponse upload(long uniqueId, Image image) { //TODO Use stream
+
+	public ServerResponse upload(long uniqueId, Image image) { // TODO Use
+																// stream
 		ServerResponse response = null;
 		return response;
 	}
-	
+
 	public ServerResponse getInfo(long uniqueId) {
 		ServerResponse response = null;
 		return response;
 	}
-	
-	public ServerResponse upload(Image image) { //TODO Use stream
+
+	public ServerResponse upload(Image image) { // TODO Use stream
 		ServerResponse response = null;
 		return response;
 	}
+
+
 }
