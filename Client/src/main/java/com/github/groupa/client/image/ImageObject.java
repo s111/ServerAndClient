@@ -43,22 +43,26 @@ public class ImageObject implements ImageManipulationInterface {
 	 * Add a new ImageSource, and synchronize it from synchronizedImageSource
 	 * @param src
 	 */
-	public void addImageSource(ImageSource src) {
-		imageSources.add(src);
-		src.synchronizeFrom(synchronizedImageSource);
+	public boolean addImageSource(ImageSource src) {
+		if (!src.synchronizeFrom(synchronizedImageSource)) {
+			// Error synchronizing
+		} else { // Success
+			imageSources.add(src);
+			return true;
+		}
+		return false;
 	}
 
 	/***
 	 * Set synchronizedImageSource to src
 	 * @param src
 	 */
-	public void setSynchronizedSource(ImageSource src) {
-		if (imageSources.contains(src)) {
+	public boolean setSynchronizedSource(ImageSource src) {
+		if (imageSources.contains(src) || addImageSource(src)) {
 			synchronizedImageSource = src;
-		} else {
-			addImageSource(src);
-			synchronizedImageSource = src;
+			return true;
 		}
+		return false;
 	}
 
 	public boolean isSynchronized() {

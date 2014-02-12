@@ -5,26 +5,10 @@ package com.github.groupa.client.communication;
  *
  */
 public class ServerResponse {
-	public static enum Type {
-		SUCCESS,
-		UNKNOWN_ERROR
-	}
-	public Type type = Type.UNKNOWN_ERROR;
-	private boolean connectionSucceeded = false;
+	private final long uniqueId;
 	
-	Object content = null;
+	public ServerResponse(long uniqueId) { this.uniqueId = uniqueId; }
 	
-	public long uniqueId;
+	public long getUniqueId() { return uniqueId; }
 	
-	public boolean connectionSucceeded() {
-		return connectionSucceeded;
-	}
-	public void setConnectionSucceeded() {
-		connectionSucceeded = true;
-	}
-	
-	public Object getContent()
-	{
-		return content;
-	}
 }

@@ -3,6 +3,7 @@ package com.github.groupa.client.image;
 import java.util.LinkedList;
 
 import com.github.groupa.client.communication.HTTPConnection;
+import com.github.groupa.client.communication.ImageResponse;
 import com.github.groupa.client.communication.RemoteConnection;
 import com.github.groupa.client.communication.ServerResponse;
 
@@ -20,7 +21,7 @@ public class RemoteImageSource extends ImageSource {
 	 * @param response
 	 */
 	public RemoteImageSource(ServerResponse response) {
-		uniqueId = response.uniqueId;
+		uniqueId = response.getUniqueId();
 	}
 	
 	public boolean isSynchronized() {
@@ -48,7 +49,7 @@ public class RemoteImageSource extends ImageSource {
 			throw new RuntimeException("Implementation error");
 		}
 		images.put(MAIN_IMAGE, image);
-		ServerResponse response = connection.upload(uniqueId, image);
+		ServerResponse response = connection.upload(uniqueId, image.getStream());
 		//TODO
 	}
 	
@@ -57,9 +58,7 @@ public class RemoteImageSource extends ImageSource {
 		if (images.get(key) == null) {
 			//TODO: Sizes ..
 			ServerResponse response = connection.getImage(uniqueId, MAIN_IMAGE);
-			if (!response.connectionSucceeded()) {
-				//TODO
-			} else if (response.type != ServerResponse.Type.SUCCESS) {
+			if (!(response instanceof ImageResponse)) {
 				//TODO
 			} else { // SUCCESS
 				Image image = new Image(response.getContent());

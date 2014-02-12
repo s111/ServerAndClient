@@ -1,6 +1,7 @@
 package com.github.groupa.client.image;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.util.LinkedList;
 
 public class LocalImageSource extends ImageSource {
@@ -21,8 +22,10 @@ public class LocalImageSource extends ImageSource {
 	}
 	
 	@Override
-	public void synchronizeFrom(ImageSource src) {
+	public boolean synchronizeFrom(ImageSource src) {
 		//TODO
+		
+		return false;
 	}
 	
 	@Override
@@ -38,10 +41,14 @@ public class LocalImageSource extends ImageSource {
 	}
 
 	@Override
-	public void makeAvailable(String key) {
-		if (images.get(key) == null) {
-			Image image = new Image(mainImageFile);
-			images.put(key, image.get(key));
+	public boolean makeAvailable(String resolution) { //TODO
+		if (images.get(resolution) == null) {
+			Image image = new Image(new FileInputStream(mainImageFile));
+			if (image == null) {
+				return false;
+			}
+			images.put(resolution, image.get(resolution));
 		}
+		return true;
 	}
 }

@@ -16,13 +16,15 @@ public abstract class ImageSource {
 	abstract protected void readImages();
 	public boolean isModified() { return !changeLog.isEmpty(); }
 
-	abstract public void makeAvailable(String key);
-	abstract public void synchronizeFrom(ImageSource src);
+	abstract public boolean makeAvailable(String key);
+	abstract public boolean synchronizeFrom(ImageSource src);
 	
 	
 	public Image getImage(String key) {
-		makeAvailable(key);
-		return images.get(key);
+		if (makeAvailable(key)) {
+			return images.get(key);
+		}
+		return null;
 	}
 	
 	public void commit(LinkedList<String> changes) {
