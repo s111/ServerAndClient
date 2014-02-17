@@ -15,7 +15,7 @@ public class ImageController extends Controller {
 		File image = new File(imageModel.filename);
 		
 		if (image.exists()) {
-			return ok();
+			return ok(image, true);
 		} else {
 			return badRequest();
 		}
