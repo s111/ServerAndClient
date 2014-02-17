@@ -21,7 +21,7 @@ public class ImageModelTest extends WithApplication {
 
 	@Test
 	public void addImageToDatabase() {
-		String filename = "../../images/01.png";
+		String filename = "../../images/999.png";
 
 		new ImageModel(filename).save();
 
@@ -35,7 +35,7 @@ public class ImageModelTest extends WithApplication {
 
 	@Test
 	public void createAndSaveImageToDatabase() {
-		String filename = "../../images/02.png";
+		String filename = "../../images/999.png";
 
 		ImageModel.create(filename);
 
@@ -51,9 +51,9 @@ public class ImageModelTest extends WithApplication {
 	public void getImageById() {
 		String filename = "../../images/03.png";
 
-		ImageModel.create(filename);
+		ImageModel createdModel = ImageModel.create(filename);
 
-		ImageModel imageModel = ImageModel.getImageModel(1);
+		ImageModel imageModel = ImageModel.getImageModel(createdModel.id);
 
 		assertNotNull("imageModel is null", imageModel);
 		assertEquals("filename property doesn't match", filename,
@@ -62,30 +62,24 @@ public class ImageModelTest extends WithApplication {
 
 	@Test
 	public void getAllImages() {
+		int initialSize = ImageModel.getAll().size();
+		
 		List<String> filenames = new ArrayList<>();
 
-		filenames.add("../../images/01.png");
-		filenames.add("../../images/02.png");
-		filenames.add("../../images/03.png");
+		filenames.add("../../images/901.png");
+		filenames.add("../../images/902.png");
+		filenames.add("../../images/903.png");
 
 		for (String filename : filenames)
 			ImageModel.create(filename);
-
+		
 		List<ImageModel> imageModels = ImageModel.getAll();
+		
+		int newSize = ImageModel.getAll().size();
 
 		assertNotNull("ImageModel list is null", imageModels);
 		assertEquals(
 				"Number of Images in the database does not match the number of files",
-				imageModels.size(), filenames.size());
-
-		int numberOfImages = imageModels.size();
-
-		for (int i = 0; i < numberOfImages; i++) {
-			ImageModel imageModel = imageModels.get(i);
-
-			assertNotNull("imageModel is null", imageModel);
-			assertEquals("filename property doesn't match", filenames.get(i),
-					imageModel.filename);
-		}
+				initialSize + 3, newSize);
 	}
 }
