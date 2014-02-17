@@ -2,21 +2,52 @@ package models;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
-import static play.test.Helpers.fakeApplication;
-import static play.test.Helpers.inMemoryDatabase;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
-import play.test.WithApplication;
+import play.test.FakeApplication;
+import play.test.Helpers;
 
-public class ImageModelTest extends WithApplication {
+import com.avaje.ebean.Ebean;
+import com.avaje.ebean.EbeanServer;
+import com.avaje.ebean.config.ServerConfig;
+import com.avaje.ebean.config.dbplatform.H2Platform;
+import com.avaje.ebeaninternal.api.SpiEbeanServer;
+import com.avaje.ebeaninternal.server.ddl.DdlGenerator;
+
+public class ImageModelTest {
+	public static FakeApplication application;
+
+	@BeforeClass
+	public static void startApp() throws IOException {
+		application = Helpers.fakeApplication();
+
+		Helpers.start(application);
+	}
+
+	@AfterClass
+	public static void stopApp() {
+		Helpers.stop(application);
+	}
+
 	@Before
-	public void setUp() {
-		start(fakeApplication(inMemoryDatabase()));
+	public void dropCreateDb() throws IOException {
+		String serverName = "default";
+
+		EbeanServer server = Ebean.getServer(serverName);
+		ServerConfig config = new ServerConfig();
+
+		DdlGenerator ddl = new DdlGenerator();
+		ddl.setup((SpiEbeanServer) server, new H2Platform(), config);
+		ddl.runScript(false, ddl.generateDropDdl());
+		ddl.runScript(false, ddl.generateCreateDdl());
 	}
 
 	@Test
@@ -27,7 +58,10 @@ public class ImageModelTest extends WithApplication {
 
 		ImageModel imageModel = ImageModel.find.where()
 				.eq("filename", filename).findUnique();
+		
+		int numberOfImagesInDatabase = ImageModel.getAll().size();
 
+		assertEquals(1, numberOfImagesInDatabase);
 		assertNotNull("imageModel is null", imageModel);
 		assertEquals("filename property doesn't match", filename,
 				imageModel.filename);
@@ -41,7 +75,10 @@ public class ImageModelTest extends WithApplication {
 
 		ImageModel imageModel = ImageModel.find.where()
 				.eq("filename", filename).findUnique();
+		
+		int numberOfImagesInDatabase = ImageModel.getAll().size();
 
+		assertEquals(1, numberOfImagesInDatabase);
 		assertNotNull("imageModel is null", imageModel);
 		assertEquals("filename property doesn't match", filename,
 				imageModel.filename);
@@ -52,18 +89,18 @@ public class ImageModelTest extends WithApplication {
 		String filename = "../../images/03.png";
 
 		ImageModel createdModel = ImageModel.create(filename);
-
 		ImageModel imageModel = ImageModel.getImageModel(createdModel.id);
+		
+		int numberOfImagesInDatabase = ImageModel.getAll().size();
 
-		assertNotNull("imageModel is null", imageModel);
+		assertEquals(1, numberOfImagesInDatabase);
+		assertNotNull(" imageModel is null", imageModel);
 		assertEquals("filename property doesn't match", filename,
 				imageModel.filename);
 	}
 
 	@Test
 	public void getAllImages() {
-		int initialSize = ImageModel.getAll().size();
-		
 		List<String> filenames = new ArrayList<>();
 
 		filenames.add("../../images/901.png");
@@ -72,14 +109,14 @@ public class ImageModelTest extends WithApplication {
 
 		for (String filename : filenames)
 			ImageModel.create(filename);
-		
+
 		List<ImageModel> imageModels = ImageModel.getAll();
-		
-		int newSize = ImageModel.getAll().size();
+
+		int numberOfImagesInDatabase = ImageModel.getAll().size();
 
 		assertNotNull("ImageModel list is null", imageModels);
 		assertEquals(
-				"Number of Images in the database does not match the number of files",
-				initialSize + 3, newSize);
+				"Number of Images in the database does not match the number of files added",
+				3, numberOfImagesInDatabase);
 	}
 }

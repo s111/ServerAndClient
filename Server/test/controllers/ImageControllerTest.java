@@ -14,7 +14,7 @@ import play.test.TestBrowser;
 
 public class ImageControllerTest {
 	@Test
-    public void imageRequestTest() {
+    public void imageRequest() {
         running(testServer(3333, fakeApplication(inMemoryDatabase())), HTMLUNIT, new Callback<TestBrowser>() {
             public void invoke(TestBrowser browser) {
                 browser.goTo("http://localhost:3333/api/image/1");
