@@ -9,6 +9,8 @@ public class Global extends GlobalSettings {
 	public void onStart(Application application) {
 		File directory = new File("../../images");
 		
+		if (!directory.isDirectory()) return;
+		
 		File[] listOfFiles = directory.listFiles();
 		
 		for (File image : listOfFiles) {
