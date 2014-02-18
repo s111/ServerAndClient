@@ -18,7 +18,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class MainFrame {
-	private final Logger logger = LoggerFactory.getLogger(MainFrame.class);
+	private static final Logger logger = LoggerFactory
+			.getLogger(MainFrame.class);
 
 	private JFrame frame;
 	private Container contentPane;
@@ -31,11 +32,19 @@ public class MainFrame {
 
 		setUpMainFrame();
 		addImageView();
-		displayImage();
+
+		/*
+		 * Commented out as we are trying to load a image from the server
+		 * displayImage();
+		 */
 	}
 
 	public void display() {
 		frame.setVisible(true);
+	}
+
+	public void setImageView(Image image) {
+		imageView.setIcon(new ImageIcon(image));
 	}
 
 	public JFrame getFrame() {
@@ -65,11 +74,12 @@ public class MainFrame {
 		contentPane.add(Box.createHorizontalGlue());
 	}
 
+	@SuppressWarnings("unused")
 	private void displayImage() {
 		Image image = null;
 
 		try {
-			image = loadImage();
+			image = loadImageFromDisk();
 		} catch (IOException exception) {
 			logger.warn("Unable to load image");
 		}
@@ -79,7 +89,7 @@ public class MainFrame {
 		}
 	}
 
-	private Image loadImage() throws IOException {
+	private Image loadImageFromDisk() throws IOException {
 		return ImageIO.read(new File("../../images/01.png"));
 	}
 }
