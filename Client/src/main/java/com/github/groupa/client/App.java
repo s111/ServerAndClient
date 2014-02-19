@@ -31,8 +31,12 @@ public class App {
 				} catch (IOException e) {
 					logger.warn("Could not import image due to IOException");
 				}
-
-				mainFrame.setImageView(Library.get(1));
+				
+				ImageObject imageObject = Library.get(1);
+				
+				if (imageObject != null) {
+					mainFrame.setImageView(imageObject);
+				}
 			}
 		});
 	}

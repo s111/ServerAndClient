@@ -6,8 +6,11 @@ import java.awt.Image;
 
 public class Library {
 	private static List<ImageObject> images = new ArrayList<>();
+	
+	private Library() {}
 
 	public static int size() { return images.size(); }
+	
 	/***
 	 * 
 	 * @param id

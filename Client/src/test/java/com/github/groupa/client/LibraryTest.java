@@ -13,26 +13,27 @@ import org.junit.Test;
 public class LibraryTest {
 
 	@Test
-	public void test() {
+	public void addLocalImagesToLibrary() {
 		Image img1 = null, img2 = null;
+
 		try {
 			img1 = loadImageFromDisk("../../images/01.png");
 			img2 = loadImageFromDisk("../../images/02.png");
 		} catch (IOException e) {
 			fail("Local images not found");
 		}
-		if (Library.size() != 0) {
-			fail("Invalid count of images");
-		}
+
+		assertEquals("Invalid count of images", Library.size(), 0);
+
 		Library.add(1, img1);
 		Library.add(2, img2);
+
 		assertSame(img1, Library.get(1).getImage());
 		assertSame(img2, Library.get(2).getImage());
-		if (Library.size() != 2) {
-			fail("Invalid count of images");
-		}
+
+		assertEquals("Invalid count of images", Library.size(), 2);
 	}
-	
+
 	private Image loadImageFromDisk(String path) throws IOException {
 		return ImageIO.read(new File(path));
 	}
