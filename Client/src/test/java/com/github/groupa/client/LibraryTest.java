@@ -26,8 +26,8 @@ public class LibraryTest {
 		}
 		Library.add(1, img1);
 		Library.add(2, img2);
-		assertSame(img1, Library.get(1));
-		assertSame(img2, Library.get(2));
+		assertSame(img1, Library.get(1).getImage());
+		assertSame(img2, Library.get(2).getImage());
 		if (Library.size() != 2) {
 			fail("Invalid count of images");
 		}

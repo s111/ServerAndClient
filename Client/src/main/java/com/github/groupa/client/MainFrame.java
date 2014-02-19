@@ -43,8 +43,8 @@ public class MainFrame {
 		frame.setVisible(true);
 	}
 
-	public void setImageView(Image image) {
-		imageView.setIcon(new ImageIcon(image));
+	public void setImageView(ImageObject imageObject) {
+		imageView.setIcon(new ImageIcon(imageObject.getImage()));
 	}
 
 	public JFrame getFrame() {

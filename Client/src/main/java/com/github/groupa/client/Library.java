@@ -1,19 +1,29 @@
 package com.github.groupa.client;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.awt.Image;
 
 public class Library {
-	private static Map<Long, Image> images = new HashMap<>();
+	private static List<ImageObject> images = new ArrayList<>();
 
 	public static int size() { return images.size(); }
-	public static Image get(long id) { return images.get(id); }
-	//public static Image remove(long id) { return images.remove(id); }
+	/***
+	 * 
+	 * @param id
+	 * @return null if image can not be found
+	 */
+	public static ImageObject get(long id) {
+		for (ImageObject o : images) {
+			if (id == o.getId()) { return o; }
+		}
+		return null;
+	}
+	
 	public static void add(long id, Image img) {
 		if (img == null) {
 			throw new NullPointerException("Image was null");
 		}
-		images.put(id, img);
+		images.add(new ImageObject(id, img));
 	}
 }
