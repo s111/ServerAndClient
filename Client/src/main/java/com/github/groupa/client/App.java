@@ -26,10 +26,13 @@ public class App {
 				mainFrame.display();
 
 				try {
-					mainFrame.setImageView(ImageRequester.requestImage(1));
+					Library.add(1,ImageRequester.requestImage(1));
+					Library.add(2,ImageRequester.requestImage(2));
 				} catch (IOException e) {
 					logger.warn("Could not import image due to IOException");
 				}
+
+				mainFrame.setImageView(Library.get(1));
 			}
 		});
 	}
