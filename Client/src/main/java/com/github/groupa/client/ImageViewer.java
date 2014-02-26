@@ -13,6 +13,8 @@ public class ImageViewer {
      
     public static void addComponentsToPane(Container pane) {
          
+    	
+    	
         if (!(pane.getLayout() instanceof BorderLayout)) {
             pane.add(new JLabel("Container doesn't use BorderLayout!"));
             return;
@@ -25,33 +27,36 @@ public class ImageViewer {
          
         // Top Panel
         JPanel TopPanel = new JPanel();
-        TopPanel.setPreferredSize(new Dimension(0, 100));
-        TopPanel.setBackground(Color.RED);
+        JLabel TopLabel = new JLabel("Top Toolbar");
         pane.add(TopPanel, BorderLayout.PAGE_START);
+        pane.add(TopLabel, BorderLayout.PAGE_START);
          
         // Picture Panel
         JPanel PicturePanel = new JPanel();
         PicturePanel.setPreferredSize(new Dimension(640, 640));
-        PicturePanel.setBackground(Color.BLACK);
+        PicturePanel.setBackground(Color.GREEN);
+        
         pane.add(PicturePanel, BorderLayout.CENTER);
          
         // Left Panel
         JPanel LeftPanel = new JPanel();
+        JLabel LeftLabel = new JLabel("Left Toolbar");
         LeftPanel.setPreferredSize(new Dimension(100, 0));
-        LeftPanel.setBackground(Color.WHITE);
         pane.add(LeftPanel, BorderLayout.LINE_START);
+        pane.add(LeftLabel, BorderLayout.LINE_START);
          
         // Bottom Panel
         JPanel BottomPanel = new JPanel();
-        BottomPanel.setPreferredSize(new Dimension(0, 100));
-        BottomPanel.setBackground(Color.RED);
+        JLabel BottomLabel = new JLabel("Bottom Toolbar");
         pane.add(BottomPanel, BorderLayout.PAGE_END);
+        pane.add(BottomLabel, BorderLayout.PAGE_END);
         
         // Right Panel
         JPanel RightPanel = new JPanel();
+        JLabel RightLabel = new JLabel("Right Toolbar");
         RightPanel.setPreferredSize(new Dimension(100, 0));
-        RightPanel.setBackground(Color.WHITE);
         pane.add(RightPanel, BorderLayout.LINE_END);
+        pane.add(RightLabel, BorderLayout.LINE_END);
     }
      
 
