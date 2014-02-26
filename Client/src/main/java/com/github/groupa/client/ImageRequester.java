@@ -13,16 +13,16 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
-// Feel free to come up with a better name
-public class ImageRequester {
-	public static Image requestImage(long id) throws IOException {
+// Feel free to come up with better names
+public class ImageRequester implements Requester {
+	public Image requestImage(long id) throws IOException {
 		CloseableHttpResponse response = sendImageRequest(id);
 		Image image = extractImageFromResponse(response);
 
 		return image;
 	}
 
-	private static Image extractImageFromResponse(CloseableHttpResponse response)
+	private Image extractImageFromResponse(CloseableHttpResponse response)
 			throws IOException {
 		HttpEntity entity = response.getEntity();
 
@@ -38,7 +38,7 @@ public class ImageRequester {
 		return image;
 	}
 
-	private static CloseableHttpResponse sendImageRequest(long id)
+	private CloseableHttpResponse sendImageRequest(long id)
 			throws IOException {
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 

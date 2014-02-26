@@ -24,10 +24,12 @@ public class App {
 				MainFrame mainFrame = new MainFrame("App");
 
 				mainFrame.display();
+				
+				Requester requester = new ImageRequester();
 
 				try {
-					Library.add(1,ImageRequester.requestImage(1));
-					Library.add(2,ImageRequester.requestImage(2));
+					Library.add(1, requester.requestImage(1));
+					Library.add(2, requester.requestImage(2));
 				} catch (IOException e) {
 					logger.warn("Could not import image due to IOException");
 				}

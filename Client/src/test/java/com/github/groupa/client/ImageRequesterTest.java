@@ -10,10 +10,6 @@ import org.apache.log4j.BasicConfigurator;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-/*
- * Currently a instance of the server needs to be running.
- * Issue #29 explains this in-depth
- */
 public class ImageRequesterTest {
 	@BeforeClass
 	public static void setUp() {
@@ -27,9 +23,11 @@ public class ImageRequesterTest {
 	@Test
 	public void requestImage() {
 		Image image = null;
+		
+		Requester requester = new FakeImageRequester();
 
 		try {
-			image = ImageRequester.requestImage(1);
+			image = requester.requestImage(1);
 		} catch (IOException e) {
 			fail("Threw IOException");
 		}
