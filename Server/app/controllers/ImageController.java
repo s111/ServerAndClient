@@ -30,17 +30,37 @@ public class ImageController extends Controller {
 	}
 
 	public static Result getImages(int offset, int limit) throws Exception {
-		if (offset < 0 || limit < 0) return badRequest();
+		if (offset < 0 || limit < 0)
+			return badRequest();
+
+		int numRows = ImageModel.getRowCount();
+		int pages = numRows / limit;
+
+		int previousOffset = offset - limit;
+
+		if (previousOffset < 0)
+			previousOffset = 0;
+
 		List<ImageModel> imageModels = ImageModel.getSubList(offset, limit);
 
 		ObjectMapper mapper = new ObjectMapper();
 
 		ObjectNode rootNode = Json.newObject();
-
 		rootNode.put("href", routes.ImageController.getImages(offset, limit)
 				.absoluteURL(request()));
 		rootNode.put("offset", offset);
 		rootNode.put("limit", limit);
+		rootNode.put("first", routes.ImageController.getImages(0, 25)
+				.absoluteURL(request()));
+		rootNode.put("previous",
+				routes.ImageController.getImages(previousOffset, limit)
+						.absoluteURL(request()));
+		rootNode.put("next",
+				routes.ImageController.getImages(offset + limit, limit)
+						.absoluteURL(request()));
+		rootNode.put("last",
+				routes.ImageController.getImages(pages * limit, limit)
+						.absoluteURL(request()));
 
 		ArrayNode images = mapper.convertValue(imageModels, ArrayNode.class);
 

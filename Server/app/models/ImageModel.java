@@ -44,6 +44,10 @@ public class ImageModel extends Model {
 		return find.all();
 	}
 	
+	public static int getRowCount() {
+		return find.all().size();
+	}
+	
 	public static List<ImageModel> getSubList(int offset, int limit) {
 		if (offset < 0 || limit < 0)
 			return new ArrayList<ImageModel>();
