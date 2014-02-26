@@ -17,7 +17,7 @@ public class ImageControllerTest {
     public void imageRequest() {
         running(testServer(3333, fakeApplication(inMemoryDatabase())), HTMLUNIT, new Callback<TestBrowser>() {
             public void invoke(TestBrowser browser) {
-                browser.goTo("http://localhost:3333/api/image/1");
+                browser.goTo("http://localhost:3333/api/images/1");
                 assertThat(browser.pageSource()).contains("PNG");
             }
         });

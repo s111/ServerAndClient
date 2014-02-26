@@ -6,7 +6,7 @@
 GET     /                           controllers.Application.index()
 
 # Get image by id
-GET		/api/image/:id				controllers.ImageController.getImage(id: Long)
+GET		/api/images/:id				controllers.ImageController.getImage(id: Long)
 
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)
