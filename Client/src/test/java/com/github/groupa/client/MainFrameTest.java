@@ -2,6 +2,7 @@ package com.github.groupa.client;
 
 import java.awt.Component;
 import java.awt.Container;
+import java.io.IOException;
 
 import javax.swing.JLabel;
 
@@ -9,9 +10,14 @@ import org.junit.Assert;
 import org.junit.Test;
 
 public class MainFrameTest {
+	/*
+	 * Cleanup
+	 */
 	@Test
-	public void checkImageView() {		
+	public void checkImageView() throws IOException {		
 		MainFrame mainFrame = new MainFrame("App");
+		
+		mainFrame.setImageView(new ImageObject(1, mainFrame.loadImageFromDisk()));
 		
 		Container contentPane = mainFrame.getFrame().getContentPane();
 		Component[] components = contentPane.getComponents();
@@ -20,7 +26,7 @@ public class MainFrameTest {
 		
 		for (Component component : components) {
 			if (component instanceof JLabel) {
-				Assert.assertFalse("expected image", ((JLabel) component).getIcon().equals(null));
+				Assert.assertNotNull("expected image", ((JLabel) component).getIcon());
 				
 				found = true;
 			}

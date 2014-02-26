@@ -42,7 +42,7 @@ public class ImageRequester {
 			throws IOException {
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 
-		HttpGet httpGet = new HttpGet("http://localhost:9000/api/image/" + id);
+		HttpGet httpGet = new HttpGet("http://localhost:9000/api/images/" + id);
 
 		CloseableHttpResponse response = httpclient.execute(httpGet);
 

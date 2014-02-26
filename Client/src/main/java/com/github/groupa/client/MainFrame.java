@@ -89,7 +89,7 @@ public class MainFrame {
 		}
 	}
 
-	private Image loadImageFromDisk() throws IOException {
+	public Image loadImageFromDisk() throws IOException {
 		return ImageIO.read(new File("../../images/01.png"));
 	}
 }
