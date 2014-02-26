@@ -8,5 +8,8 @@ GET     /                           controllers.Application.index()
 # Get image by id
 GET		/api/images/:id				controllers.ImageController.getImage(id: Long)
 
+# Get list of images
+GET		/api/images					controllers.ImageController.getImages(offset: Int ?= 0, limit: Int ?= 25)
+
 # Map static resources from the /public folder to the /assets URL path
 GET     /assets/*file               controllers.Assets.at(path="/public", file)

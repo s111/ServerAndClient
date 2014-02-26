@@ -5,6 +5,8 @@ import java.util.List;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import play.data.validation.Constraints.Required;
 import play.db.ebean.Model;
 
@@ -19,6 +21,7 @@ public class ImageModel extends Model {
 	public long id;
 
 	@Required
+	@JsonIgnore
 	public String filename;
 
 	public ImageModel(String filename) {
