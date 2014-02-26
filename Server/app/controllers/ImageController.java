@@ -30,6 +30,7 @@ public class ImageController extends Controller {
 	}
 
 	public static Result getImages(int offset, int limit) throws Exception {
+		if (offset < 0 || limit < 0) return badRequest();
 		List<ImageModel> imageModels = ImageModel.getSubList(offset, limit);
 
 		ObjectMapper mapper = new ObjectMapper();

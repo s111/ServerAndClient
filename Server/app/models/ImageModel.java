@@ -1,14 +1,15 @@
 package models;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import play.data.validation.Constraints.Required;
 import play.db.ebean.Model;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 public class ImageModel extends Model {
@@ -44,6 +45,19 @@ public class ImageModel extends Model {
 	}
 	
 	public static List<ImageModel> getSubList(int offset, int limit) {
-		return find.all().subList(offset, offset + limit);
+		if (offset < 0 || limit < 0)
+			return new ArrayList<ImageModel>();
+		
+		List<ImageModel> imageModels = find.all();
+		
+		int size = imageModels.size();
+		
+		int newLimit = offset + limit;
+		
+		if (newLimit >= size) {
+			newLimit = size - 1;
+		}
+		
+		return find.all().subList(offset, newLimit);
 	}
 }
