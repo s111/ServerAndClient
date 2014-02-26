@@ -35,8 +35,9 @@ public class MainFrame {
 
 		/*
 		 * Commented out as we are trying to load a image from the server
-		 * displayImage();
+		 * 
 		 */
+		displayImage();
 	}
 
 	public void display() {
