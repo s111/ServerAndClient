@@ -52,16 +52,12 @@ public class ImageModel extends Model {
 		if (offset < 0 || limit < 0)
 			return new ArrayList<ImageModel>();
 		
-		List<ImageModel> imageModels = find.all();
+		int size = find.all().size();
 		
-		int size = imageModels.size();
-		
-		int newLimit = offset + limit;
-		
-		if (newLimit >= size) {
-			newLimit = size - 1;
+		if (offset + limit >= size) {
+			limit = size - offset;
 		}
 		
-		return find.all().subList(offset, newLimit);
+		return find.all().subList(offset, offset + limit);
 	}
 }
