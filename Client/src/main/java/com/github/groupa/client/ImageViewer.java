@@ -6,72 +6,102 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
- 
+
 public class ImageViewer {
-	
-    public static boolean RIGHT_TO_LEFT = false;
-     
-    public static void addComponentsToPane(Container pane) {
-         
-    	
-    	
-        if (!(pane.getLayout() instanceof BorderLayout)) {
-            pane.add(new JLabel("Container doesn't use BorderLayout!"));
-            return;
-        }
-         
-        if (RIGHT_TO_LEFT) {
-            pane.setComponentOrientation(
-                    java.awt.ComponentOrientation.RIGHT_TO_LEFT);
-        }
-         
-        // Top Panel
-        JPanel TopPanel = new JPanel();
-        JLabel TopLabel = new JLabel("Top Toolbar");
-        pane.add(TopPanel, BorderLayout.PAGE_START);
-        pane.add(TopLabel, BorderLayout.PAGE_START);
-         
-        // Picture Panel
-        JPanel PicturePanel = new JPanel();
-        PicturePanel.setPreferredSize(new Dimension(640, 640));
-        PicturePanel.setBackground(Color.GREEN);
-        
-        pane.add(PicturePanel, BorderLayout.CENTER);
-         
-        // Left Panel
-        JPanel LeftPanel = new JPanel();
-        JLabel LeftLabel = new JLabel("Left Toolbar");
-        LeftPanel.setPreferredSize(new Dimension(100, 0));
-        pane.add(LeftPanel, BorderLayout.LINE_START);
-        pane.add(LeftLabel, BorderLayout.LINE_START);
-         
-        // Bottom Panel
-        JPanel BottomPanel = new JPanel();
-        JLabel BottomLabel = new JLabel("Bottom Toolbar");
-        pane.add(BottomPanel, BorderLayout.PAGE_END);
-        pane.add(BottomLabel, BorderLayout.PAGE_END);
-        
-        // Right Panel
-        JPanel RightPanel = new JPanel();
-        JLabel RightLabel = new JLabel("Right Toolbar");
-        RightPanel.setPreferredSize(new Dimension(100, 0));
-        pane.add(RightPanel, BorderLayout.LINE_END);
-        pane.add(RightLabel, BorderLayout.LINE_END);
-    }
-     
+	private JFrame frame;
 
-    private static void createAndShowGUI() {
-         
-        JFrame frame = new JFrame("Test");
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        addComponentsToPane(frame.getContentPane());
-        frame.pack();
-        frame.setVisible(true);
-    }
-     
-    public static void main(String[] args) {
+	private Container contentPane;
 
-         createAndShowGUI();
-            
-     }
+	private String title;
+
+	public ImageViewer(String title) {
+		this.title = title;
+
+		setUpImageViewer();
+	}
+
+	public void display() {
+		frame.setVisible(true);
+	}
+
+	private void setUpImageViewer() {
+		frame = new JFrame(title);
+		frame.setMinimumSize(new Dimension(640, 480));
+		frame.setLocationRelativeTo(null);
+		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		contentPane = frame.getContentPane();
+		contentPane.setLayout(new BorderLayout());
+
+		addPanelsToContentPane(contentPane);
+
+		frame.pack();
+	}
+
+	private JPanel createTopPanel() {
+		JPanel topPanel = new JPanel();
+		JLabel label = new JLabel("Top Toolbar");
+
+		topPanel.add(label);
+
+		return topPanel;
+	}
+
+	private JPanel createPicturePanel() {
+		JPanel picturePanel = new JPanel();
+		picturePanel.setBackground(Color.GREEN);
+
+		return picturePanel;
+	}
+
+	private JPanel createLeftPanel() {
+		JPanel leftPanel = new JPanel();
+		JLabel label = new JLabel("Left Toolbar");
+
+		leftPanel.add(label);
+
+		return leftPanel;
+	}
+
+	private JPanel createBottomPanel() {
+		JPanel bottomPanel = new JPanel();
+		JLabel label = new JLabel("Bottom Toolbar");
+
+		bottomPanel.add(label);
+
+		return bottomPanel;
+	}
+
+	private JPanel createRightPanel() {
+		JPanel rightPanel = new JPanel();
+		JLabel label = new JLabel("Right Toolbar");
+
+		rightPanel.add(label);
+
+		return rightPanel;
+	}
+
+	private void addPanelsToContentPane(Container contentPane) {
+		JPanel topPanel = createTopPanel();
+		JPanel picturePanel = createPicturePanel();
+		JPanel leftPanel = createLeftPanel();
+		JPanel bottomPanel = createBottomPanel();
+		JPanel rightPanel = createRightPanel();
+
+		contentPane.add(topPanel, BorderLayout.NORTH);
+		contentPane.add(picturePanel, BorderLayout.CENTER);
+		contentPane.add(leftPanel, BorderLayout.WEST);
+		contentPane.add(bottomPanel, BorderLayout.SOUTH);
+		contentPane.add(rightPanel, BorderLayout.EAST);
+	}
+
+	public static void main(String[] args) {
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				ImageViewer imageViewer = new ImageViewer("Title");
+				imageViewer.display();
+			}
+		});
+	}
 }

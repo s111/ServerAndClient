@@ -75,7 +75,6 @@ public class MainFrame {
 		contentPane.add(Box.createHorizontalGlue());
 	}
 
-	@SuppressWarnings("unused")
 	private void displayImage() {
 		Image image = null;
 
