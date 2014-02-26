@@ -42,4 +42,8 @@ public class ImageModel extends Model {
 	public static List<ImageModel> getAll() {
 		return find.all();
 	}
+	
+	public static List<ImageModel> getSubList(int offset, int limit) {
+		return find.all().subList(offset, offset + limit);
+	}
 }
