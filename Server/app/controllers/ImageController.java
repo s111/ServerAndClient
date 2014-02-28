@@ -24,6 +24,10 @@ public class ImageController extends Controller {
 		ObjectNode rootNode = Json.newObject();
 		rootNode.put("href", routes.ImageController.getImageInfo(id)
 				.absoluteURL(request()));
+		
+		/* This document should also contain a first, next, previous, last
+		 * pointing to the appropriate images
+		 */
 
 		ObjectNode image = mapper.convertValue(imageModel, ObjectNode.class);
 		

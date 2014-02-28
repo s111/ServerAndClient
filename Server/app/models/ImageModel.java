@@ -49,6 +49,7 @@ public class ImageModel extends Model {
 	}
 	
 	public static List<ImageModel> getSubList(int offset, int limit) {
+		// Next time working on this function take a look at find.findPagingList(pageSize);
 		if (offset < 0 || limit < 0)
 			return new ArrayList<ImageModel>();
 		
