@@ -1,6 +1,5 @@
 package controllers;
 
-import java.io.File;
 import java.util.List;
 
 import models.ImageModel;
@@ -14,44 +13,48 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class ImageController extends Controller {
-	public static Result getImage(long id) {
+	public static Result getImageInfo(long id) {
 		ImageModel imageModel = ImageModel.getImageModel(id);
 
 		if (imageModel == null)
 			return badRequest();
 
-		File image = new File(imageModel.filename);
+		ObjectMapper mapper = new ObjectMapper();
 
-		if (image.exists()) {
-			return ok(image, true);
-		} else {
-			return badRequest();
-		}
+		ObjectNode rootNode = Json.newObject();
+		rootNode.put("href", routes.ImageController.getImageInfo(id)
+				.absoluteURL(request()));
+
+		ObjectNode image = mapper.convertValue(imageModel, ObjectNode.class);
+		
+		rootNode.put("image", image);
+
+		return ok(rootNode);
 	}
 
 	public static Result getImages(int offset, int limit) throws Exception {
 		int numRows = ImageModel.getRowCount();
-		
+
 		if (offset < 0 || limit < 0 || offset > numRows)
 			return badRequest();
 
 		int pages = numRows / limit;
 		int previousOffset = offset - limit;
 		int nextOffset = offset + limit;
-		
+
 		if (previousOffset < 0) {
 			previousOffset = 0;
 		}
-		
+
 		String next = routes.ImageController.getImages(offset + limit, limit)
 				.absoluteURL(request());
-		String previous = routes.ImageController.getImages(previousOffset, limit)
-				.absoluteURL(request());
-		
+		String previous = routes.ImageController.getImages(previousOffset,
+				limit).absoluteURL(request());
+
 		if (offset == 0) {
 			previous = null;
 		}
-		
+
 		if (nextOffset > numRows - 1) {
 			next = null;
 		}
@@ -79,10 +82,10 @@ public class ImageController extends Controller {
 			long id = image.get("id").asLong();
 
 			((ObjectNode) image).put("href", routes.ImageController
-					.getImage(id).absoluteURL(request()));
+					.getImageInfo(id).absoluteURL(request()));
 		}
 
-		rootNode.put("items", images);
+		rootNode.put("images", images);
 
 		return ok(rootNode);
 	}
