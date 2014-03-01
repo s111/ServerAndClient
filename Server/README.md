@@ -3,7 +3,7 @@
 ## Endpoints
 Endpoint followed by parameters (a default is specified if it's optional)
 
-Get /api/image/:id  
+GET /api/image/:id  
 
 GET /api/image/:id/raw  
 
