@@ -88,7 +88,7 @@ public class ImageModelTest {
 		String filename = "../../images/03.png";
 
 		ImageModel createdModel = ImageModel.create(filename);
-		ImageModel imageModel = ImageModel.getImageModel(createdModel.id);
+		ImageModel imageModel = ImageModel.get(createdModel.id);
 		
 		int numberOfImagesInDatabase = ImageModel.getAll().size();
 

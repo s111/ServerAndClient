@@ -15,7 +15,7 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class ImageController extends Controller {
 	public static Result getImageInfo(long id) {
-		ImageModel imageModel = ImageModel.getImageModel(id);
+		ImageModel imageModel = ImageModel.get(id);
 
 		if (imageModel == null)
 			return badRequest();
@@ -25,6 +25,40 @@ public class ImageController extends Controller {
 		ObjectNode rootNode = Json.newObject();
 		rootNode.put("href", routes.ImageController.getImageInfo(id)
 				.absoluteURL(request()));
+
+		ImageModel nextImageModel = ImageModel.getNext(id);
+		ImageModel previousImageModel = ImageModel.getPrevious(id);
+		ImageModel firstImageModel = ImageModel.getFirst();
+		ImageModel lastImageModel = ImageModel.getLast();
+
+		long nextId = -1;
+		long previousId = -1;
+		long firstId = -1;
+		long lastId = -1;
+
+		if (nextImageModel != null) {
+			nextId = nextImageModel.id;
+		}
+
+		if (previousImageModel != null) {
+			previousId = previousImageModel.id;
+		}
+
+		if (firstImageModel != null) {
+			firstId = firstImageModel.id;
+		}
+
+		if (lastImageModel != null) {
+			lastId = lastImageModel.id;
+		}
+
+		rootNode.put("next", getAbsoluteURLToImageOrNull(nextId));
+
+		rootNode.put("previous", getAbsoluteURLToImageOrNull(previousId));
+
+		rootNode.put("first", getAbsoluteURLToImageOrNull(firstId));
+
+		rootNode.put("last", getAbsoluteURLToImageOrNull(lastId));
 
 		/*
 		 * This document should also contain a first, next, previous, last
@@ -38,8 +72,13 @@ public class ImageController extends Controller {
 		return ok(rootNode);
 	}
 
+	private static String getAbsoluteURLToImageOrNull(long previousId) {
+		return previousId > 0 ? routes.ImageController.getImageInfo(previousId)
+				.absoluteURL(request()) : null;
+	}
+
 	public static Result getImage(long id) {
-		ImageModel imageModel = ImageModel.getImageModel(id);
+		ImageModel imageModel = ImageModel.get(id);
 
 		if (imageModel == null)
 			return badRequest();
@@ -73,11 +112,11 @@ public class ImageController extends Controller {
 		int previousOffset = calculatePreviousOffset(offset, limit);
 		int nextOffset = calculateNextOffset(offset, limit);
 
-		String next = nextOffset > 0 ? getAbsoluteURL(nextOffset, limit) : null;
-		String href = getAbsoluteURL(offset, limit);
-		String first = getAbsoluteURL(0, 25);
-		String previous = getAbsoluteURL(previousOffset, limit);
-		String last = getAbsoluteURL(lastOffset, limit);
+		String next = getAbsoluteURLToImageListOrNull(nextOffset, limit);
+		String href = getAbsoluteURLToImageList(offset, limit);
+		String first = getAbsoluteURLToImageList(0, 25);
+		String previous = getAbsoluteURLToImageListOrNull(previousOffset, limit);
+		String last = getAbsoluteURLToImageList(lastOffset, limit);
 
 		ObjectNode rootNode = Json.newObject();
 		rootNode.put("href", href);
@@ -91,7 +130,12 @@ public class ImageController extends Controller {
 		return rootNode;
 	}
 
-	private static String getAbsoluteURL(int offset, int limit) {
+	private static String getAbsoluteURLToImageListOrNull(int offset, int limit) {
+		return offset >= 0 ? getAbsoluteURLToImageList(offset,
+				limit) : null;
+	}
+
+	private static String getAbsoluteURLToImageList(int offset, int limit) {
 		return routes.ImageController.getImages(offset, limit).absoluteURL(
 				request());
 	}

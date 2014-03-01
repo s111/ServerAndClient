@@ -1,6 +1,7 @@
 package models;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import javax.persistence.Entity;
@@ -38,8 +39,52 @@ public class ImageModel extends Model {
 		return imageModel;
 	}
 
-	public static ImageModel getImageModel(long id) {
+	public static ImageModel get(long id) {
 		return find.byId(id);
+	}
+	
+	public static ImageModel getFirst() {
+		List<ImageModel> imageModels = find.all();
+		
+		if (imageModels.size() == 0) {
+			return null;
+		}
+		
+		return imageModels.get(0);
+	}
+	
+	public static ImageModel getLast() {
+		List<ImageModel> imageModels = find.all();
+		
+		if (imageModels.size() == 0) {
+			return null;
+		}
+		
+		Collections.reverse(imageModels);
+		
+		return imageModels.get(0);
+	}
+
+	public static ImageModel getNext(long id) {
+		List<ImageModel> imageModels = find.where().gt("id", id).findList();
+
+		if (imageModels.size() == 0) {
+			return null;
+		}
+
+		return imageModels.get(0);
+	}
+
+	public static ImageModel getPrevious(long id) {
+		List<ImageModel> imageModels = find.where().lt("id", id).findList();
+
+		if (imageModels.size() == 0) {
+			return null;
+		}
+		
+		Collections.reverse(imageModels);
+
+		return imageModels.get(0);
 	}
 
 	public static List<ImageModel> getAll() {
@@ -56,7 +101,7 @@ public class ImageModel extends Model {
 
 		PagingList<ImageModel> imageModels = find.findPagingList(limit);
 
-		int page = offset/limit;
+		int page = offset / limit;
 
 		Page<ImageModel> imagesOnPage = imageModels.getPage(page);
 
