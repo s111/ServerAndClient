@@ -3,9 +3,9 @@
 ## Endpoints
 Endpoint followed by parameters (a default is specified if it's optional)
 
-GET /api/image/:id  
+GET /api/images/:id  
 
-GET /api/image/:id/raw  
+GET /api/images/:id/raw  
 
 GET /api/images  
 - offset (default 0)  
