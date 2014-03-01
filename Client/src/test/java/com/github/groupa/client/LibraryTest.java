@@ -15,7 +15,8 @@ public class LibraryTest {
 	@Test
 	public void addLocalImagesToLibrary() {
 		Image img1 = null, img2 = null;
-
+		ImageObject imgObject1, imgObject2;
+		Library lib;
 		try {
 			img1 = loadImageFromDisk("../../images/01.png");
 			img2 = loadImageFromDisk("../../images/02.png");
@@ -24,14 +25,19 @@ public class LibraryTest {
 		}
 
 		assertEquals("Invalid count of images", Library.size(), 0);
-
-		Library.add(1, img1);
-		Library.add(2, img2);
-
-		assertSame(img1, Library.get(1).getImage());
-		assertSame(img2, Library.get(2).getImage());
+		
+		imgObject1 = Library.add(1, img1);
+		lib = new Library();
+		assertNull("Nonexisting image returned",lib.getImage(2));
+		imgObject2 = Library.add(2, img2);
 
 		assertEquals("Invalid count of images", Library.size(), 2);
+		
+		assertSame(imgObject1, lib.getImage(1));
+		assertSame(imgObject2, lib.getImage(2));
+		assertSame(imgObject1, lib.getPrevImage());
+		assertSame(imgObject2, lib.getNextImage());
+		assertNull("Nonexisting image returned", lib.getNextImage());
 	}
 
 	private Image loadImageFromDisk(String path) throws IOException {
