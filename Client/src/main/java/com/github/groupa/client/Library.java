@@ -4,18 +4,24 @@ import java.util.ArrayList;
 import java.util.List;
 import java.awt.Image;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class Library {
+	private static final Logger logger = LoggerFactory
+			.getLogger(Library.class);
 	private static List<ImageObject> images = new ArrayList<>();
 	private static int modCount = 0;
 
 	private List<ImageObject> selectedImages = new ArrayList<>();
 	private int expectedModCount;
-	private long activeImage = -1l;
+	private long activeImage = 0l;
 
 	public static ImageObject add(long id, Image img) {
 		if (img == null || id < 0) {
 			return null;
 		}
+		logger.info("Image #" + id + " added");
 		ImageObject imgObject = new ImageObject(id, img);
 		images.add(imgObject);
 		modCount++;
