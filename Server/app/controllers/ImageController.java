@@ -159,7 +159,7 @@ public class ImageController extends Controller {
 	private static int calculateLastOffset(int limit) {
 		int numRows = ImageModel.getRowCount();
 		int pages = numRows / limit;
-		int lastOffset = pages * limit - 1;
+		int lastOffset = pages * limit;
 
 		return lastOffset;
 	}
