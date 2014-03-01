@@ -3,7 +3,6 @@ package models;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,7 +25,7 @@ public class ImageModelTest {
 	public static FakeApplication application;
 
 	@BeforeClass
-	public static void startApp() throws IOException {
+	public static void startApp() {
 		application = Helpers.fakeApplication();
 
 		Helpers.start(application);
@@ -38,7 +37,7 @@ public class ImageModelTest {
 	}
 
 	@Before
-	public void dropCreateDb() throws IOException {
+	public void dropCreateDb() {
 		String serverName = "default";
 
 		EbeanServer server = Ebean.getServer(serverName);

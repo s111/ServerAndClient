@@ -24,61 +24,65 @@ public class ImageController extends Controller {
 		ObjectNode rootNode = Json.newObject();
 		rootNode.put("href", routes.ImageController.getImageInfo(id)
 				.absoluteURL(request()));
-		
-		/* This document should also contain a first, next, previous, last
+
+		/*
+		 * This document should also contain a first, next, previous, last
 		 * pointing to the appropriate images
 		 */
 
 		ObjectNode image = mapper.convertValue(imageModel, ObjectNode.class);
-		
+
 		rootNode.put("image", image);
 
 		return ok(rootNode);
 	}
 
-	public static Result getImages(int offset, int limit) throws Exception {
-		int numRows = ImageModel.getRowCount();
-
-		if (offset < 0 || limit < 0 || offset > numRows)
+	public static Result getImages(int offset, int limit) {
+		if (isNotWithinBoundaries(offset, limit))
 			return badRequest();
 
-		int pages = numRows / limit;
-		int previousOffset = offset - limit;
-		int nextOffset = offset + limit;
+		ObjectNode rootNode = createJSONForImages(offset, limit);
 
-		if (previousOffset < 0) {
-			previousOffset = 0;
-		}
+		List<ImageModel> imageModels = ImageModel.getPageList(offset, limit);
 
-		String next = routes.ImageController.getImages(offset + limit, limit)
-				.absoluteURL(request());
-		String previous = routes.ImageController.getImages(previousOffset,
-				limit).absoluteURL(request());
+		ArrayNode images = createJSONArrayFromImageModels(imageModels);
 
-		if (offset == 0) {
-			previous = null;
-		}
+		rootNode.put("images", images);
 
-		if (nextOffset > numRows - 1) {
-			next = null;
-		}
+		return ok(rootNode);
+	}
 
-		List<ImageModel> imageModels = ImageModel.getSubList(offset, limit);
+	private static ObjectNode createJSONForImages(int offset, int limit) {
+		int lastOffset = calculateLastOffset(limit);
+		int previousOffset = calculatePreviousOffset(offset, limit);
+		int nextOffset = calculateNextOffset(offset, limit);
 
-		ObjectMapper mapper = new ObjectMapper();
+		String next = nextOffset > 0 ? getAbsoluteURL(nextOffset, limit) : null;
+		String href = getAbsoluteURL(offset, limit);
+		String first = getAbsoluteURL(0, 25);
+		String previous = getAbsoluteURL(previousOffset, limit);
+		String last = getAbsoluteURL(lastOffset, limit);
 
 		ObjectNode rootNode = Json.newObject();
-		rootNode.put("href", routes.ImageController.getImages(offset, limit)
-				.absoluteURL(request()));
+		rootNode.put("href", href);
 		rootNode.put("offset", offset);
 		rootNode.put("limit", limit);
-		rootNode.put("first", routes.ImageController.getImages(0, 25)
-				.absoluteURL(request()));
-		rootNode.put("previous", previous);
+		rootNode.put("first", first);
 		rootNode.put("next", next);
-		rootNode.put("last",
-				routes.ImageController.getImages(pages * limit, limit)
-						.absoluteURL(request()));
+		rootNode.put("previous", previous);
+		rootNode.put("last", last);
+
+		return rootNode;
+	}
+
+	private static String getAbsoluteURL(int offset, int limit) {
+		return routes.ImageController.getImages(offset, limit).absoluteURL(
+				request());
+	}
+
+	private static ArrayNode createJSONArrayFromImageModels(
+			List<ImageModel> imageModels) {
+		ObjectMapper mapper = new ObjectMapper();
 
 		ArrayNode images = mapper.convertValue(imageModels, ArrayNode.class);
 
@@ -89,8 +93,42 @@ public class ImageController extends Controller {
 					.getImageInfo(id).absoluteURL(request()));
 		}
 
-		rootNode.put("images", images);
+		return images;
+	}
 
-		return ok(rootNode);
+	private static int calculateLastOffset(int limit) {
+		int numRows = ImageModel.getRowCount();
+		int pages = numRows / limit;
+		int lastOffset = pages * limit - 1;
+
+		return lastOffset;
+	}
+
+	private static int calculateNextOffset(int offset, int limit) {
+		int numRows = ImageModel.getRowCount();
+
+		int nextOffset = offset + limit;
+
+		if (nextOffset > numRows - 1) {
+			nextOffset = -1;
+		}
+
+		return nextOffset;
+	}
+
+	private static int calculatePreviousOffset(int offset, int limit) {
+		int previousOffset = offset - limit;
+
+		if (previousOffset < 0) {
+			previousOffset = 0;
+		}
+
+		return previousOffset;
+	}
+
+	private static boolean isNotWithinBoundaries(int offset, int limit) {
+		int numRows = ImageModel.getRowCount();
+
+		return (offset < 0 || limit < 0 || offset > numRows);
 	}
 }

@@ -9,6 +9,8 @@ import javax.persistence.Id;
 import play.data.validation.Constraints.Required;
 import play.db.ebean.Model;
 
+import com.avaje.ebean.Page;
+import com.avaje.ebean.PagingList;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
@@ -43,22 +45,21 @@ public class ImageModel extends Model {
 	public static List<ImageModel> getAll() {
 		return find.all();
 	}
-	
+
 	public static int getRowCount() {
 		return find.all().size();
 	}
-	
-	public static List<ImageModel> getSubList(int offset, int limit) {
-		// Next time working on this function take a look at find.findPagingList(pageSize);
+
+	public static List<ImageModel> getPageList(int offset, int limit) {
 		if (offset < 0 || limit < 0)
 			return new ArrayList<ImageModel>();
-		
-		int size = find.all().size();
-		
-		if (offset + limit >= size) {
-			limit = size - offset;
-		}
-		
-		return find.all().subList(offset, offset + limit);
+
+		PagingList<ImageModel> imageModels = find.findPagingList(limit);
+
+		int page = offset/limit;
+
+		Page<ImageModel> imagesOnPage = imageModels.getPage(page);
+
+		return imagesOnPage.getList();
 	}
 }
