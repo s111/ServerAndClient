@@ -39,6 +39,46 @@ public class ImageControllerTest {
 		isJSON(result);
 		contains(result, "\"id\":1");
 	}
+	
+	@Test
+	public void getImageInfo_10_Next11() {
+		Result result = callAction(controllers.routes.ref.ImageController
+				.getImageInfo(10));
+
+		isOK(result);
+		isJSON(result);
+		contains(result, "\"next\":\"http:///api/images/11\"");
+	}
+	
+	@Test
+	public void getImageInfo_10_Previous9() {
+		Result result = callAction(controllers.routes.ref.ImageController
+				.getImageInfo(10));
+
+		isOK(result);
+		isJSON(result);
+		contains(result, "\"previous\":\"http:///api/images/9\"");
+	}
+	
+	@Test
+	public void getImageInfo_10_First1() {
+		Result result = callAction(controllers.routes.ref.ImageController
+				.getImageInfo(10));
+
+		isOK(result);
+		isJSON(result);
+		contains(result, "\"first\":\"http:///api/images/1\"");
+	}
+	
+	@Test
+	public void getImageInfo_10_Last68() {
+		Result result = callAction(controllers.routes.ref.ImageController
+				.getImageInfo(10));
+
+		isOK(result);
+		isJSON(result);
+		contains(result, "\"last\":\"http:///api/images/68\"");
+	}
 
 	@Test
 	public void getImages_0And25_Offset0AndLimit25() {
