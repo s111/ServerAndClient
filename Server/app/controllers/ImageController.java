@@ -1,5 +1,6 @@
 package controllers;
 
+import java.io.File;
 import java.util.List;
 
 import models.ImageModel;
@@ -35,6 +36,21 @@ public class ImageController extends Controller {
 		rootNode.put("image", image);
 
 		return ok(rootNode);
+	}
+
+	public static Result getImage(long id) {
+		ImageModel imageModel = ImageModel.getImageModel(id);
+
+		if (imageModel == null)
+			return badRequest();
+
+		File image = new File(imageModel.filename);
+
+		if (image.exists()) {
+			return ok(image, true);
+		} else {
+			return notFound();
+		}
 	}
 
 	public static Result getImages(int offset, int limit) {
