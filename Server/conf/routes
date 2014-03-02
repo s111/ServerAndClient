@@ -3,19 +3,22 @@
 # ~~~~
 
 # Home page
-GET   /                     controllers.Application.index()
+GET    /                      controllers.Application.index()
 
 # Get image by id
-GET   /api/images/:id       controllers.GetImage.info(id: Long)
+GET    /api/images/:id        controllers.GetImage.info(id: Long)
 
 # Get raw image by id
-GET   /api/images/:id/raw   controllers.GetImage.file(id: Long)
+GET    /api/images/:id/raw    controllers.GetImage.file(id: Long)
 
 # Get list of images
-GET   /api/images           controllers.ImageController.getImages(offset: Int ?= 0, limit: Int ?= 25)
+GET    /api/images            controllers.ImageController.getImages(offset: Int ?= 0, limit: Int ?= 25)
 
 # Rate image
-POST  /api/images/:id/rate  controllers.ImageRater.rate(id: Long)
+POST   /api/images/:id/rate   controllers.ImageRater.rate(id: Long)
+
+# Set description for image
+POST  /api/images/:id/description controllers.ImageDescription.setDescription(id: Long)
 
 # Map static resources from the /public folder to the /assets URL path
-GET   /assets/*file         controllers.Assets.at(path="/public", file)
+GET    /assets/*file          controllers.Assets.at(path="/public", file)
