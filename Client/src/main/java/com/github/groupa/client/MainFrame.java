@@ -2,10 +2,13 @@ package com.github.groupa.client;
 
 import java.awt.Container;
 import java.awt.Dimension;
+
 import javax.swing.JFrame;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.github.groupa.client.components.MenuBar;
 
 public class MainFrame {
 	private static final Logger logger = LoggerFactory
@@ -28,7 +31,9 @@ public class MainFrame {
 		frame.setMinimumSize(new Dimension(640, 480));
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
+		
+		frame.setJMenuBar(new MenuBar().getMenuBar());
+		
 		contentPane = frame.getContentPane();
 	}
 
