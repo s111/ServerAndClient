@@ -1,13 +1,17 @@
 package com.github.groupa.client;
 
-import javax.swing.*;
-
-import com.github.groupa.client.components.ImageRater;
-
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
+
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
+
+import com.github.groupa.client.components.ImageDescriptionButton;
+import com.github.groupa.client.components.ImageRater;
 
 public class ImageViewer {
 	private JFrame frame;
@@ -58,9 +62,7 @@ public class ImageViewer {
 
 	private JPanel createLeftPanel() {
 		JPanel leftPanel = new JPanel();
-		JLabel label = new JLabel("Left Toolbar");
-
-		leftPanel.add(label);
+		leftPanel.add(new ImageDescriptionButton().getButton());
 
 		return leftPanel;
 	}
