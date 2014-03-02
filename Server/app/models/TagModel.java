@@ -1,5 +1,7 @@
 package models;
 
+import java.util.List;
+
 import javax.persistence.Entity;
 import javax.persistence.Id;
 
@@ -24,5 +26,13 @@ public class TagModel extends Model {
 		tagModel.save();
 
 		return tagModel;
+	}
+
+	public static TagModel get(String name) {
+		return find.where().eq("name", name).findUnique();
+	}
+
+	public static List<TagModel> getAll() {
+		return find.all();
 	}
 }
