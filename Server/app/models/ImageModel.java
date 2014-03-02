@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 
 import play.data.validation.Constraints.Required;
 import play.db.ebean.Model;
@@ -23,10 +24,15 @@ public class ImageModel extends Model {
 
 	@Id
 	public long id;
+	public int rating;
 
 	@Required
 	@JsonIgnore
 	public String filename;
+	public String description;
+	
+	@ManyToMany
+	public List<TagModel> tags;
 
 	public ImageModel(String filename) {
 		this.filename = filename;

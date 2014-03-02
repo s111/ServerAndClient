@@ -144,6 +144,8 @@ public class ImageController extends Controller {
 		for (JsonNode image : images) {
 			long id = image.get("id").asLong();
 
+			((ObjectNode) image).removeAll();
+			((ObjectNode) image).put("id", id);
 			((ObjectNode) image).put("href", routes.ImageController
 					.getImageInfo(id).absoluteURL(request()));
 		}
