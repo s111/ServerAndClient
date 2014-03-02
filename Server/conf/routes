@@ -6,10 +6,10 @@
 GET     /                           controllers.Application.index()
 
 # Get image by id
-GET		/api/images/:id				controllers.ImageController.getImageInfo(id: Long)
+GET		/api/images/:id				controllers.GetImage.info(id: Long)
 
 # Get raw image by id
-GET		/api/images/:id/raw			controllers.ImageController.getImage(id: Long)
+GET		/api/images/:id/raw			controllers.GetImage.file(id: Long)
 
 # Get list of images
 GET		/api/images					controllers.ImageController.getImages(offset: Int ?= 0, limit: Int ?= 25)

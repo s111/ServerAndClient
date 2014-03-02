@@ -1,6 +1,5 @@
 package controllers;
 
-import java.io.File;
 import java.util.List;
 
 import models.ImageModel;
@@ -14,79 +13,6 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class ImageController extends Controller {
-	public static Result getImageInfo(long id) {
-		ImageModel imageModel = ImageModel.get(id);
-
-		if (imageModel == null)
-			return badRequest();
-
-		ObjectMapper mapper = new ObjectMapper();
-
-		ObjectNode rootNode = Json.newObject();
-		rootNode.put("href", routes.ImageController.getImageInfo(id)
-				.absoluteURL(request()));
-
-		ImageModel nextImageModel = ImageModel.getNext(id);
-		ImageModel previousImageModel = ImageModel.getPrevious(id);
-		ImageModel firstImageModel = ImageModel.getFirst();
-		ImageModel lastImageModel = ImageModel.getLast();
-
-		long nextId = -1;
-		long previousId = -1;
-		long firstId = -1;
-		long lastId = -1;
-
-		if (nextImageModel != null) {
-			nextId = nextImageModel.id;
-		}
-
-		if (previousImageModel != null) {
-			previousId = previousImageModel.id;
-		}
-
-		if (firstImageModel != null) {
-			firstId = firstImageModel.id;
-		}
-
-		if (lastImageModel != null) {
-			lastId = lastImageModel.id;
-		}
-
-		rootNode.put("next", getAbsoluteURLToImageOrNull(nextId));
-
-		rootNode.put("previous", getAbsoluteURLToImageOrNull(previousId));
-
-		rootNode.put("first", getAbsoluteURLToImageOrNull(firstId));
-
-		rootNode.put("last", getAbsoluteURLToImageOrNull(lastId));
-
-		ObjectNode image = mapper.convertValue(imageModel, ObjectNode.class);
-
-		rootNode.put("image", image);
-
-		return ok(rootNode);
-	}
-
-	private static String getAbsoluteURLToImageOrNull(long previousId) {
-		return previousId > 0 ? routes.ImageController.getImageInfo(previousId)
-				.absoluteURL(request()) : null;
-	}
-
-	public static Result getImage(long id) {
-		ImageModel imageModel = ImageModel.get(id);
-
-		if (imageModel == null)
-			return badRequest();
-
-		File image = new File(imageModel.filename);
-
-		if (image.exists()) {
-			return ok(image, true);
-		} else {
-			return notFound();
-		}
-	}
-
 	public static Result getImages(int offset, int limit) {
 		if (isNotWithinBoundaries(offset, limit))
 			return badRequest();
@@ -126,8 +52,7 @@ public class ImageController extends Controller {
 	}
 
 	private static String getAbsoluteURLToImageListOrNull(int offset, int limit) {
-		return offset >= 0 ? getAbsoluteURLToImageList(offset,
-				limit) : null;
+		return offset >= 0 ? getAbsoluteURLToImageList(offset, limit) : null;
 	}
 
 	private static String getAbsoluteURLToImageList(int offset, int limit) {
@@ -146,8 +71,8 @@ public class ImageController extends Controller {
 
 			((ObjectNode) image).removeAll();
 			((ObjectNode) image).put("id", id);
-			((ObjectNode) image).put("href", routes.ImageController
-					.getImageInfo(id).absoluteURL(request()));
+			((ObjectNode) image).put("href", routes.GetImage.info(id)
+					.absoluteURL(request()));
 		}
 
 		return images;

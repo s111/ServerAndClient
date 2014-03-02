@@ -23,48 +23,43 @@ public class ImageControllerTest {
 
 	@Test
 	public void getImageInfo_for_image_1_expect_id_1() {
-		Result result = callAction(controllers.routes.ref.ImageController
-				.getImageInfo(1));
+		Result result = callGetImageInfo(1);
 
 		isOK(result);
 		isJSON(result);
 		contains(result, "\"id\":1");
 	}
-	
+
 	@Test
 	public void getImageInfo_for_image_10_expect_next_image_11() {
-		Result result = callAction(controllers.routes.ref.ImageController
-				.getImageInfo(10));
+		Result result = callGetImageInfo(10);
 
 		isOK(result);
 		isJSON(result);
 		contains(result, "\"next\":\"http:///api/images/11\"");
 	}
-	
+
 	@Test
 	public void getImageInfo_for_image_10_expect_previous_image_9() {
-		Result result = callAction(controllers.routes.ref.ImageController
-				.getImageInfo(10));
+		Result result = callGetImageInfo(10);
 
 		isOK(result);
 		isJSON(result);
 		contains(result, "\"previous\":\"http:///api/images/9\"");
 	}
-	
+
 	@Test
 	public void getImageInfo_for_image_10_expect_first_image_1() {
-		Result result = callAction(controllers.routes.ref.ImageController
-				.getImageInfo(10));
+		Result result = callGetImageInfo(10);
 
 		isOK(result);
 		isJSON(result);
 		contains(result, "\"first\":\"http:///api/images/1\"");
 	}
-	
+
 	@Test
 	public void getImageInfo_for_image_10_expect_last_68() {
-		Result result = callAction(controllers.routes.ref.ImageController
-				.getImageInfo(10));
+		Result result = callGetImageInfo(10);
 
 		isOK(result);
 		isJSON(result);
@@ -73,52 +68,56 @@ public class ImageControllerTest {
 
 	@Test
 	public void getImages_with_offset_0_limit_25_expect_offset_0_limit_25() {
-		Result result = callAction(controllers.routes.ref.ImageController
-				.getImages(0, 25));
+		Result result = callGetImages(0, 25);
 
 		isOK(result);
 		isJSON(result);
 		contains(result, "\"offset\":0,\"limit\":25");
 	}
-	
+
 	@Test
 	public void getImages_with_offset_0_limit_25_expect_next_offset_25() {
-		Result result = callAction(controllers.routes.ref.ImageController
-				.getImages(0, 25));
+		Result result = callGetImages(0, 25);
 
 		isOK(result);
 		isJSON(result);
 		contains(result, "\"next\":\"http:///api/images?offset=25\"");
 	}
-	
+
 	@Test
 	public void getImages_with_offset_25_limit_25_expect__previous_offset_0() {
-		Result result = callAction(controllers.routes.ref.ImageController
-				.getImages(25, 25));
+		Result result = callGetImages(25, 25);
 
 		isOK(result);
 		isJSON(result);
 		contains(result, "\"previous\":\"http:///api/images\"");
 	}
-	
+
 	@Test
 	public void getImages_with_offset_0_limit_25_expect_first_offset_0() {
-		Result result = callAction(controllers.routes.ref.ImageController
-				.getImages(0, 25));
+		Result result = callGetImages(0, 25);
 
 		isOK(result);
 		isJSON(result);
 		contains(result, "\"first\":\"http:///api/images\"");
 	}
-	
+
 	@Test
 	public void getImages_with_offset_0_limit_25_expect_last_offset_50() {
-		Result result = callAction(controllers.routes.ref.ImageController
-				.getImages(0, 25));
+		Result result = callGetImages(0, 25);
 
 		isOK(result);
 		isJSON(result);
 		contains(result, "\"last\":\"http:///api/images?offset=50\"");
+	}
+
+	private Result callGetImageInfo(long id) {
+		return callAction(controllers.routes.ref.GetImage.info(id));
+	}
+
+	private Result callGetImages(int offset, int limit) {
+		return callAction(controllers.routes.ref.ImageController.getImages(
+				offset, limit));
 	}
 
 	private void contains(Result result, String string) {
