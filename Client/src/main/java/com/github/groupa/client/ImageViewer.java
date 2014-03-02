@@ -2,6 +2,8 @@ package com.github.groupa.client;
 
 import javax.swing.*;
 
+import com.github.groupa.client.components.ImageRater;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Container;
@@ -65,9 +67,8 @@ public class ImageViewer {
 
 	private JPanel createBottomPanel() {
 		JPanel bottomPanel = new JPanel();
-		JLabel label = new JLabel("Bottom Toolbar");
-
-		bottomPanel.add(label);
+		
+		bottomPanel.add(new ImageRater().getPanel());
 
 		return bottomPanel;
 	}
