@@ -16,6 +16,8 @@ public class ImageController extends Controller {
 	public static Result getImages(int offset, int limit) {
 		if (isNotWithinBoundaries(offset, limit))
 			return badRequest();
+		
+		if (limit == 0) limit = ImageModel.getAll().size();
 
 		ObjectNode rootNode = createJSONForImages(offset, limit);
 

@@ -53,15 +53,6 @@ public class GetImageTest {
 		isJSON(result);
 		contains(result, "\"first\":\"http:///api/images/1\"");
 	}
-
-	@Test
-	public void getImageInfo_for_image_10_expect_last_68() {
-		Result result = callGetImageInfo(10);
-
-		isOK(result);
-		isJSON(result);
-		contains(result, "\"last\":\"http:///api/images/68\"");
-	}
 	
 	private Result callGetImageInfo(long id) {
 		return callAction(controllers.routes.ref.GetImage.info(id));

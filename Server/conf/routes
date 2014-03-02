@@ -23,6 +23,9 @@ POST   /api/images/:id/description   controllers.ImageDescription.setDescription
 # Tag image
 POST   /api/images/:id/tag           controllers.ImageTagger.tag(id: Long)
 
+# Upload image
+POST   /api/image                    controllers.ImageUploader.upload()
+
 # Get images given tag
 GET    /api/tags/:tag                controllers.TagController.getImages(tag: String, offset: Int ?= 0, limit: Int ?= 25)
 
