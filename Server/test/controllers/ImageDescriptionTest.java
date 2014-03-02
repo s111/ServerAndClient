@@ -18,7 +18,7 @@ import com.avaje.ebean.config.dbplatform.H2Platform;
 import com.avaje.ebeaninternal.api.SpiEbeanServer;
 import com.avaje.ebeaninternal.server.ddl.DdlGenerator;
 
-public class ImageRaterTest {
+public class ImageDescriptionTest {
 	@Before
 	public void startApp() {
 		start(fakeApplication());
@@ -43,14 +43,14 @@ public class ImageRaterTest {
 	}
 
 	@Test
-	public void rate_image_1_with_default_rating_0_expect_rating_0() {
+	public void set_description_for_image_expect_null() {
 		String filename = "../../images/01.png";
 		
 		ImageModel createdImageModel = ImageModel.create(filename);
 		long id = createdImageModel.id;
 		
-		callAction(controllers.routes.ref.ImageRater.rate(id));
+		callAction(controllers.routes.ref.ImageDescription.setDescription(id));
 
-		assertEquals(0, createdImageModel.rating);
+		assertEquals(null, createdImageModel.description);
 	}
 }
