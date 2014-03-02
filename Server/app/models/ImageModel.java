@@ -2,11 +2,14 @@ package models;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
+import javax.persistence.OneToMany;
 
 import play.data.validation.Constraints.Required;
 import play.db.ebean.Model;
@@ -33,6 +36,9 @@ public class ImageModel extends Model {
 	
 	@ManyToMany(mappedBy = "images")
 	public List<TagModel> tags = new ArrayList<>();
+	
+	@OneToMany(mappedBy = "image")
+	public Map<Integer, ThumbnailModel> thumbnails = new HashMap<>();
 
 	public ImageModel(String filename) {
 		this.filename = filename;
@@ -122,5 +128,13 @@ public class ImageModel extends Model {
 		Page<ImageModel> imagesOnPage = imageModels.getPage(page);
 
 		return imagesOnPage.getList();
+	}
+
+	public void addThumbnail(ThumbnailModel thumbnailModel) {
+		thumbnails.put(thumbnailModel.size, thumbnailModel);
+		
+		thumbnailModel.image = this;
+
+		save();
 	}
 }
