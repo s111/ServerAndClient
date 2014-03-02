@@ -15,8 +15,8 @@ import org.apache.http.util.EntityUtils;
 
 // Feel free to come up with better names
 public class ImageRequester implements Requester {
-	public Image requestImage(long id) throws IOException {
-		CloseableHttpResponse response = sendImageRequest(id);
+	public Image requestImage(String href) throws IOException {
+		CloseableHttpResponse response = sendImageRequest(href);
 		Image image = extractImageFromResponse(response);
 
 		return image;
@@ -38,11 +38,11 @@ public class ImageRequester implements Requester {
 		return image;
 	}
 
-	private CloseableHttpResponse sendImageRequest(long id)
+	private CloseableHttpResponse sendImageRequest(String href)
 			throws IOException {
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 
-		HttpGet httpGet = new HttpGet("http://localhost:9000/api/images/" + id + "/raw");
+		HttpGet httpGet = new HttpGet(href + "/raw");
 
 		CloseableHttpResponse response = httpclient.execute(httpGet);
 

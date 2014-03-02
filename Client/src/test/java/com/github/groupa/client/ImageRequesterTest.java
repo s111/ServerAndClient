@@ -27,7 +27,7 @@ public class ImageRequesterTest {
 		Requester requester = new FakeImageRequester();
 
 		try {
-			image = requester.requestImage(1);
+			image = requester.requestImage("");
 		} catch (IOException e) {
 			fail("Threw IOException");
 		}

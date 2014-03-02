@@ -19,8 +19,8 @@ public class LibraryTest {
 		Requester request = new FakeImageRequester();
 		
 		try {
-			img1 = request.requestImage(1);
-			img2 = request.requestImage(2);
+			img1 = request.requestImage("");
+			img2 = request.requestImage("");
 		} catch (IOException e) {
 			fail("FakeImageRequester error");
 		}
