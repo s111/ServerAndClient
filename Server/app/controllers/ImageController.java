@@ -60,11 +60,6 @@ public class ImageController extends Controller {
 
 		rootNode.put("last", getAbsoluteURLToImageOrNull(lastId));
 
-		/*
-		 * This document should also contain a first, next, previous, last
-		 * pointing to the appropriate images
-		 */
-
 		ObjectNode image = mapper.convertValue(imageModel, ObjectNode.class);
 
 		rootNode.put("image", image);

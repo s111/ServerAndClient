@@ -1,4 +1,7 @@
 
+import static org.junit.Assert.assertEquals;
+import static play.test.Helpers.fakeApplication;
+
 import java.io.File;
 
 import models.ImageModel;
@@ -7,18 +10,15 @@ import org.junit.Before;
 import org.junit.Test;
 
 import play.test.WithApplication;
-import static org.junit.Assert.assertEquals;
-import static play.test.Helpers.fakeApplication;
-import static play.test.Helpers.inMemoryDatabase;
 
 public class GlobalTest extends WithApplication {
 	@Before
-	public void setUp() {
-		start(fakeApplication(inMemoryDatabase()));
+	public void startApp() {
+		start(fakeApplication());
 	}
 
 	@Test
-	public void checkInitialDatabase() {
+	public void check_initial_database_size_expect_to_match_files_on_disk() {
 		File directory = new File("../../images");
 
 		File[] listOfFiles = directory.listFiles();
