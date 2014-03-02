@@ -10,7 +10,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
-public class ImageRater implements ActionListener {
+public class ImageRater {
 	private static final int MAX_RATING = 5;
 
 	private JRadioButton buttons[] = new JRadioButton[MAX_RATING];
@@ -48,22 +48,15 @@ public class ImageRater implements ActionListener {
 
 	private void createRadioButtons() {
 		for (int i = 0; i < MAX_RATING; i++) {
+			final int j = i + 1;
+			
 			buttons[i] = new JRadioButton(names[i]);
-			buttons[i].addActionListener(this);
+			buttons[i].addActionListener(new ActionListener() {
+				@Override
+				public void actionPerformed(ActionEvent action) {
+					JOptionPane.showMessageDialog(null, "You Rated " + j + "!");
+				}
+			});
 		}
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == buttons[0])
-			JOptionPane.showMessageDialog(null, "You Rated 1!");
-		else if (e.getSource() == buttons[1])
-			JOptionPane.showMessageDialog(null, "You Rated 2!");
-		else if (e.getSource() == buttons[2])
-			JOptionPane.showMessageDialog(null, "You Rated 3!");
-		else if (e.getSource() == buttons[3])
-			JOptionPane.showMessageDialog(null, "You Rated 4!");
-		else if (e.getSource() == buttons[4])
-			JOptionPane.showMessageDialog(null, "You Rated 5!");
 	}
 }

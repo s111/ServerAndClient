@@ -13,7 +13,7 @@ public class ImageDescriptionButton implements ActionListener {
 	public ImageDescriptionButton() {
 		createCommentButton();
 	}
-	
+
 	public JButton getButton() {
 		return button;
 	}
@@ -25,9 +25,8 @@ public class ImageDescriptionButton implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		if (e.getSource() == button)
-			this.description = JOptionPane
-					.showInputDialog("Please type your description of this image.");
+		description = JOptionPane
+				.showInputDialog("Please type your description of this image.");
 
 		JOptionPane.showMessageDialog(null, "Your description of this image:\n"
 				+ description);

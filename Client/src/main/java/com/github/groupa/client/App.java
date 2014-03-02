@@ -20,7 +20,8 @@ import org.slf4j.LoggerFactory;
 public class App {
 	private static final Logger logger = LoggerFactory.getLogger(App.class);
 
-	private static void getImages(String host) throws IOException { //TODO: Fix this mess
+	private static void getImages(String host) throws IOException { // TODO: Fix
+																	// this mess
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 
 		HttpGet httpGet = new HttpGet("http://" + host
@@ -70,8 +71,9 @@ public class App {
 			@Override
 			public void run() {
 				MainFrame mainFrame = new MainFrame("App");
-				String host = JOptionPane.showInputDialog("Host address", "localhost:9000");
-				
+				String host = JOptionPane.showInputDialog("Host address",
+						"localhost:9000");
+
 				mainFrame.display();
 
 				try {

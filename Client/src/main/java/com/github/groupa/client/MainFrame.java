@@ -5,15 +5,9 @@ import java.awt.Dimension;
 
 import javax.swing.JFrame;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.github.groupa.client.components.MenuBar;
 
 public class MainFrame {
-	private static final Logger logger = LoggerFactory
-			.getLogger(MainFrame.class);
-
 	private JFrame frame;
 	private Container contentPane;
 	private Container displayedContainer;
