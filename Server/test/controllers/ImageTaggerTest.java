@@ -18,7 +18,7 @@ import com.avaje.ebean.config.dbplatform.H2Platform;
 import com.avaje.ebeaninternal.api.SpiEbeanServer;
 import com.avaje.ebeaninternal.server.ddl.DdlGenerator;
 
-public class ImageRaterTest {
+public class ImageTaggerTest {
 	@Before
 	public void startApp() {
 		start(fakeApplication());
@@ -41,16 +41,16 @@ public class ImageRaterTest {
 		ddl.runScript(false, ddl.generateDropDdl());
 		ddl.runScript(false, ddl.generateCreateDdl());
 	}
-
+	
 	@Test
-	public void rate_image_1_without_value_expect_rating_0() {
+	public void tag_image_without_value_expect_empty_list() {
 		String filename = "../../images/01.png";
 		
 		ImageModel createdImageModel = ImageModel.create(filename);
 		long id = createdImageModel.id;
 		
-		callAction(controllers.routes.ref.ImageRater.rate(id));
+		callAction(controllers.routes.ref.ImageTagger.tag(id));
 
-		assertEquals(0, createdImageModel.rating);
+		assertEquals(0, createdImageModel.tags.size());
 	}
 }
