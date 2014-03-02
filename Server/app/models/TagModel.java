@@ -1,9 +1,11 @@
 package models;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 
 import play.db.ebean.Model;
 
@@ -13,6 +15,9 @@ public class TagModel extends Model {
 
 	@Id
 	public String name;
+	
+	@ManyToMany
+	public List<ImageModel> images = new ArrayList<>();
 
 	public static Finder<Long, TagModel> find = new Finder<>(Long.class,
 			TagModel.class);
@@ -20,7 +25,7 @@ public class TagModel extends Model {
 	public TagModel(String name) {
 		this.name = name;
 	}
-
+	
 	public static TagModel create(String name) {
 		TagModel tagModel = new TagModel(name);
 		tagModel.save();

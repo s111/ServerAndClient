@@ -31,11 +31,21 @@ public class ImageModel extends Model {
 	public String filename;
 	public String description;
 	
-	@ManyToMany
-	public List<TagModel> tags;
+	@ManyToMany(mappedBy = "images")
+	public List<TagModel> tags = new ArrayList<>();
 
 	public ImageModel(String filename) {
 		this.filename = filename;
+	}
+	
+	public void tag(TagModel tagModel) {
+		if (tags.contains(tagModel)) return;
+		
+		tags.add(tagModel);
+		
+		tagModel.images.add(this);
+
+		save();
 	}
 
 	public static ImageModel create(String filename) {

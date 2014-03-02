@@ -103,4 +103,53 @@ public class TagModelTest {
 
 		assertEquals(3, databaseSize);
 	}
+	
+	
+	@Test
+	public void tag_image_expect_tag_to_contain_one_image() {
+		String filename = "../../images/01.png";
+		String tagName = "tag";
+		
+		ImageModel imageModel = new ImageModel(filename);
+		TagModel tagModel = TagModel.create(tagName);
+		
+		imageModel.tag(tagModel);
+		
+		assertEquals(1, tagModel.images.size());
+	}
+	
+	@Test
+	public void tag_image_twice_expect_tags_to_contain_one_image() {
+		String filename = "../../images/01.png";
+		String tag1 = "tag1";
+		String tag2 = "tag2";
+		
+		ImageModel imageModel = new ImageModel(filename);
+		TagModel tagModel1 = TagModel.create(tag1);
+		TagModel tagModel2 = TagModel.create(tag2);
+		
+		imageModel.tag(tagModel1);
+		imageModel.tag(tagModel2);
+		
+		assertEquals(1, tagModel1.images.size());
+		assertEquals(1, tagModel2.images.size());
+	}
+	
+	@Test
+	public void tag_two_images_expect_tag_to_contain_two_images() {
+		String filename1 = "../../images/01.png";
+		String filename2 = "../../images/02.png";
+		
+		String tagName = "tag";
+		
+		ImageModel imageModel1 = new ImageModel(filename1);
+		ImageModel imageModel2 = new ImageModel(filename2);
+		
+		TagModel tagModel = TagModel.create(tagName);
+		
+		imageModel1.tag(tagModel);
+		imageModel2.tag(tagModel);
+		
+		assertEquals(2, tagModel.images.size());
+	}
 }
