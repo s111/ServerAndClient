@@ -28,17 +28,14 @@ public class App {
 				Requester requester = new ImageRequester();
 
 				try {
-					Library.add(1, requester.requestImage(1));
-					Library.add(2, requester.requestImage(2));
+					for (int i = 0; i < 20; i++) {
+						Library.add(i, requester.requestImage(i));
+					}
 				} catch (IOException e) {
 					logger.warn("Could not import image due to IOException");
 				}
 				
-				ImageObject imageObject = Library.get(1);
-				
-				if (imageObject != null) {
-					mainFrame.setImageView(imageObject);
-				}
+				mainFrame.setImageView();
 			}
 		});
 	}
