@@ -11,6 +11,12 @@ GET    /api/images/:id               controllers.GetImage.info(id: Long)
 # Get raw image by id
 GET    /api/images/:id/raw           controllers.GetImage.file(id: Long)
 
+GET    /api/images/:id/xs            controllers.GetThumbnail.getXSmall(id: Long)
+GET    /api/images/:id/s             controllers.GetThumbnail.getSmall(id: Long)
+GET    /api/images/:id/m             controllers.GetThumbnail.getMedium(id: Long)
+GET    /api/images/:id/l             controllers.GetThumbnail.getLarge(id: Long)
+GET    /api/images/:id/xl            controllers.GetThumbnail.getXLarge(id: Long)
+
 # Get list of images
 GET    /api/images                   controllers.ImageController.getImages(offset: Int ?= 0, limit: Int ?= 25)
 
