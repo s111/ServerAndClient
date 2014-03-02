@@ -21,16 +21,8 @@ public class ImageTagger extends Controller {
 		ImageModel imageModel = ImageModel.get(id);
 
 		for (String tag : tags) {
-			// continue if tag already exists
-			if (TagModel.find.where().eq("name", tag).findUnique() != null)
-				continue;
-			
-			TagModel tagModel = TagModel.create(tag);
-
-			imageModel.tags.add(tagModel);
+			imageModel.tag(TagModel.get(tag));
 		}
-
-		imageModel.save();
 
 		return ok();
 	}

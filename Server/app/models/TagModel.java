@@ -34,7 +34,11 @@ public class TagModel extends Model {
 	}
 
 	public static TagModel get(String name) {
-		return find.where().eq("name", name).findUnique();
+		TagModel tagModel = find.where().eq("name", name).findUnique();
+		
+		if (tagModel == null) tagModel = create(name);
+		
+		return tagModel;
 	}
 
 	public static List<TagModel> getAll() {
