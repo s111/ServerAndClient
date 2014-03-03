@@ -4,7 +4,6 @@ import java.awt.Image;
 import java.io.IOException;
 
 import com.github.groupa.client.jsonobjects.ImageList;
-
 import com.github.groupa.client.servercommunication.Requester;
 
 public class FakeRequester implements Requester {
@@ -24,5 +23,11 @@ public class FakeRequester implements Requester {
 		if (0 < stars && stars <= 5)
 			return true;
 		return false;
+	}
+
+	@Override
+	public boolean describeImage(long id, String description)
+			throws IOException {
+		return true;
 	}
 }

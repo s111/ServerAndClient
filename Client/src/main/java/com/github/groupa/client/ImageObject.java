@@ -12,6 +12,7 @@ public class ImageObject {
 	private Image thumb = null;
 	private long id = -1;
 	private int rating = 0;
+	private String description = null;
 	private Requester requester = null;
 	private HashMap<String, Integer> sizeMap = new HashMap<>();
 
@@ -125,5 +126,20 @@ public class ImageObject {
 
 	public int getRating() {
 		return rating;
+	}
+
+	public boolean describe(String description) {
+		try {
+			if (requester.describeImage(id, description)) {
+				this.description = description;
+				return true;
+			}
+		} catch (IOException e) {
+		}
+		return false;
+	}
+
+	public String getDescription() {
+		return description;
 	}
 }

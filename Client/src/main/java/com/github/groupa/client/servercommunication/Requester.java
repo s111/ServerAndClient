@@ -11,4 +11,6 @@ public interface Requester {
 	public ImageList getImageList(int limit) throws IOException;
 	
 	public boolean rateImage(long id, int stars) throws IOException;
+	
+	public boolean describeImage(long id, String description) throws IOException;
 }

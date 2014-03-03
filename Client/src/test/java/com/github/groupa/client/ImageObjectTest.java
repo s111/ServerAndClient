@@ -25,6 +25,10 @@ public class ImageObjectTest {
 		assertTrue(img.rate(4));
 		assertEquals(img.getRating(), 4);
 		assertNotEquals(img.getRating(), 3);
+		
+		String desc = "description";
+		assertTrue(img.describe(desc));
+		assertEquals(img.getDescription(), desc);
 	}
 
 }

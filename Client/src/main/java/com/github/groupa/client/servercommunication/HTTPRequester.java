@@ -82,13 +82,23 @@ public class HTTPRequester implements Requester {
 	}
 
 	@Override
-	public boolean rateImage(long id, int stars) throws IOException {
+	public boolean rateImage(long id, int rating) throws IOException {
+		return post("http://" + host + "/api/images/" + id + "/rate", rating);
+	}
+
+	@Override
+	public boolean describeImage(long id, String description)
+			throws IOException {
+		return post("http://" + host + "/api/images/" + id + "/description",
+				description);
+	}
+
+	private boolean post(String href, Object value) throws IOException {
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 
-		HttpPost httpPost = new HttpPost("http://" + host + "/api/images/" + id
-				+ "/rate");
+		HttpPost httpPost = new HttpPost(href);
 		List<NameValuePair> nvps = new LinkedList<NameValuePair>();
-		nvps.add(new BasicNameValuePair("value", "" + stars));
+		nvps.add(new BasicNameValuePair("value", "" + value));
 		httpPost.setEntity(new UrlEncodedFormEntity(nvps));
 		CloseableHttpResponse response = httpclient.execute(httpPost);
 
@@ -100,7 +110,6 @@ public class HTTPRequester implements Requester {
 		} finally {
 			response.close();
 		}
-
 		return result;
 	}
 }
