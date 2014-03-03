@@ -23,14 +23,14 @@ public class ImageView {
 
 	private JPanel mainPanel;
 
-	private JLabel imageLabel = new JLabel("IMAGE");
+	private JLabel imageLabel = new JLabel();
 	
 	private JButton nextButton = new JButton("=>");
 	private JButton previousButton = new JButton("<=");
 
 	public ImageView() {
 		setUpImageViewer();
-		setImage(library.getNextImage());
+		setImage(library.getImage());
 	}
 
 	private void setUpImageViewer() {

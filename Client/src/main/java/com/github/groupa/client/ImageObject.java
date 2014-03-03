@@ -25,16 +25,16 @@ public class ImageObject {
 		this.id = id;
 		this.requester = requester;
 
-		sizeMap.put("xs", 32);
+		sizeMap.put("xs", 48);
 		sizeMap.put("s", 64);
-		sizeMap.put("m", 96);
-		sizeMap.put("l", 128);
-		sizeMap.put("xl", 192);
+		sizeMap.put("m", 128);
+		sizeMap.put("l", 192);
+		sizeMap.put("xl", 256);
 	}
 
 	public Image getImage() {
 		try {
-			return (image == null) ? (image = requester.getImage(id, "raw"))
+			return (image == null) ? (image = requester.getImage(id, "xl"))
 					: image;
 		} catch (IOException e) {
 			return null;
