@@ -23,11 +23,11 @@ public class ImageRequesterTest {
 	@Test
 	public void requestImage() {
 		Image image = null;
-		
+
 		Requester requester = new FakeImageRequester();
 
 		try {
-			image = requester.requestImage("");
+			image = requester.getImage(0, "");
 		} catch (IOException e) {
 			fail("Threw IOException");
 		}

@@ -5,7 +5,7 @@ import java.io.IOException;
 
 public class FakeImageRequester implements Requester {
 	@Override
-	public Image requestImage(String href) throws IOException {
+	public Image getImage(long id, String s) throws IOException {
 		return new FakeImage();
 	}
 }

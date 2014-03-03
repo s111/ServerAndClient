@@ -14,9 +14,16 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
 // Feel free to come up with better names
-public class ImageRequester implements Requester {
-	public Image requestImage(String href) throws IOException {
-		CloseableHttpResponse response = sendImageRequest(href);
+public class HTTPRequester implements Requester {
+	private String host;
+
+	public HTTPRequester(String host) {
+		this.host = host;
+	}
+
+	public Image getImage(long id, String size) throws IOException {
+		CloseableHttpResponse response = sendImageRequest("http://" + host
+				+ "/api/images/" + id + "/" + size);
 		Image image = extractImageFromResponse(response);
 
 		return image;
@@ -42,10 +49,7 @@ public class ImageRequester implements Requester {
 			throws IOException {
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 
-		HttpGet httpGet = new HttpGet(href + "/raw");
-
-		CloseableHttpResponse response = httpclient.execute(httpGet);
-
-		return response;
+		HttpGet httpGet = new HttpGet(href);
+		return httpclient.execute(httpGet);
 	}
 }

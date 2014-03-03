@@ -172,7 +172,7 @@ public class ImageViewer implements KeyListener {
 		if (entity.getContentType().getValue().startsWith("application/json")) {
 			long id;
 			String href;
-			Requester requester = new ImageRequester();
+			Requester requester = new HTTPRequester(host);
 			JsonFactory jsonFactory = new JsonFactory();
 			JsonParser jp = jsonFactory.createJsonParser(entity.getContent());
 			JsonToken tok = jp.nextToken();
@@ -192,7 +192,7 @@ public class ImageViewer implements KeyListener {
 						}
 					}
 					if (id != -1 && href != null) {
-						Library.add(id, requester.requestImage(href));
+						Library.add(new ImageObject(id, requester));
 					}
 				}
 				tok = jp.nextToken();

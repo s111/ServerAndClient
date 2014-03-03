@@ -2,7 +2,6 @@ package com.github.groupa.client;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.awt.Image;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,15 +16,10 @@ public class Library {
 	private int expectedModCount;
 	private long activeImage = 0l;
 
-	public static ImageObject add(long id, Image img) {
-		if (img == null || id < 0) {
-			return null;
-		}
-		logger.info("Image #" + id + " added");
-		ImageObject imgObject = new ImageObject(id, img);
-		images.add(imgObject);
+	public static ImageObject add(ImageObject img) {
+		images.add(img);
 		modCount++;
-		return imgObject;
+		return img;
 	}
 
 	public static int size() {
