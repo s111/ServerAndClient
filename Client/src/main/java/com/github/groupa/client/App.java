@@ -14,12 +14,11 @@ import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import servercommunication.HTTPRequester;
-import servercommunication.Requester;
-
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.groupa.client.jsonobjects.Image;
 import com.github.groupa.client.jsonobjects.ImageList;
+import com.github.groupa.client.servercommunication.HTTPRequester;
+import com.github.groupa.client.servercommunication.Requester;
 
 public class App {
 	private static final Logger logger = LoggerFactory.getLogger(App.class);

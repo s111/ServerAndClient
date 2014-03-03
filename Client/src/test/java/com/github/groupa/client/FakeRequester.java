@@ -3,7 +3,7 @@ package com.github.groupa.client;
 import java.awt.Image;
 import java.io.IOException;
 
-import servercommunication.Requester;
+import com.github.groupa.client.servercommunication.Requester;
 
 public class FakeRequester implements Requester {
 	@Override

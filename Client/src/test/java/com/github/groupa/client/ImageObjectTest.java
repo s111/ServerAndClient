@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import servercommunication.Requester;
+import com.github.groupa.client.servercommunication.Requester;
 
 public class ImageObjectTest {
 

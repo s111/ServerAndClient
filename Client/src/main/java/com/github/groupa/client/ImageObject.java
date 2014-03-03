@@ -5,7 +5,7 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.HashMap;
 
-import servercommunication.Requester;
+import com.github.groupa.client.servercommunication.Requester;
 
 public class ImageObject {
 	private Image image = null;
