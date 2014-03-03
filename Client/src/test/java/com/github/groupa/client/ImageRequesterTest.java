@@ -24,7 +24,7 @@ public class ImageRequesterTest {
 	public void requestImage() {
 		Image image = null;
 
-		Requester requester = new FakeImageRequester();
+		Requester requester = new FakeRequester();
 
 		try {
 			image = requester.getImage(0, "");
