@@ -11,51 +11,34 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.log4j.BasicConfigurator;
-import org.codehaus.jackson.JsonFactory;
-import org.codehaus.jackson.JsonParser;
-import org.codehaus.jackson.JsonToken;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.groupa.client.jsonobjects.Image;
+import com.github.groupa.client.jsonobjects.ImageList;
 
 public class App {
 	private static final Logger logger = LoggerFactory.getLogger(App.class);
 
-	private static void getImages(String host) throws IOException { // TODO: Fix
-																	// this mess
+	private static void getImages(String host) throws IOException {
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 
-		HttpGet httpGet = new HttpGet("http://" + host
-				+ "/api/images?limit=9999");
+		HttpGet httpGet = new HttpGet("http://" + host + "/api/images?limit=0");
 
 		CloseableHttpResponse response = httpclient.execute(httpGet);
 		HttpEntity entity = response.getEntity();
+
 		if (entity.getContentType().getValue().startsWith("application/json")) {
-			long id;
-			String href;
 			Requester requester = new HTTPRequester(host);
-			JsonFactory jsonFactory = new JsonFactory();
-			JsonParser jp = jsonFactory.createJsonParser(entity.getContent());
-			JsonToken tok = jp.nextToken();
-			while (tok != null && tok != JsonToken.START_ARRAY) {
-				tok = jp.nextToken();
-			}
-			while (tok != null && tok != JsonToken.END_ARRAY) {
-				if (tok == JsonToken.START_OBJECT) {
-					id = -1;
-					href = null;
-					while (tok != null && tok != JsonToken.END_OBJECT) {
-						tok = jp.nextToken();
-						if (tok == JsonToken.VALUE_NUMBER_INT) {
-							id = jp.getValueAsLong();
-						} else if (tok == JsonToken.VALUE_STRING) {
-							href = jp.getText();
-						}
-					}
-					if (id != -1 && href != null) {
-						Library.add(new ImageObject(id, requester));
-					}
-				}
-				tok = jp.nextToken();
+
+			ObjectMapper mapper = new ObjectMapper();
+
+			ImageList imageList = mapper.readValue(entity.getContent(),
+					ImageList.class);
+
+			for (Image image : imageList.images) {
+				Library.add(new ImageObject(image.id, requester));
 			}
 		}
 	}
@@ -82,9 +65,7 @@ public class App {
 					logger.warn("Could not import image due to IOException");
 				}
 
-				final ImageView imageView = new ImageView();
-
-				mainFrame.replaceContent(imageView.getPanel());
+				mainFrame.replaceContent(new ImageView().getPanel());
 			}
 		});
 	}
