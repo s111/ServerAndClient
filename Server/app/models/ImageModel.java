@@ -48,6 +48,18 @@ public class ImageModel extends Model {
 		this.filename = filename;
 	}
 	
+	public void setDescription(String description) {
+		this.description = description;
+		
+		save();
+	}
+	
+	public void setRating(int rating) {
+		this.rating = rating;
+		
+		save();
+	}
+	
 	public void tag(TagModel tagModel) {
 		if (tags.contains(tagModel)) return;
 		

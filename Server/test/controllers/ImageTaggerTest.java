@@ -5,11 +5,18 @@ import static play.test.Helpers.callAction;
 import static play.test.Helpers.fakeApplication;
 import static play.test.Helpers.start;
 import static play.test.Helpers.stop;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import models.ImageModel;
 
 import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
+
+import play.test.FakeRequest;
 
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.EbeanServer;
@@ -19,8 +26,8 @@ import com.avaje.ebeaninternal.api.SpiEbeanServer;
 import com.avaje.ebeaninternal.server.ddl.DdlGenerator;
 
 public class ImageTaggerTest {
-	@Before
-	public void startApp() {
+	@BeforeClass
+	public static void startApp() {
 		start(fakeApplication());
 	}
 	
@@ -43,14 +50,31 @@ public class ImageTaggerTest {
 	}
 	
 	@Test
-	public void tag_image_without_value_expect_empty_list() {
+	public void tag_image_with_abc_expect_tag_name_abc() {
 		String filename = ImageUploader.IMAGE_DIRECTORY + "01.png";
 		
-		ImageModel createdImageModel = ImageModel.create(filename);
-		long id = createdImageModel.id;
+		long id = ImageModel.create(filename).id;
 		
-		callAction(controllers.routes.ref.ImageTagger.tag(id));
+		Map<String, String> data = new HashMap<>();
+		data.put("value", "abc");
+		
+		callAction(controllers.routes.ref.ImageTagger.tag(id), new FakeRequest().withFormUrlEncodedBody(data));
 
-		assertEquals(0, createdImageModel.tags.size());
+		assertEquals("abc", ImageModel.get(id).tags.get(0).name);
+	}
+	
+	@Test
+	public void tag_image_with_abc_and_def_expect_tag_name_abc_and_def() {
+		String filename = ImageUploader.IMAGE_DIRECTORY + "01.png";
+		
+		long id = ImageModel.create(filename).id;
+		
+		Map<String, String> data = new HashMap<>();
+		data.put("value", "abc,def");
+		
+		callAction(controllers.routes.ref.ImageTagger.tag(id), new FakeRequest().withFormUrlEncodedBody(data));
+
+		assertEquals("abc", ImageModel.get(id).tags.get(0).name);
+		assertEquals("def", ImageModel.get(id).tags.get(1).name);
 	}
 }

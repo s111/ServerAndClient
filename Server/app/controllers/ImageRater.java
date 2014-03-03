@@ -23,8 +23,7 @@ public class ImageRater extends Controller {
 		
 		ImageModel imageModel = ImageModel.get(id);
 		
-		imageModel.rating = rating;
-		imageModel.save();
+		imageModel.setRating(rating);
 		
 		return ok();
 	}

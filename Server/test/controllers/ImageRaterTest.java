@@ -5,11 +5,18 @@ import static play.test.Helpers.callAction;
 import static play.test.Helpers.fakeApplication;
 import static play.test.Helpers.start;
 import static play.test.Helpers.stop;
+
+import java.util.HashMap;
+import java.util.Map;
+
 import models.ImageModel;
 
 import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
+
+import play.test.FakeRequest;
 
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.EbeanServer;
@@ -19,11 +26,11 @@ import com.avaje.ebeaninternal.api.SpiEbeanServer;
 import com.avaje.ebeaninternal.server.ddl.DdlGenerator;
 
 public class ImageRaterTest {
-	@Before
-	public void startApp() {
+	@BeforeClass
+	public static void startApp() {
 		start(fakeApplication());
 	}
-	
+
 	@AfterClass
 	public static void stopApp() {
 		stop(fakeApplication());
@@ -43,14 +50,17 @@ public class ImageRaterTest {
 	}
 
 	@Test
-	public void rate_image_1_without_value_expect_rating_0() {
+	public void rate_image_with_5_expect_rating_5() {
 		String filename = ImageUploader.IMAGE_DIRECTORY + "01.png";
-		
-		ImageModel createdImageModel = ImageModel.create(filename);
-		long id = createdImageModel.id;
-		
-		callAction(controllers.routes.ref.ImageRater.rate(id));
 
-		assertEquals(0, createdImageModel.rating);
+		long id = ImageModel.create(filename).id;
+
+		Map<String, String> data = new HashMap<>();
+		data.put("value", "5");
+
+		callAction(controllers.routes.ref.ImageRater.rate(id),
+				new FakeRequest().withFormUrlEncodedBody(data));
+
+		assertEquals(5, ImageModel.get(id).rating);
 	}
 }

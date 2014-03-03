@@ -16,8 +16,7 @@ public class ImageDescriber extends Controller {
 		
 		ImageModel imageModel = ImageModel.get(id);
 		
-		imageModel.description = description;
-		imageModel.save();
+		imageModel.setDescription(description);
 		
 		return ok();
 	}
