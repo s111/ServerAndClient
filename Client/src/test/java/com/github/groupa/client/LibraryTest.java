@@ -11,7 +11,7 @@ public class LibraryTest {
 		ImageObject imgObject1;
 		ImageObject imgObject2;
 		Library lib;
-		Requester requester = new FakeImageRequester();
+		Requester requester = new FakeRequester();
 
 		assertEquals("Invalid count of images", Library.size(), 0);
 
