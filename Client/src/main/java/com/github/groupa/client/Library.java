@@ -9,7 +9,7 @@ public class Library {
 
 	private List<ImageObject> selectedImages = new ArrayList<>();
 	private int expectedModCount;
-	private long activeImage = 0l;
+	private int activeImage = 0;
 
 	public static ImageObject add(ImageObject img) {
 		images.add(img);
@@ -25,33 +25,20 @@ public class Library {
 		addSelectedImages();
 	}
 
-	public ImageObject getImage(long id) {
-		ImageObject img = get(id);
-		if (img != null) {
-			this.activeImage = id;
-		}
-		return img;
-	}
-
 	public ImageObject getImage() {
 		return get(activeImage);
 	}
 
 	public ImageObject getNextImage() {
-		ImageObject img = get(++activeImage);
-		if (img == null)
-			activeImage--;
-		return img;
+		return get(activeImage - 1);
 	}
 
 	public ImageObject getPrevImage() {
-		ImageObject img = get(--activeImage);
-		if (img == null)
-			activeImage++;
-		return img;
+		return get(activeImage + 1);
 	}
 
 	public int imageCount() {
+		ensureSync();
 		return selectedImages.size();
 	}
 
@@ -60,18 +47,21 @@ public class Library {
 	 */
 	private void addSelectedImages() {
 		expectedModCount = Library.modCount;
+		this.selectedImages.clear();
 		this.selectedImages.addAll(Library.images);
 	}
 
-	private ImageObject get(long id) {
+	private ImageObject get(int num) {
+		ensureSync();
+		int count = imageCount();
+		if (count == 0) return null;
+		activeImage = (num + count) % count;
+		return selectedImages.get(activeImage);
+	}
+	
+	private void ensureSync() {
 		if (expectedModCount != Library.modCount) {
 			addSelectedImages();
 		}
-		for (ImageObject o : selectedImages) {
-			if (id == o.getId()) {
-				return o;
-			}
-		}
-		return null;
 	}
 }

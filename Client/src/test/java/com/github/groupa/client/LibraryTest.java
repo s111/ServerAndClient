@@ -19,14 +19,15 @@ public class LibraryTest {
 
 		imgObject1 = Library.add(new ImageObject(1, requester));
 		lib = new Library();
-		assertNull("Nonexisting image returned", lib.getImage(2));
 		imgObject2 = Library.add(new ImageObject(2, requester));
 		assertEquals("Invalid count of images", Library.size(), 2);
+		assertEquals("Invalid count of images", lib.imageCount(), 2);
 
-		assertSame(imgObject1, lib.getImage(1));
-		assertSame(imgObject2, lib.getImage(2));
-		assertSame(imgObject1, lib.getPrevImage());
+		assertSame(imgObject1, lib.getImage());
 		assertSame(imgObject2, lib.getNextImage());
-		assertNull("Nonexisting image returned", lib.getNextImage());
+		assertSame(imgObject1, lib.getNextImage());
+		assertSame(imgObject2, lib.getPrevImage());
+		assertSame(imgObject1, lib.getPrevImage());
+		assertSame(imgObject2, lib.getPrevImage());
 	}
 }
