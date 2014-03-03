@@ -3,12 +3,7 @@ package com.github.groupa.client;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 public class Library {
-	private static final Logger logger = LoggerFactory
-			.getLogger(Library.class);
 	private static List<ImageObject> images = new ArrayList<>();
 	private static int modCount = 0;
 
