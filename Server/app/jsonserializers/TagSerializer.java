@@ -18,10 +18,6 @@ public class TagSerializer extends JsonSerializer<Object> {
 			JsonProcessingException {
 		List<TagModel> tags = (List<TagModel>) value;
 
-		if (tags.isEmpty()) {
-			return;
-		}
-
 		jgen.writeStartArray();
 
 		for (TagModel tagModel : tags) {
