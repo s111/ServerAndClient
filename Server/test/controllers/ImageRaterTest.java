@@ -44,7 +44,7 @@ public class ImageRaterTest {
 
 	@Test
 	public void rate_image_1_without_value_expect_rating_0() {
-		String filename = "../../images/01.png";
+		String filename = ImageUploader.IMAGE_DIRECTORY + "01.png";
 		
 		ImageModel createdImageModel = ImageModel.create(filename);
 		long id = createdImageModel.id;

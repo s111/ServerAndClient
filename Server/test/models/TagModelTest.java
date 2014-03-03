@@ -18,6 +18,8 @@ import com.avaje.ebean.config.dbplatform.H2Platform;
 import com.avaje.ebeaninternal.api.SpiEbeanServer;
 import com.avaje.ebeaninternal.server.ddl.DdlGenerator;
 
+import controllers.ImageUploader;
+
 public class TagModelTest {
 	@BeforeClass
 	public static void startApp() {
@@ -107,7 +109,7 @@ public class TagModelTest {
 	
 	@Test
 	public void tag_image_expect_tag_to_contain_one_image() {
-		String filename = "../../images/01.png";
+		String filename = ImageUploader.IMAGE_DIRECTORY + "01.png";
 		String tagName = "tag";
 		
 		ImageModel imageModel = new ImageModel(filename);
@@ -120,7 +122,7 @@ public class TagModelTest {
 	
 	@Test
 	public void tag_image_twice_expect_tags_to_contain_one_image() {
-		String filename = "../../images/01.png";
+		String filename = ImageUploader.IMAGE_DIRECTORY + "01.png";
 		String tag1 = "tag1";
 		String tag2 = "tag2";
 		
@@ -137,8 +139,8 @@ public class TagModelTest {
 	
 	@Test
 	public void tag_two_images_expect_tag_to_contain_two_images() {
-		String filename1 = "../../images/01.png";
-		String filename2 = "../../images/02.png";
+		String filename1 = ImageUploader.IMAGE_DIRECTORY + "01.png";
+		String filename2 = ImageUploader.IMAGE_DIRECTORY + "02.png";
 		
 		String tagName = "tag";
 		

@@ -17,6 +17,8 @@ import com.avaje.ebean.config.dbplatform.H2Platform;
 import com.avaje.ebeaninternal.api.SpiEbeanServer;
 import com.avaje.ebeaninternal.server.ddl.DdlGenerator;
 
+import controllers.ImageUploader;
+
 public class ThumbnailTest {
 	@BeforeClass
 	public static void startApp() {
@@ -43,11 +45,11 @@ public class ThumbnailTest {
 	
 	@Test
 	public void add_thumbnail_to_image_expect_image_to_contain_one_thumbnail() {
-		String filename = "../../images/01.png";
+		String filename = ImageUploader.IMAGE_DIRECTORY + "01.png";
 		int thumbnailSize = 1;
 		
 		ImageModel imageModel = new ImageModel(filename);
-		ThumbnailModel thumbnailModel = new ThumbnailModel("../../images/01s.png", thumbnailSize);
+		ThumbnailModel thumbnailModel = new ThumbnailModel(ImageUploader.IMAGE_DIRECTORY + "01s.png", thumbnailSize);
 		
 		imageModel.addThumbnail(thumbnailModel);
 		
@@ -57,15 +59,15 @@ public class ThumbnailTest {
 	
 	@Test
 	public void add_three_thumbnails_to_image_expect_image_to_contain_three_thumbnails() {
-		String filename = "../../images/01.png";
+		String filename = ImageUploader.IMAGE_DIRECTORY + "01.png";
 		int xs = 0;
 		int s = 1;
 		int m = 2;
 		
 		ImageModel imageModel = new ImageModel(filename);
-		ThumbnailModel thumbnailModel1 = new ThumbnailModel("../../images/01s.png", xs);
-		ThumbnailModel thumbnailModel2 = new ThumbnailModel("../../images/02s.png", s);
-		ThumbnailModel thumbnailModel3 = new ThumbnailModel("../../images/03s.png", m);
+		ThumbnailModel thumbnailModel1 = new ThumbnailModel(ImageUploader.IMAGE_DIRECTORY + "01s.png", xs);
+		ThumbnailModel thumbnailModel2 = new ThumbnailModel(ImageUploader.IMAGE_DIRECTORY + "02s.png", s);
+		ThumbnailModel thumbnailModel3 = new ThumbnailModel(ImageUploader.IMAGE_DIRECTORY + "03s.png", m);
 		
 		imageModel.addThumbnail(thumbnailModel1);
 		imageModel.addThumbnail(thumbnailModel2);

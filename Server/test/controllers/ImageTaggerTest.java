@@ -44,7 +44,7 @@ public class ImageTaggerTest {
 	
 	@Test
 	public void tag_image_without_value_expect_empty_list() {
-		String filename = "../../images/01.png";
+		String filename = ImageUploader.IMAGE_DIRECTORY + "01.png";
 		
 		ImageModel createdImageModel = ImageModel.create(filename);
 		long id = createdImageModel.id;

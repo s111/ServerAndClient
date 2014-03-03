@@ -18,6 +18,8 @@ import com.avaje.ebean.config.dbplatform.H2Platform;
 import com.avaje.ebeaninternal.api.SpiEbeanServer;
 import com.avaje.ebeaninternal.server.ddl.DdlGenerator;
 
+import controllers.ImageUploader;
+
 public class ImageModelTest {
 	@BeforeClass
 	public static void startApp() {
@@ -49,7 +51,7 @@ public class ImageModelTest {
 
 	@Test
 	public void insert_image_expect_to_retrieve_image() {
-		String filename = "../../images/01.png";
+		String filename = ImageUploader.IMAGE_DIRECTORY + "01.png";
 
 		new ImageModel(filename).save();
 
@@ -61,7 +63,7 @@ public class ImageModelTest {
 
 	@Test
 	public void insert_image_expect_database_size_1() {
-		String filename = "../../images/01.png";
+		String filename = ImageUploader.IMAGE_DIRECTORY + "01.png";
 
 		new ImageModel(filename).save();
 
@@ -72,7 +74,7 @@ public class ImageModelTest {
 
 	@Test
 	public void create_image_expect_to_retrieve_image() {
-		String filename = "../../images/01.png";
+		String filename = ImageUploader.IMAGE_DIRECTORY + "01.png";
 
 		ImageModel.create(filename);
 
@@ -84,7 +86,7 @@ public class ImageModelTest {
 
 	@Test
 	public void create_image_expect_to_get_image() {
-		String filename = "../../images/01.png";
+		String filename = ImageUploader.IMAGE_DIRECTORY + "01.png";
 
 		ImageModel createdImageModel = ImageModel.create(filename);
 
@@ -97,9 +99,9 @@ public class ImageModelTest {
 
 	@Test
 	public void insert_3_images_expect_to_getAll_images() {
-		ImageModel.create("../../images/01.png");
-		ImageModel.create("../../images/02.png");
-		ImageModel.create("../../images/03.png");
+		ImageModel.create(ImageUploader.IMAGE_DIRECTORY + "01.png");
+		ImageModel.create(ImageUploader.IMAGE_DIRECTORY + "02.png");
+		ImageModel.create(ImageUploader.IMAGE_DIRECTORY + "03.png");
 
 		int databaseSize = ImageModel.getAll().size();
 
@@ -108,7 +110,7 @@ public class ImageModelTest {
 	
 	@Test
 	public void tag_image_expect_image_to_contain_one_tag() {
-		String filename = "../../images/01.png";
+		String filename = ImageUploader.IMAGE_DIRECTORY + "01.png";
 		String tagName = "tag";
 		
 		ImageModel imageModel = new ImageModel(filename);
@@ -121,7 +123,7 @@ public class ImageModelTest {
 	
 	@Test
 	public void tag_image_twice_expect_image_to_contain_two_tags() {
-		String filename = "../../images/01.png";
+		String filename = ImageUploader.IMAGE_DIRECTORY + "01.png";
 		String tag1 = "tag1";
 		String tag2 = "tag2";
 		

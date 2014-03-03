@@ -12,7 +12,7 @@ import play.mvc.Http.MultipartFormData.FilePart;
 import play.mvc.Result;
 
 public class ImageUploader extends Controller {
-	private static final String IMAGE_DIRECTORY = "../../images/";
+	public static final String IMAGE_DIRECTORY = "../../images/";
 
 	public static Result upload() {
 		MultipartFormData body = request().body().asMultipartFormData();

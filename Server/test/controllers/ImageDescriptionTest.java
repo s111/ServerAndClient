@@ -44,7 +44,7 @@ public class ImageDescriptionTest {
 
 	@Test
 	public void set_description_without_value_expect_null() {
-		String filename = "../../images/01.png";
+		String filename = ImageUploader.IMAGE_DIRECTORY + "01.png";
 		
 		ImageModel createdImageModel = ImageModel.create(filename);
 		long id = createdImageModel.id;
