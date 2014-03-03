@@ -93,6 +93,11 @@ public class HTTPRequester implements Requester {
 				description);
 	}
 
+	@Override
+	public boolean addTag(long id, String tag) throws IOException {
+		return post("http://" + host + "/api/images/" + id + "/tag", tag);
+	}
+
 	private boolean post(String href, Object value) throws IOException {
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 

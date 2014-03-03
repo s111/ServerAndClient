@@ -13,4 +13,6 @@ public interface Requester {
 	public boolean rateImage(long id, int stars) throws IOException;
 	
 	public boolean describeImage(long id, String description) throws IOException;
+	
+	public boolean addTag(long id, String tag) throws IOException;
 }

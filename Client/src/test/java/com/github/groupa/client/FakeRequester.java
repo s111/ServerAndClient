@@ -30,4 +30,9 @@ public class FakeRequester implements Requester {
 			throws IOException {
 		return true;
 	}
+
+	@Override
+	public boolean addTag(long id, String tag) throws IOException {
+		return true;
+	}
 }

@@ -29,6 +29,13 @@ public class ImageObjectTest {
 		String desc = "description";
 		assertTrue(img.describe(desc));
 		assertEquals(img.getDescription(), desc);
+		
+		String tag = "prague 2013";
+		assertTrue(img.addTag(tag));
+		assertTrue(img.hasTag(tag));
+		assertTrue(img.getTags().contains(tag));
+		assertFalse(img.hasTag("nonexisting tag"));
+		assertFalse(img.addTag("Invalid,tag"));
 	}
 
 }

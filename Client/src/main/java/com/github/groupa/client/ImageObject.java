@@ -4,6 +4,8 @@ import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 import com.github.groupa.client.servercommunication.Requester;
 
@@ -15,6 +17,7 @@ public class ImageObject {
 	private String description = null;
 	private Requester requester = null;
 	private HashMap<String, Integer> sizeMap = new HashMap<>();
+	private List<String> tags = new LinkedList<>();
 
 	private String thumbSize = null;
 
@@ -141,5 +144,32 @@ public class ImageObject {
 
 	public String getDescription() {
 		return description;
+	}
+
+	public List<String> getTags() {
+		return tags;
+	}
+
+	public boolean addTag(String tag) {
+		if (hasTag(tag))
+			return true;
+		if (tag.contains(","))
+			return false;
+		try {
+			if (requester.addTag(id, tag)) {
+				tags.add(tag);
+				return true;
+			}
+		} catch (IOException e) {
+		}
+		return false;
+	}
+
+	public boolean hasTag(String tag) {
+		return tags.contains(tag);
+	}
+
+	public boolean hasTags(List<String> tags) {
+		return this.tags.containsAll(tags);
 	}
 }
