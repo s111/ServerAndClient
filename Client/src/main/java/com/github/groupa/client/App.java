@@ -16,6 +16,8 @@ import com.github.groupa.client.jsonobjects.Image;
 import com.github.groupa.client.jsonobjects.ImageList;
 
 public class App {
+	public static String host;
+	
 	private static final Logger logger = LoggerFactory.getLogger(App.class);
 
 	private static void getImages(String host) throws IOException {
@@ -39,7 +41,7 @@ public class App {
 			@Override
 			public void run() {
 				MainFrame mainFrame = new MainFrame("App");
-				String host = JOptionPane.showInputDialog("Host address",
+				host = JOptionPane.showInputDialog("Host address",
 						"localhost:9000");
 
 				mainFrame.display();

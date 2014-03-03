@@ -108,7 +108,7 @@ public class ImageView {
 
 	private JPanel createLeftPanel() {
 		JPanel leftPanel = new JPanel();
-		leftPanel.add(new ImageDescriptionButton().getButton());
+		leftPanel.add(new ImageDescriptionButton(library).getButton());
 
 		return leftPanel;
 	}
@@ -117,7 +117,7 @@ public class ImageView {
 		JPanel bottomPanel = new JPanel();
 
 		bottomPanel.add(previousButton);
-		bottomPanel.add(new ImageRater().getPanel());
+		bottomPanel.add(new ImageRater(library).getPanel());
 		bottomPanel.add(nextButton);
 
 		return bottomPanel;

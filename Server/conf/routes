@@ -26,7 +26,7 @@ GET    /api/images                   controllers.ImageController.getImages(offse
 POST   /api/images/:id/rate          controllers.ImageRater.rate(id: Long)
 
 # Set description for image
-POST   /api/images/:id/description   controllers.ImageDescription.setDescription(id: Long)
+POST   /api/images/:id/description   controllers.ImageDescriber.describe(id: Long)
 
 # Tag image
 POST   /api/images/:id/tag           controllers.ImageTagger.tag(id: Long)

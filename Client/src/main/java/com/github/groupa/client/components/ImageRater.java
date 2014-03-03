@@ -10,6 +10,8 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
+import com.github.groupa.client.Library;
+
 public class ImageRater {
 	private static final int MAX_RATING = 5;
 
@@ -17,7 +19,11 @@ public class ImageRater {
 	private String names[] = { "1", "2", "3", "4", "5" };
 	private JPanel panel = new JPanel();
 
-	public ImageRater() {
+	private Library library;
+
+	public ImageRater(Library library) {
+		this.library = library;
+		
 		createRadioButtons();
 		addRadioButtonsToGroup();
 
@@ -48,13 +54,15 @@ public class ImageRater {
 
 	private void createRadioButtons() {
 		for (int i = 0; i < MAX_RATING; i++) {
-			final int j = i + 1;
+			final int rating = i + 1;
 
 			buttons[i] = new JRadioButton(names[i]);
 			buttons[i].addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent action) {
-					JOptionPane.showMessageDialog(null, "You Rated " + j + "!");
+					JOptionPane.showMessageDialog(null, "You Rated " + rating + "!");
+					
+					library.getImage().rate(rating);
 				}
 			});
 		}

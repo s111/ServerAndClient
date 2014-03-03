@@ -6,11 +6,17 @@ import java.awt.event.ActionListener;
 import javax.swing.JButton;
 import javax.swing.JOptionPane;
 
+import com.github.groupa.client.Library;
+
 public class ImageDescriptionButton implements ActionListener {
 	private JButton button;
 	private String description;
 
-	public ImageDescriptionButton() {
+	private Library library;
+
+	public ImageDescriptionButton(Library library) {
+		this.library = library;
+
 		createCommentButton();
 	}
 
@@ -30,6 +36,7 @@ public class ImageDescriptionButton implements ActionListener {
 
 		JOptionPane.showMessageDialog(null, "Your description of this image:\n"
 				+ description);
+		
+		library.getImage().describe(description);
 	}
-
 }
