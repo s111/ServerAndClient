@@ -1,4 +1,4 @@
-package com.github.groupa.client;
+package servercommunication;
 
 import java.awt.Image;
 import java.io.IOException;

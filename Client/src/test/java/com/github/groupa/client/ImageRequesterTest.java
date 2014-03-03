@@ -10,6 +10,8 @@ import org.apache.log4j.BasicConfigurator;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import servercommunication.Requester;
+
 public class ImageRequesterTest {
 	@BeforeClass
 	public static void setUp() {
