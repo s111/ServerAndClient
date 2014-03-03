@@ -82,7 +82,9 @@ public class App {
 					logger.warn("Could not import image due to IOException");
 				}
 
-				mainFrame.setImageView();
+				final ImageView imageView = new ImageView();
+
+				mainFrame.replaceContent(imageView.getPanel());
 			}
 		});
 	}
