@@ -14,6 +14,9 @@ import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import servercommunication.HTTPRequester;
+import servercommunication.Requester;
+
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.groupa.client.jsonobjects.Image;
 import com.github.groupa.client.jsonobjects.ImageList;

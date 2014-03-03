@@ -5,6 +5,8 @@ import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.HashMap;
 
+import servercommunication.Requester;
+
 public class ImageObject {
 	private Image image = null;
 	private Image thumb = null;
