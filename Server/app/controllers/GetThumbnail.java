@@ -1,7 +1,9 @@
 package controllers;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import javax.imageio.ImageIO;
 
 import models.ImageModel;
 import models.ThumbnailModel;
@@ -32,6 +34,10 @@ public class GetThumbnail extends Controller {
 	public static Result getXLarge(long id) {
 		return getThumbnail(id, ThumbnailModel.X_LARGE);
 	}
+	
+	public static Result getCompressed(long id) {
+		return getThumbnail(id, ThumbnailModel.COMPRESSED);
+	}
 
 	public static Result getThumbnail(long id, int size) {
 		ImageModel imageModel = ImageModel.get(id);
@@ -58,8 +64,8 @@ public class GetThumbnail extends Controller {
 			File rawImage = new File(imageModel.filename);
 			String filename = generateThumbnailFilename(rawImage, size);
 
-			int w = 32;
-			int h = 32;
+			int w = 48;
+			int h = 48;
 
 			switch (size) {
 			case ThumbnailModel.X_SMALL:
@@ -73,13 +79,17 @@ public class GetThumbnail extends Controller {
 				h = 128;
 				break;
 			case ThumbnailModel.LARGE:
-				w = 640;
-				h = 480;
+				w = 192;
+				h = 192;
 				break;
 			case ThumbnailModel.X_LARGE:
-				w = 1024;
-				h = 768;
+				w = 256;
+				h = 256;
 				break;
+			case ThumbnailModel.COMPRESSED:
+				BufferedImage bufferedImage = ImageIO.read(rawImage);
+				w = bufferedImage.getWidth();
+				h = bufferedImage.getHeight();
 			default:
 				break;
 			}

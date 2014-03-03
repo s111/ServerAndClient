@@ -38,6 +38,7 @@ public class ImageModel extends Model {
 	public List<TagModel> tags = new ArrayList<>();
 	
 	@OneToMany(mappedBy = "image")
+	@JsonIgnore
 	public Map<Integer, ThumbnailModel> thumbnails = new HashMap<>();
 
 	public ImageModel(String filename) {

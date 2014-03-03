@@ -16,6 +16,7 @@ public class ThumbnailModel extends Model {
 	public static final int MEDIUM = 2;
 	public static final int LARGE = 3;
 	public static final int X_LARGE = 4;
+	public static final int COMPRESSED = 5;
 	
 
 	@Id
