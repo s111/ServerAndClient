@@ -19,6 +19,12 @@ public class ImageObjectTest {
 		assertNotNull(img.getThumbM());
 		assertNotNull(img.getThumbL());
 		assertNotNull(img.getThumbXL());
+		
+		assertFalse(img.rate(0));
+		assertFalse(img.rate(6));
+		assertTrue(img.rate(4));
+		assertEquals(img.getRating(), 4);
+		assertNotEquals(img.getRating(), 3);
 	}
 
 }

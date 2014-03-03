@@ -15,7 +15,14 @@ public class FakeRequester implements Requester {
 
 	@Override
 	public ImageList getImageList(int limit) throws IOException {
-		
+
 		return null;
+	}
+
+	@Override
+	public boolean rateImage(long id, int stars) throws IOException {
+		if (0 < stars && stars <= 5)
+			return true;
+		return false;
 	}
 }

@@ -3,14 +3,21 @@ package com.github.groupa.client.servercommunication;
 import java.awt.Image;
 import java.io.BufferedInputStream;
 import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 
 import org.apache.http.HttpEntity;
+import org.apache.http.HttpStatus;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
+import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -55,11 +62,12 @@ public class HTTPRequester implements Requester {
 		HttpGet httpGet = new HttpGet(href);
 		return httpclient.execute(httpGet);
 	}
-	
+
 	public ImageList getImageList(int limit) throws IOException {
 		CloseableHttpClient httpclient = HttpClients.createDefault();
 
-		HttpGet httpGet = new HttpGet("http://" + host + "/api/images?limit=" + limit);
+		HttpGet httpGet = new HttpGet("http://" + host + "/api/images?limit="
+				+ limit);
 
 		CloseableHttpResponse response = httpclient.execute(httpGet);
 		HttpEntity entity = response.getEntity();
@@ -71,5 +79,28 @@ public class HTTPRequester implements Requester {
 			return mapper.readValue(entity.getContent(), ImageList.class);
 		}
 		return null;
+	}
+
+	@Override
+	public boolean rateImage(long id, int stars) throws IOException {
+		CloseableHttpClient httpclient = HttpClients.createDefault();
+
+		HttpPost httpPost = new HttpPost("http://" + host + "/api/images/" + id
+				+ "/rate");
+		List<NameValuePair> nvps = new LinkedList<NameValuePair>();
+		nvps.add(new BasicNameValuePair("value", "" + stars));
+		httpPost.setEntity(new UrlEncodedFormEntity(nvps));
+		CloseableHttpResponse response = httpclient.execute(httpPost);
+
+		boolean result = false;
+		try {
+			if (response.getStatusLine().getStatusCode() == HttpStatus.SC_OK)
+				result = true;
+			EntityUtils.consume(response.getEntity());
+		} finally {
+			response.close();
+		}
+
+		return result;
 	}
 }

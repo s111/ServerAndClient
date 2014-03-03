@@ -9,4 +9,6 @@ public interface Requester {
 	public Image getImage(long id, String size) throws IOException;
 	
 	public ImageList getImageList(int limit) throws IOException;
+	
+	public boolean rateImage(long id, int stars) throws IOException;
 }

@@ -11,6 +11,7 @@ public class ImageObject {
 	private Image image = null;
 	private Image thumb = null;
 	private long id = -1;
+	private int rating = 0;
 	private Requester requester = null;
 	private HashMap<String, Integer> sizeMap = new HashMap<>();
 
@@ -48,9 +49,12 @@ public class ImageObject {
 				thumb = scaleImage(image, size);
 			}
 			thumbSize = size;
-		} else if (sizeMap.get(size) < sizeMap.get(thumbSize)) { // Scale down existing thumb
+		} else if (sizeMap.get(size) < sizeMap.get(thumbSize)) { // Scale down
+																	// existing
+																	// thumb
 			return scaleImage(thumb, size);
-		} else if (sizeMap.get(size) == sizeMap.get(thumbSize)) { // Have the thumb
+		} else if (sizeMap.get(size) == sizeMap.get(thumbSize)) { // Have the
+																	// thumb
 			return thumb;
 		}
 		if (sizeMap.get(size) > sizeMap.get(thumbSize)) { // Need a bigger thumb
@@ -98,5 +102,28 @@ public class ImageObject {
 
 	public long getId() {
 		return id;
+	}
+
+	/***
+	 * Valid value for rating is 0 < rating <= 5
+	 * 
+	 * @param rating
+	 * @return
+	 */
+	public boolean rate(int rating) {
+		if (0 < rating && rating <= 5) {
+			try {
+				if (requester.rateImage(id, rating)) {
+					this.rating = rating;
+					return true;
+				}
+			} catch (IOException e) {
+			}
+		}
+		return false;
+	}
+
+	public int getRating() {
+		return rating;
 	}
 }
