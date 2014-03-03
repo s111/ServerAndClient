@@ -5,7 +5,7 @@ import java.io.IOException;
 
 import com.github.groupa.client.jsonobjects.ImageList;
 
-import servercommunication.Requester;
+import com.github.groupa.client.servercommunication.Requester;
 
 public class FakeRequester implements Requester {
 	@Override

@@ -22,10 +22,10 @@ public class ImageRater {
 		addRadioButtonsToGroup();
 
 		panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
-		
+
 		addRadioButtonsToPanel();
 	}
-	
+
 	public JPanel getPanel() {
 		return panel;
 	}
@@ -49,7 +49,7 @@ public class ImageRater {
 	private void createRadioButtons() {
 		for (int i = 0; i < MAX_RATING; i++) {
 			final int j = i + 1;
-			
+
 			buttons[i] = new JRadioButton(names[i]);
 			buttons[i].addActionListener(new ActionListener() {
 				@Override

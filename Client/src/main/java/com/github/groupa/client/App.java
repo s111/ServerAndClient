@@ -5,17 +5,12 @@ import java.io.IOException;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import servercommunication.HTTPRequester;
-import servercommunication.Requester;
+import com.github.groupa.client.servercommunication.HTTPRequester;
+import com.github.groupa.client.servercommunication.Requester;
 
 import com.github.groupa.client.jsonobjects.Image;
 import com.github.groupa.client.jsonobjects.ImageList;

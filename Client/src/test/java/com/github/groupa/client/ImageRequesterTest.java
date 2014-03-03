@@ -10,7 +10,7 @@ import org.apache.log4j.BasicConfigurator;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import servercommunication.Requester;
+import com.github.groupa.client.servercommunication.Requester;
 
 public class ImageRequesterTest {
 	@BeforeClass
