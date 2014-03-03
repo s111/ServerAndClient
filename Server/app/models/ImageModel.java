@@ -11,12 +11,14 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 
+import jsonserializers.TagSerializer;
 import play.data.validation.Constraints.Required;
 import play.db.ebean.Model;
 
 import com.avaje.ebean.Page;
 import com.avaje.ebean.PagingList;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 
 @Entity
 public class ImageModel extends Model {
@@ -35,6 +37,7 @@ public class ImageModel extends Model {
 	public String description;
 	
 	@ManyToMany(mappedBy = "images")
+	@JsonSerialize(using = TagSerializer.class)
 	public List<TagModel> tags = new ArrayList<>();
 	
 	@OneToMany(mappedBy = "image")
