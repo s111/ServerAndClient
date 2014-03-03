@@ -10,7 +10,6 @@ import com.github.groupa.client.components.MenuBar;
 public class MainFrame {
 	private JFrame frame;
 	private Container contentPane;
-	private Container displayedContainer;
 
 	private String title;
 
@@ -39,10 +38,8 @@ public class MainFrame {
 		return frame;
 	}
 
-	public void setImageView() {
+	public void replaceContent(Container content) {
 		contentPane.removeAll();
-		ExampleImageViewer imageViewer = new ExampleImageViewer();
-		displayedContainer = imageViewer.getPanel();
-		contentPane.add(displayedContainer);
+		contentPane.add(content);
 	}
 }
