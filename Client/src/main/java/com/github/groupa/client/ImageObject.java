@@ -32,6 +32,10 @@ public class ImageObject {
 		sizeMap.put("xl", 256);
 	}
 
+	public boolean hasImage() {
+		return image != null;
+	}
+
 	public Image getImage() {
 		try {
 			return (image == null) ? (image = requester.getImage(id, "xl"))
