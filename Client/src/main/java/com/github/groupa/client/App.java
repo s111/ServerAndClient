@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import servercommunication.HTTPRequester;
 import servercommunication.Requester;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.github.groupa.client.jsonobjects.Image;
 import com.github.groupa.client.jsonobjects.ImageList;
 
@@ -25,25 +24,13 @@ public class App {
 	private static final Logger logger = LoggerFactory.getLogger(App.class);
 
 	private static void getImages(String host) throws IOException {
-		CloseableHttpClient httpclient = HttpClients.createDefault();
-
-		HttpGet httpGet = new HttpGet("http://" + host + "/api/images?limit=0");
-
-		CloseableHttpResponse response = httpclient.execute(httpGet);
-		HttpEntity entity = response.getEntity();
-
-		if (entity.getContentType().getValue().startsWith("application/json")) {
-			Requester requester = new HTTPRequester(host);
-
-			ObjectMapper mapper = new ObjectMapper();
-
-			ImageList imageList = mapper.readValue(entity.getContent(),
-					ImageList.class);
-
-			for (Image image : imageList.images) {
-				Library.add(new ImageObject(image.id, requester));
-			}
+		Requester requester = new HTTPRequester(host);
+		ImageList imageList = requester.getImageList(0);
+		if (imageList == null) return;
+		for (Image image : imageList.images) {
+			Library.add(new ImageObject(image.id, requester));
 		}
+	
 	}
 
 	public static void main(String[] args) {

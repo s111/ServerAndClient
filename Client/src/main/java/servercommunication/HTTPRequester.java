@@ -13,6 +13,9 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.groupa.client.jsonobjects.ImageList;
+
 // Feel free to come up with better names
 public class HTTPRequester implements Requester {
 	private String host;
@@ -51,5 +54,22 @@ public class HTTPRequester implements Requester {
 
 		HttpGet httpGet = new HttpGet(href);
 		return httpclient.execute(httpGet);
+	}
+	
+	public ImageList getImageList(int limit) throws IOException {
+		CloseableHttpClient httpclient = HttpClients.createDefault();
+
+		HttpGet httpGet = new HttpGet("http://" + host + "/api/images?limit=" + limit);
+
+		CloseableHttpResponse response = httpclient.execute(httpGet);
+		HttpEntity entity = response.getEntity();
+
+		if (entity.getContentType().getValue().startsWith("application/json")) {
+
+			ObjectMapper mapper = new ObjectMapper();
+
+			return mapper.readValue(entity.getContent(), ImageList.class);
+		}
+		return null;
 	}
 }
