@@ -18,6 +18,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import play.mvc.Result;
+
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.config.ServerConfig;
@@ -25,9 +27,7 @@ import com.avaje.ebean.config.dbplatform.H2Platform;
 import com.avaje.ebeaninternal.api.SpiEbeanServer;
 import com.avaje.ebeaninternal.server.ddl.DdlGenerator;
 
-import play.mvc.Result;
-
-public class ImageControllerTest {
+public class GetImageTest {
 	private List<Long> ids;
 	
 	@BeforeClass
@@ -65,52 +65,42 @@ public class ImageControllerTest {
 	}
 
 	@Test
-	public void getImages_with_offset_0_limit_4_expect_offset_0_limit_4() {
-		Result result = callGetImages(0, 4);
+	public void getImageInfo_for_image_0_expect_id_0() {
+		Result result = callGetImageInfo(ids.get(0));
 
 		isOK(result);
 		isJSON(result);
-		contains(result, "\"offset\":0,\"limit\":4");
+		contains(result, "\"id\":" + ids.get(0));
 	}
 
 	@Test
-	public void getImages_with_offset_0_limit_4_expect_next_offset_4() {
-		Result result = callGetImages(0, 4);
+	public void getImageInfo_for_image_5_expect_next_image_6() {
+		Result result = callGetImageInfo(ids.get(5));
 
 		isOK(result);
 		isJSON(result);
-		contains(result, "\"next\":\"http:///api/images?offset=4");
+		contains(result, "\"next\":\"http:///api/images/" + ids.get(6) +"\"");
 	}
 
 	@Test
-	public void getImages_with_offset_4_limit_4_expect__previous_offset_0() {
-		Result result = callGetImages(4, 4);
+	public void getImageInfo_for_image_5_expect_previous_image_4() {
+		Result result = callGetImageInfo(ids.get(5));
 
 		isOK(result);
 		isJSON(result);
-		contains(result, "\"previous\":\"http:///api/images?limit=4\"");
+		contains(result, "\"previous\":\"http:///api/images/" + ids.get(4) + "\"");
 	}
 
 	@Test
-	public void getImages_with_offset_4_limit_4_expect_first_offset_0() {
-		Result result = callGetImages(4, 4);
+	public void getImageInfo_for_image_5_expect_first_image_0() {
+		Result result = callGetImageInfo(ids.get(5));
 
 		isOK(result);
 		isJSON(result);
-		contains(result, "\"first\":\"http:///api/images?limit=4\"");
-	}
-
-	@Test
-	public void getImages_with_offset_0_limit_4_expect_last_offset_8() {
-		Result result = callGetImages(0, 4);
-
-		isOK(result);
-		isJSON(result);
-		contains(result, "\"last\":\"http:///api/images?offset=8");
+		contains(result, "\"first\":\"http:///api/images/" + ids.get(0) + "\"");
 	}
 	
-	private Result callGetImages(int offset, int limit) {
-		return callAction(controllers.routes.ref.ImageController.getImages(
-				offset, limit));
+	private Result callGetImageInfo(long id) {
+		return callAction(controllers.routes.ref.GetImage.info(id));
 	}
 }

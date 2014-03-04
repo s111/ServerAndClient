@@ -1,17 +1,179 @@
 package com.github.groupa.client;
 
 import java.awt.Image;
+import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+
+import com.github.groupa.client.servercommunication.Requester;
 
 public class ImageObject {
-	private Image image;
-	private long id;
-	
-	public ImageObject(long id, Image image) {
+	private Image image = null;
+	private Image thumb = null;
+	private long id = -1;
+	private int rating = 0;
+	private String description = null;
+	private Requester requester = null;
+	private HashMap<String, Integer> sizeMap = new HashMap<>();
+	private List<String> tags = new LinkedList<>();
+
+	private String thumbSize = null;
+
+	public ImageObject(long id, Requester requester) {
 		this.id = id;
-		this.image = image;
+		this.requester = requester;
+
+		sizeMap.put("xs", 48);
+		sizeMap.put("s", 64);
+		sizeMap.put("m", 128);
+		sizeMap.put("l", 192);
+		sizeMap.put("xl", 256);
 	}
-	
-	public Image getImage() { return image; }
-	public long getId() { return id; }
-	
+
+	public boolean hasImage() {
+		return image != null;
+	}
+
+	public Image getImage() {
+		try {
+			return (image == null) ? (image = requester.getImage(id, "xl"))
+					: image;
+		} catch (IOException e) {
+			return null;
+		}
+	}
+
+	private Image getThumb(String size) {
+		if (thumbSize == null) { // Need a thumb
+			if (image == null) { // Request from server
+				try {
+					thumb = requester.getImage(id, size);
+				} catch (IOException e) {
+					return null;
+				}
+			} else { // Generate from full-size image
+				thumb = scaleImage(image, size);
+			}
+			thumbSize = size;
+		} else if (sizeMap.get(size) < sizeMap.get(thumbSize)) { // Scale down
+																	// existing
+																	// thumb
+			return scaleImage(thumb, size);
+		} else if (sizeMap.get(size) == sizeMap.get(thumbSize)) { // Have the
+																	// thumb
+			return thumb;
+		}
+		if (sizeMap.get(size) > sizeMap.get(thumbSize)) { // Need a bigger thumb
+			if (image == null) {
+				try {
+					thumb = requester.getImage(id, size);
+				} catch (IOException e) {
+					return null;
+				}
+			} else {
+				thumb = scaleImage(image, size);
+			}
+			thumbSize = size;
+		}
+		return thumb;
+	}
+
+	private Image scaleImage(Image img, String size) {
+		return scaleImage(img, sizeMap.get(size));
+	}
+
+	private Image scaleImage(Image img, int size) {
+		return image.getScaledInstance(size, size, BufferedImage.SCALE_SMOOTH);
+	}
+
+	public Image getThumbXS() {
+		return getThumb("xs");
+	}
+
+	public Image getThumbS() {
+		return getThumb("s");
+	}
+
+	public Image getThumbM() {
+		return getThumb("m");
+	}
+
+	public Image getThumbL() {
+		return getThumb("l");
+	}
+
+	public Image getThumbXL() {
+		return getThumb("xl");
+	}
+
+	public long getId() {
+		return id;
+	}
+
+	/***
+	 * Valid value for rating is 0 < rating <= 5
+	 * 
+	 * @param rating
+	 * @return
+	 */
+	public boolean rate(int rating) {
+		if (0 < rating && rating <= 5) {
+			try {
+				if (requester.rateImage(id, rating)) {
+					this.rating = rating;
+					return true;
+				}
+			} catch (IOException e) {
+			}
+		}
+		return false;
+	}
+
+	public int getRating() {
+		return rating;
+	}
+
+	public boolean describe(String description) {
+		try {
+			if (requester.describeImage(id, description)) {
+				this.description = description;
+				return true;
+			}
+		} catch (IOException e) {
+		}
+		return false;
+	}
+
+	public String getDescription() {
+		return description;
+	}
+
+	public List<String> getTags() {
+		return tags;
+	}
+
+	public boolean addTag(String tag) {
+		if (hasTag(tag))
+			return true;
+		if (tag.contains(","))
+			return false;
+		try {
+			if (requester.addTag(id, tag)) {
+				tags.add(tag);
+				return true;
+			}
+		} catch (IOException e) {
+		}
+		return false;
+	}
+
+	public boolean hasTag(String tag) {
+		return tags.contains(tag);
+	}
+
+	public boolean hasTags(List<String> tags) {
+		return this.tags.containsAll(tags);
+	}
 }

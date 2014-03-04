@@ -2,14 +2,33 @@ package com.github.groupa.client;
 
 import java.io.IOException;
 
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
 import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.groupa.client.servercommunication.HTTPRequester;
+import com.github.groupa.client.servercommunication.Requester;
+
+import com.github.groupa.client.jsonobjects.Image;
+import com.github.groupa.client.jsonobjects.ImageList;
+
 public class App {
+	public static String host;
+	
 	private static final Logger logger = LoggerFactory.getLogger(App.class);
+
+	private static void getImages(String host) throws IOException {
+		Requester requester = new HTTPRequester(host);
+		ImageList imageList = requester.getImageList(0);
+		if (imageList == null) return;
+		for (Image image : imageList.images) {
+			Library.add(new ImageObject(image.id, requester));
+		}
+	
+	}
 
 	public static void main(String[] args) {
 		/*
@@ -22,21 +41,18 @@ public class App {
 			@Override
 			public void run() {
 				MainFrame mainFrame = new MainFrame("App");
+				host = JOptionPane.showInputDialog("Host address",
+						"localhost:9000");
 
 				mainFrame.display();
 
 				try {
-					Library.add(1,ImageRequester.requestImage(1));
-					Library.add(2,ImageRequester.requestImage(2));
+					getImages(host);
 				} catch (IOException e) {
 					logger.warn("Could not import image due to IOException");
 				}
-				
-				ImageObject imageObject = Library.get(1);
-				
-				if (imageObject != null) {
-					mainFrame.setImageView(imageObject);
-				}
+
+				mainFrame.replaceContent(new ImageView().getPanel());
 			}
 		});
 	}

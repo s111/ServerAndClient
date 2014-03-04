@@ -1,4 +1,7 @@
 
+import static org.junit.Assert.assertEquals;
+import static play.test.Helpers.fakeApplication;
+
 import java.io.File;
 
 import models.ImageModel;
@@ -6,20 +9,18 @@ import models.ImageModel;
 import org.junit.Before;
 import org.junit.Test;
 
+import controllers.ImageUploader;
 import play.test.WithApplication;
-import static org.junit.Assert.assertEquals;
-import static play.test.Helpers.fakeApplication;
-import static play.test.Helpers.inMemoryDatabase;
 
 public class GlobalTest extends WithApplication {
 	@Before
-	public void setUp() {
-		start(fakeApplication(inMemoryDatabase()));
+	public void startApp() {
+		start(fakeApplication());
 	}
 
 	@Test
-	public void checkInitialDatabase() {
-		File directory = new File("../../images");
+	public void check_initial_database_size_expect_to_match_files_on_disk() {
+		File directory = new File(ImageUploader.IMAGE_DIRECTORY);
 
 		File[] listOfFiles = directory.listFiles();
 		
@@ -29,6 +30,7 @@ public class GlobalTest extends WithApplication {
 			String filename = image.getName();
 			
 			if (filename.matches("^(.+).png$")) {
+				if (filename.contains("thumb")) continue;
 				size++;
 			}
 		}

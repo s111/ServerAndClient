@@ -10,10 +10,8 @@ import org.apache.log4j.BasicConfigurator;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-/*
- * Currently a instance of the server needs to be running.
- * Issue #29 explains this in-depth
- */
+import com.github.groupa.client.servercommunication.Requester;
+
 public class ImageRequesterTest {
 	@BeforeClass
 	public static void setUp() {
@@ -28,8 +26,10 @@ public class ImageRequesterTest {
 	public void requestImage() {
 		Image image = null;
 
+		Requester requester = new FakeRequester();
+
 		try {
-			image = ImageRequester.requestImage(1);
+			image = requester.getImage(0, "");
 		} catch (IOException e) {
 			fail("Threw IOException");
 		}

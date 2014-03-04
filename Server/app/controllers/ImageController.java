@@ -1,23 +1,29 @@
 package controllers;
 
-import java.io.File;
-
 import models.ImageModel;
 import play.mvc.Controller;
 import play.mvc.Result;
+import collection.ImageModelList;
+
+import com.fasterxml.jackson.databind.node.ObjectNode;
 
 public class ImageController extends Controller {
-	public static Result getImage(long id) {
-		ImageModel imageModel = ImageModel.getImageModel(id);
-		
-		if (imageModel == null) return badRequest();
-		
-		File image = new File(imageModel.filename);
-		
-		if (image.exists()) {
-			return ok(image, true);
-		} else {
+	public static Result getImages(int offset, int limit) {
+		if (isNotWithinBoundaries(offset, limit))
 			return badRequest();
-		}
+		
+		if (limit == 0) limit = ImageModel.getAll().size();
+
+		ImageModelList imageModelList = new ImageModelList(request(), offset, limit);
+		
+		ObjectNode rootNode = imageModelList.generateJSON();
+
+		return ok(rootNode);
+	}
+
+	private static boolean isNotWithinBoundaries(int offset, int limit) {
+		int numRows = ImageModel.getRowCount();
+
+		return (offset < 0 || limit < 0 || offset > numRows);
 	}
 }

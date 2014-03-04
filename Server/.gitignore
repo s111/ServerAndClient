@@ -16,3 +16,4 @@ dist
 /.target
 /.cache
 conf/evolutions
+/*.log
