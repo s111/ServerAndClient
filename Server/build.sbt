@@ -8,7 +8,8 @@ libraryDependencies ++= Seq(
   cache,
   "org.apache.commons" % "commons-imaging" % "1.0-SNAPSHOT",
   "net.coobird" % "thumbnailator" % "0.4.7",
-  "commons-io" % "commons-io" % "2.4"
+  "commons-io" % "commons-io" % "2.4",
+  "org.mockito" % "mockito-all" % "1.9.5"
 )     
 
 resolvers += "apache.snapshots" at "http://repository.apache.org/snapshots"

@@ -21,8 +21,6 @@ import org.apache.commons.io.IOUtils;
 
 import com.google.common.io.Files;
 
-;
-
 public class ExifWriter {
 
 	private File image;
@@ -76,8 +74,7 @@ public class ExifWriter {
 		}
 	}
 
-	private TiffImageMetadata getExif() throws ImageReadException,
-			IOException {
+	private TiffImageMetadata getExif() throws ImageReadException, IOException {
 		IImageMetadata metadata = Imaging.getMetadata(image);
 		JpegImageMetadata jpegMetadata = (JpegImageMetadata) metadata;
 		TiffImageMetadata exif = null;
