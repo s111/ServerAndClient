@@ -12,9 +12,9 @@ import org.apache.commons.imaging.formats.tiff.constants.TiffConstants;
 
 public class ExifReader {
 	private TiffImageMetadata exif;
-	private int rating;
-	private String tags;
-	private String description;
+	private int rating = -1;
+	private String tags = "";
+	private String description = "";
 
 	/**
 	 * ExifReader constructor. Allows you to use its methods on your specified
@@ -30,13 +30,22 @@ public class ExifReader {
 		IImageMetadata metadata = Imaging.getMetadata(jpegImageFile);
 		JpegImageMetadata jpegMetadata = (JpegImageMetadata) metadata;
 		
-		exif = jpegMetadata.getExif();
+		if (jpegMetadata != null) {
+			exif = jpegMetadata.getExif();
+		}
 
-		extractMetadata();
+		if (exif != null) {
+			extractMetadata();
+		}
 	}
 
 	private void extractMetadata() throws ImageReadException {
-		rating = exif.getFieldValue(TiffConstants.EXIF_TAG_RATING)[0];
+		short[] exifRating = exif.getFieldValue(TiffConstants.EXIF_TAG_RATING);
+		
+		if (exifRating.length > 0) {
+			rating = exifRating[0];
+		}
+		
 		tags = exif.getFieldValue(TiffConstants.EXIF_TAG_XPKEYWORDS);
 		description = exif.getFieldValue(TiffConstants.EXIF_TAG_XPCOMMENT);
 	}
