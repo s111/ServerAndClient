@@ -14,11 +14,19 @@ import javax.persistence.OneToMany;
 import jsonserializers.TagSerializer;
 import play.data.validation.Constraints.Required;
 import play.db.ebean.Model;
+import play.libs.Json;
+import play.mvc.Http.Request;
 
 import com.avaje.ebean.Page;
 import com.avaje.ebean.PagingList;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
+import controllers.routes;
 
 @Entity
 public class ImageModel extends Model {
@@ -35,11 +43,11 @@ public class ImageModel extends Model {
 	@JsonIgnore
 	public String filename;
 	public String description;
-	
+
 	@ManyToMany(mappedBy = "images")
 	@JsonSerialize(using = TagSerializer.class)
 	public List<TagModel> tags = new ArrayList<>();
-	
+
 	@OneToMany(mappedBy = "image")
 	@JsonIgnore
 	public Map<Integer, ThumbnailModel> thumbnails = new HashMap<>();
@@ -47,24 +55,25 @@ public class ImageModel extends Model {
 	public ImageModel(String filename) {
 		this.filename = filename;
 	}
-	
+
 	public void setDescription(String description) {
 		this.description = description;
-		
+
 		save();
 	}
-	
+
 	public void setRating(int rating) {
 		this.rating = rating;
-		
+
 		save();
 	}
-	
+
 	public void tag(TagModel tagModel) {
-		if (tags.contains(tagModel)) return;
-		
+		if (tags.contains(tagModel))
+			return;
+
 		tags.add(tagModel);
-		
+
 		tagModel.images.add(this);
 
 		save();
@@ -80,30 +89,31 @@ public class ImageModel extends Model {
 	public static ImageModel get(long id) {
 		return find.byId(id);
 	}
-	
+
 	public static ImageModel getFirst() {
 		List<ImageModel> imageModels = find.all();
-		
+
 		if (imageModels.size() == 0) {
 			return null;
 		}
-		
-		return imageModels.get(0);
-	}
-	
-	public static ImageModel getLast() {
-		List<ImageModel> imageModels = find.all();
-		
-		if (imageModels.size() == 0) {
-			return null;
-		}
-		
-		Collections.reverse(imageModels);
-		
+
 		return imageModels.get(0);
 	}
 
-	public static ImageModel getNext(long id) {
+	public static ImageModel getLast() {
+		List<ImageModel> imageModels = find.all();
+
+		if (imageModels.size() == 0) {
+			return null;
+		}
+
+		Collections.reverse(imageModels);
+
+		return imageModels.get(0);
+	}
+
+	@JsonIgnore
+	public ImageModel getNext() {
 		List<ImageModel> imageModels = find.where().gt("id", id).findList();
 
 		if (imageModels.size() == 0) {
@@ -113,13 +123,14 @@ public class ImageModel extends Model {
 		return imageModels.get(0);
 	}
 
-	public static ImageModel getPrevious(long id) {
+	@JsonIgnore
+	public ImageModel getPrevious() {
 		List<ImageModel> imageModels = find.where().lt("id", id).findList();
 
 		if (imageModels.size() == 0) {
 			return null;
 		}
-		
+
 		Collections.reverse(imageModels);
 
 		return imageModels.get(0);
@@ -148,9 +159,75 @@ public class ImageModel extends Model {
 
 	public void addThumbnail(ThumbnailModel thumbnailModel) {
 		thumbnails.put(thumbnailModel.size, thumbnailModel);
-		
+
 		thumbnailModel.image = this;
 
 		save();
+	}
+
+	public static ArrayNode generateImageArrayJSON(Request request, List<ImageModel> imageModels) {
+		ObjectMapper mapper = new ObjectMapper();
+
+		ArrayNode images = mapper.convertValue(imageModels, ArrayNode.class);
+
+		for (JsonNode image : images) {
+			long id = image.get("id").asLong();
+
+			((ObjectNode) image).removeAll();
+			((ObjectNode) image).put("id", id);
+			((ObjectNode) image).put("href", routes.GetImage.info(id)
+					.absoluteURL(request));
+		}
+
+		return images;
+	}
+
+	public ObjectNode generateImageInfoJSON(Request request) {
+		ObjectMapper mapper = new ObjectMapper();
+
+		ObjectNode rootNode = Json.newObject();
+		rootNode.put("href", routes.GetImage.info(id).absoluteURL(request));
+
+		ImageModel nextImageModel = getNext();
+		ImageModel previousImageModel = getPrevious();
+		ImageModel firstImageModel = getFirst();
+		ImageModel lastImageModel = getLast();
+
+		long nextId = -1;
+		long previousId = -1;
+		long firstId = -1;
+		long lastId = -1;
+
+		if (nextImageModel != null) {
+			nextId = nextImageModel.id;
+		}
+
+		if (previousImageModel != null) {
+			previousId = previousImageModel.id;
+		}
+
+		if (firstImageModel != null) {
+			firstId = firstImageModel.id;
+		}
+
+		if (lastImageModel != null) {
+			lastId = lastImageModel.id;
+		}
+
+		rootNode.put("next", getAbsoluteURLToImageOrNull(request, nextId));
+		rootNode.put("previous",
+				getAbsoluteURLToImageOrNull(request, previousId));
+		rootNode.put("first", getAbsoluteURLToImageOrNull(request, firstId));
+		rootNode.put("last", getAbsoluteURLToImageOrNull(request, lastId));
+
+		ObjectNode image = mapper.convertValue(this, ObjectNode.class);
+
+		rootNode.put("image", image);
+
+		return rootNode;
+	}
+
+	private static String getAbsoluteURLToImageOrNull(Request request, long id) {
+		return id > 0 ? routes.GetImage.info(id).absoluteURL(request) : null;
 	}
 }

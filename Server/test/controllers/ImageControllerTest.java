@@ -92,12 +92,12 @@ public class ImageControllerTest {
 	}
 
 	@Test
-	public void getImages_with_offset_0_limit_4_expect_first_offset_0() {
-		Result result = callGetImages(0, 4);
+	public void getImages_with_offset_4_limit_4_expect_first_offset_0() {
+		Result result = callGetImages(4, 4);
 
 		isOK(result);
 		isJSON(result);
-		contains(result, "\"first\":\"http:///api/images\"");
+		contains(result, "\"first\":\"http:///api/images?limit=4\"");
 	}
 
 	@Test
