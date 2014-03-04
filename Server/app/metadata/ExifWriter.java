@@ -8,9 +8,6 @@ import java.io.OutputStream;
 
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.ImageWriteException;
-import org.apache.commons.imaging.Imaging;
-import org.apache.commons.imaging.common.IImageMetadata;
-import org.apache.commons.imaging.formats.jpeg.JpegImageMetadata;
 import org.apache.commons.imaging.formats.jpeg.exif.ExifRewriter;
 import org.apache.commons.imaging.formats.tiff.TiffImageMetadata;
 import org.apache.commons.imaging.formats.tiff.constants.TiffConstants;
@@ -22,6 +19,7 @@ import org.apache.commons.io.IOUtils;
 import com.google.common.io.Files;
 
 public class ExifWriter {
+	private TiffImageMetadata exif;
 
 	private File image;
 	private File tempImage;
@@ -37,17 +35,21 @@ public class ExifWriter {
 
 	/**
 	 * ExifWriter constructor. Allows you to use its methods on your specified
-	 * image to edit (exif) metadata and writing it back into the file.
+	 * image to edit (exif) metadata and write it back into the file.
 	 * 
-	 * @param imagePath
-	 *            an absolute URL giving the base location of the image
+	 * @param File
+	 *            image
+	 * @param TiffImageMetadata
+	 *            exif, use ((JpegImageMetadata)
+	 *            Imaging.getMetadata(image).getExif()
 	 * @throws IOException
 	 * @throws ImageReadException
 	 * @throws ImageWriteException
 	 */
-	public ExifWriter(File image) throws ImageReadException, IOException,
-			ImageWriteException {
+	public ExifWriter(File image, TiffImageMetadata exif)
+			throws ImageReadException, IOException, ImageWriteException {
 		this.image = image;
+		this.exif = exif;
 
 		String filename = image.getName();
 		String basename = FilenameUtils.getBaseName(filename);
@@ -63,8 +65,6 @@ public class ExifWriter {
 
 	private void setUpOutputSet() throws ImageReadException, IOException,
 			ImageWriteException {
-		TiffImageMetadata exif = getExif();
-
 		if (exif != null) {
 			outputSet = exif.getOutputSet();
 		}
@@ -72,17 +72,6 @@ public class ExifWriter {
 		if (outputSet == null) {
 			outputSet = new TiffOutputSet();
 		}
-	}
-
-	private TiffImageMetadata getExif() throws ImageReadException, IOException {
-		IImageMetadata metadata = Imaging.getMetadata(image);
-		JpegImageMetadata jpegMetadata = (JpegImageMetadata) metadata;
-		TiffImageMetadata exif = null;
-
-		if (jpegMetadata != null) {
-			exif = jpegMetadata.getExif();
-		}
-		return exif;
 	}
 
 	/**
@@ -95,6 +84,7 @@ public class ExifWriter {
 	public void save() throws ImageReadException, ImageWriteException,
 			IOException {
 		setMetadata();
+
 		try {
 			outputStream = new FileOutputStream(tempImage);
 			outputStream = new BufferedOutputStream(outputStream);

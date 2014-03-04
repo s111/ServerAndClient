@@ -9,6 +9,7 @@ import org.apache.commons.imaging.formats.tiff.constants.TiffConstants;
 
 public class ExifReader {
 	private TiffImageMetadata exif;
+	
 	private int rating = -1;
 	private String tags = "";
 	private String description = "";
@@ -19,6 +20,9 @@ public class ExifReader {
 	 * 
 	 * @param File
 	 *            image
+	 * @param TiffImageMetadata
+	 *            exif, use ((JpegImageMetadata)
+	 *            Imaging.getMetadata(image).getExif()
 	 * @throws ImageReadException
 	 * @throws IOException
 	 */
