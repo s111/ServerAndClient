@@ -11,11 +11,10 @@ import org.apache.commons.imaging.formats.tiff.TiffImageMetadata;
 import org.apache.commons.imaging.formats.tiff.constants.TiffConstants;
 
 public class ExifReader {
-
-	private File jpegImageFile;
-	private IImageMetadata metadata;
-	private static JpegImageMetadata jpegMetadata;
-	private static TiffImageMetadata exif;
+	private TiffImageMetadata exif;
+	private int rating;
+	private String tags;
+	private String description;
 
 	/**
 	 * ExifReader constructor. Allows you to use its methods on your specified
@@ -23,64 +22,34 @@ public class ExifReader {
 	 * 
 	 * @param imagePath
 	 *            an absolute URL giving the base location of the image
+	 * @throws ImageReadException
+	 * @throws IOException
 	 */
-	public ExifReader(String imagePath) {
-		jpegImageFile = new File(imagePath);
-		try {
-			metadata = Imaging.getMetadata(jpegImageFile);
-			jpegMetadata = (JpegImageMetadata) metadata;
-			if (jpegMetadata != null) {
-				exif = jpegMetadata.getExif();
-			}
-		} catch (ImageReadException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			System.err.println("File not found: " + imagePath);
-			return;
-		}
+	public ExifReader(File jpegImageFile) throws ImageReadException,
+			IOException {
+		IImageMetadata metadata = Imaging.getMetadata(jpegImageFile);
+		JpegImageMetadata jpegMetadata = (JpegImageMetadata) metadata;
+		
+		exif = jpegMetadata.getExif();
+
+		extractMetadata();
 	}
 
-	public String getTitle() {
-		String title = null;
-		try {
-			title = exif.getFieldValue(TiffConstants.EXIF_TAG_XPTITLE);
-		} catch (ImageReadException e) {
-			e.printStackTrace();
-		}
-
-		return title;
+	private void extractMetadata() throws ImageReadException {
+		rating = exif.getFieldValue(TiffConstants.EXIF_TAG_RATING)[0];
+		tags = exif.getFieldValue(TiffConstants.EXIF_TAG_XPKEYWORDS);
+		description = exif.getFieldValue(TiffConstants.EXIF_TAG_XPCOMMENT);
 	}
-
+	
 	public int getRating() {
-		short[] rating = null;
-		try {
-			rating = exif.getFieldValue(TiffConstants.EXIF_TAG_RATING);
-		} catch (ImageReadException e) {
-			e.printStackTrace();
-		}
-		if (rating == null) {
-			return -1;
-		}
-		return rating[0];
+		return rating;
 	}
 
 	public String getTags() {
-		String tags = null;
-		try {
-			tags = exif.getFieldValue(TiffConstants.EXIF_TAG_XPKEYWORDS);
-		} catch (ImageReadException e) {
-			e.printStackTrace();
-		}
 		return tags;
 	}
 
 	public String getDescription() {
-		String description = null;
-		try {
-			description = exif.getFieldValue(TiffConstants.EXIF_TAG_XPCOMMENT);
-		} catch (ImageReadException e) {
-			e.printStackTrace();
-		}
 		return description;
 	}
 }
