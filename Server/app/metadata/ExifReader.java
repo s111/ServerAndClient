@@ -20,14 +20,13 @@ public class ExifReader {
 	 * ExifReader constructor. Allows you to use its methods on your specified
 	 * image to get/read (exif) metadata.
 	 * 
-	 * @param imagePath
-	 *            an absolute URL giving the base location of the image
+	 * @param File image
 	 * @throws ImageReadException
 	 * @throws IOException
 	 */
-	public ExifReader(File jpegImageFile) throws ImageReadException,
+	public ExifReader(File image) throws ImageReadException,
 			IOException {
-		IImageMetadata metadata = Imaging.getMetadata(jpegImageFile);
+		IImageMetadata metadata = Imaging.getMetadata(image);
 		JpegImageMetadata jpegMetadata = (JpegImageMetadata) metadata;
 		
 		if (jpegMetadata != null) {

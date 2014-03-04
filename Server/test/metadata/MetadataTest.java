@@ -7,19 +7,21 @@ import java.io.File;
 import java.io.IOException;
 
 import org.apache.commons.imaging.ImageReadException;
+import org.apache.commons.imaging.ImageWriteException;
 import org.junit.Test;
 
 public class MetadataTest {
 
-	String imagePath = "res/testImage.jpg";
+	File image = new File("res/testImage.jpg");
 
 	@Test
 	public void setRating_Given5_Assert5() {
-		ExifWriter exifWriter = new ExifWriter(imagePath);
+		ExifWriter exifWriter = getExifWrite(image);
 		exifWriter.setRating(5);
-		exifWriter.writeToImage();
 
-		ExifReader exifReader = getExifReader(new File(imagePath));
+		saveExifWriter(exifWriter);
+
+		ExifReader exifReader = getExifReader(image);
 
 		assertEquals(5, exifReader.getRating());
 	}
@@ -27,11 +29,12 @@ public class MetadataTest {
 	@Test
 	public void setTags_GivenMagic_Sorcery_Wizardry_AssertMagic_Sorcery_Wizardry()
 			throws ImageReadException, IOException {
-		ExifWriter exifWriter = new ExifWriter(imagePath);
+		ExifWriter exifWriter = getExifWrite(image);
 		exifWriter.setTags("Magic, Sorcery, Wizardry");
-		exifWriter.writeToImage();
 
-		ExifReader exifReader = getExifReader(new File(imagePath));
+		saveExifWriter(exifWriter);
+
+		ExifReader exifReader = getExifReader(image);
 
 		assertEquals("Magic, Sorcery, Wizardry", exifReader.getTags());
 	}
@@ -39,16 +42,17 @@ public class MetadataTest {
 	@Test
 	public void setDescription_GivenThisImageIsIndescribable_AssertThisImageIsIndescribable()
 			throws ImageReadException, IOException {
-		ExifWriter exifWriter = new ExifWriter(imagePath);
+		ExifWriter exifWriter = getExifWrite(image);
 		exifWriter.setDescription("This image is indescribable!");
-		exifWriter.writeToImage();
 
-		ExifReader exifReader = getExifReader(new File(imagePath));
+		saveExifWriter(exifWriter);
+
+		ExifReader exifReader = getExifReader(image);
 
 		assertEquals("This image is indescribable!",
 				exifReader.getDescription());
 	}
-	
+
 	private ExifReader getExifReader(File image) {
 		ExifReader exifReader = null;
 
@@ -61,5 +65,33 @@ public class MetadataTest {
 		}
 
 		return exifReader;
+	}
+
+	private ExifWriter getExifWrite(File image) {
+		ExifWriter exifWriter = null;
+
+		try {
+			exifWriter = new ExifWriter(image);
+		} catch (ImageReadException e) {
+			fail("Failed to construct ExifWriter due to a ImageReadException");
+		} catch (ImageWriteException e) {
+			fail("Failed to construct ExifWriter due to a ImageWriteException");
+		} catch (IOException e) {
+			fail("Failed to construct ExifWriter due to a IOException");
+		}
+
+		return exifWriter;
+	}
+
+	private void saveExifWriter(ExifWriter exifWriter) {
+		try {
+			exifWriter.save();
+		} catch (ImageReadException e) {
+			fail("Failed to save due to a ImageReadException");
+		} catch (ImageWriteException e) {
+			fail("Failed to save due to a ImageWriteException");
+		} catch (IOException e) {
+			fail("Failed to save due to a IOException");
+		}
 	}
 }

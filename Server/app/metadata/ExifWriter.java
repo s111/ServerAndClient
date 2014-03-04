@@ -2,7 +2,6 @@ package metadata;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -17,19 +16,26 @@ import org.apache.commons.imaging.formats.tiff.TiffImageMetadata;
 import org.apache.commons.imaging.formats.tiff.constants.TiffConstants;
 import org.apache.commons.imaging.formats.tiff.write.TiffOutputDirectory;
 import org.apache.commons.imaging.formats.tiff.write.TiffOutputSet;
-import org.apache.commons.imaging.util.IoUtils;
+import org.apache.commons.io.FilenameUtils;
+import org.apache.commons.io.IOUtils;
+
+import com.google.common.io.Files;
+
+;
 
 public class ExifWriter {
 
-	private File jpegImageFile;
-	private File tempOutputFile;
+	private File image;
+	private File tempImage;
+
 	private OutputStream outputStream;
+
 	private TiffOutputSet outputSet;
 	private TiffOutputDirectory exifDirectory;
-	private boolean canThrow;
 
-	private IImageMetadata metadata;
-	private static JpegImageMetadata jpegMetadata;
+	private int rating = -1;
+	private String tags;
+	private String description;
 
 	/**
 	 * ExifWriter constructor. Allows you to use its methods on your specified
@@ -37,81 +43,107 @@ public class ExifWriter {
 	 * 
 	 * @param imagePath
 	 *            an absolute URL giving the base location of the image
+	 * @throws IOException
+	 * @throws ImageReadException
+	 * @throws ImageWriteException
 	 */
-	public ExifWriter(String imagePath) {
-		jpegImageFile = new File(imagePath);
-		tempOutputFile = new File(imagePath + ".temp");
-		outputStream = null;
-		canThrow = false;
-		try {
-			outputSet = null;
-			metadata = Imaging.getMetadata(jpegImageFile);
-			jpegMetadata = (JpegImageMetadata) metadata;
-			if (jpegMetadata != null) {
-				TiffImageMetadata exif = jpegMetadata.getExif();
-				if (exif != null) {
-					outputSet = exif.getOutputSet();
-				}
-			}
-			if (outputSet == null) {
-				outputSet = new TiffOutputSet();
-			}
-			exifDirectory = outputSet.getOrCreateExifDirectory();
-		} catch (ImageReadException e) {
-			e.printStackTrace();
-		} catch (ImageWriteException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			System.err.println("File not found: " + imagePath);
-			return;
+	public ExifWriter(File image) throws ImageReadException, IOException,
+			ImageWriteException {
+		this.image = image;
+
+		String filename = image.getName();
+		String basename = FilenameUtils.getBaseName(filename);
+		String extension = FilenameUtils.getExtension(filename);
+
+		tempImage = File.createTempFile(basename, "." + extension, new File(
+				System.getProperty("java.io.tmpdir")));
+
+		setUpOutputSet();
+
+		exifDirectory = outputSet.getOrCreateExifDirectory();
+	}
+
+	private void setUpOutputSet() throws ImageReadException, IOException,
+			ImageWriteException {
+		TiffImageMetadata exif = getExif();
+
+		if (exif != null) {
+			outputSet = exif.getOutputSet();
 		}
+
+		if (outputSet == null) {
+			outputSet = new TiffOutputSet();
+		}
+	}
+
+	private TiffImageMetadata getExif() throws ImageReadException,
+			IOException {
+		IImageMetadata metadata = Imaging.getMetadata(image);
+		JpegImageMetadata jpegMetadata = (JpegImageMetadata) metadata;
+		TiffImageMetadata exif = null;
+
+		if (jpegMetadata != null) {
+			exif = jpegMetadata.getExif();
+		}
+		return exif;
 	}
 
 	/**
 	 * Writes both existing and changed 'EXIF Metadata' to original file.
+	 * 
+	 * @throws IOException
+	 * @throws ImageWriteException
+	 * @throws ImageReadException
 	 */
-	public void writeToImage() {
+	public void save() throws ImageReadException, ImageWriteException,
+			IOException {
+		setMetadata();
 		try {
-			outputStream = new FileOutputStream(tempOutputFile);
+			outputStream = new FileOutputStream(tempImage);
 			outputStream = new BufferedOutputStream(outputStream);
-			new ExifRewriter().updateExifMetadataLossless(jpegImageFile, outputStream, outputSet);
-			jpegImageFile.delete();
-			tempOutputFile.renameTo(jpegImageFile);
-			canThrow = true;
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (ImageReadException e) {
-			e.printStackTrace();
-		} catch (ImageWriteException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
+
+			new ExifRewriter().updateExifMetadataLossless(image, outputStream,
+					outputSet);
+
+			Files.move(tempImage, image);
 		} finally {
-			try {
-				IoUtils.closeQuietly(canThrow, outputStream);
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
+			IOUtils.closeQuietly(outputStream);
 		}
 	}
 
-	public void setTitle(String title) {
-		try {
-			exifDirectory.removeField(TiffConstants.EXIF_TAG_XPTITLE);
-			exifDirectory.add(TiffConstants.EXIF_TAG_XPTITLE, title);
-		} catch (ImageWriteException e) {
-			e.printStackTrace();
+	private void setMetadata() throws ImageWriteException {
+		if (rating != -1) {
+			setRatingMetadata();
 		}
+
+		if (tags != null) {
+			setTagsMetadata();
+		}
+
+		if (description != null) {
+			setDescriptionMetadata();
+		}
+	}
+
+	private void setDescriptionMetadata() throws ImageWriteException {
+		exifDirectory.removeField(TiffConstants.EXIF_TAG_XPCOMMENT);
+		exifDirectory.add(TiffConstants.EXIF_TAG_XPCOMMENT, description);
+	}
+
+	private void setTagsMetadata() throws ImageWriteException {
+		exifDirectory.removeField(TiffConstants.EXIF_TAG_XPKEYWORDS);
+		exifDirectory.add(TiffConstants.EXIF_TAG_XPKEYWORDS, tags);
+	}
+
+	private void setRatingMetadata() throws ImageWriteException {
+		short ratingShort = Short.parseShort(Integer.toString(rating));
+
+		exifDirectory.removeField(TiffConstants.EXIF_TAG_RATING);
+		exifDirectory.add(TiffConstants.EXIF_TAG_RATING, ratingShort);
 	}
 
 	public void setRating(int rating) {
-		try {
-			short ratingShort = Short.parseShort(Integer.toString(rating));
-			exifDirectory.removeField(TiffConstants.EXIF_TAG_RATING);
-			exifDirectory.add(TiffConstants.EXIF_TAG_RATING, ratingShort);
-		} catch (ImageWriteException e) {
-			e.printStackTrace();
-		}
+		this.rating = rating;
 	}
 
 	/**
@@ -121,20 +153,10 @@ public class ExifWriter {
 	 *            Seperate tags by commas (e.g. "tag1, tag2, tag3")
 	 */
 	public void setTags(String tags) {
-		try {
-			exifDirectory.removeField(TiffConstants.EXIF_TAG_XPKEYWORDS);
-			exifDirectory.add(TiffConstants.EXIF_TAG_XPKEYWORDS, tags);
-		} catch (ImageWriteException e) {
-			e.printStackTrace();
-		}
+		this.tags = tags;
 	}
 
 	public void setDescription(String description) {
-		try {
-			exifDirectory.removeField(TiffConstants.EXIF_TAG_XPCOMMENT);
-			exifDirectory.add(TiffConstants.EXIF_TAG_XPCOMMENT, description);
-		} catch (ImageWriteException e) {
-			e.printStackTrace();
-		}
+		this.description = description;
 	}
 }
