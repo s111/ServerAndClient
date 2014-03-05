@@ -20,13 +20,14 @@ import com.github.groupa.client.components.ImageRater;
 
 public class ImageView {
 	private Library library = new Library();
-
+	
 	private JPanel mainPanel;
 
 	private JLabel imageLabel = new JLabel();
 	
 	private JButton nextButton = new JButton("=>");
 	private JButton previousButton = new JButton("<=");
+	private JButton backToMainButton = new JButton("<= Exit to Main");
 
 	public ImageView() {
 		setUpImageViewer();
@@ -79,6 +80,13 @@ public class ImageView {
 				displayPreviousImage();
 			}
 		});
+		
+		backToMainButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent action) {
+				// Call change view method on App
+			}
+		});
 	}
 
 	public void displayNextImage() {
@@ -91,9 +99,8 @@ public class ImageView {
 
 	private JPanel createTopPanel() {
 		JPanel topPanel = new JPanel();
-		JLabel label = new JLabel("Top Toolbar");
-
-		topPanel.add(label);
+		
+		topPanel.add(backToMainButton);
 
 		return topPanel;
 	}
