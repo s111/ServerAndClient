@@ -10,6 +10,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
+import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.Library;
 
 public class ImageRater {
@@ -23,7 +24,7 @@ public class ImageRater {
 
 	public ImageRater(Library library) {
 		this.library = library;
-		
+
 		createRadioButtons();
 		addRadioButtonsToGroup();
 
@@ -60,9 +61,15 @@ public class ImageRater {
 			buttons[i].addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent action) {
-					JOptionPane.showMessageDialog(null, "You Rated " + rating + "!");
-					
-					library.getImage().rate(rating);
+					ImageObject image = library.getImage();
+
+					if (image == null)
+						return;
+
+					image.rate(rating);
+
+					JOptionPane.showMessageDialog(null, "You Rated " + rating
+							+ "!");
 				}
 			});
 		}
