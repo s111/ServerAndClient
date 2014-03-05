@@ -17,6 +17,7 @@ import javax.swing.KeyStroke;
 
 import com.github.groupa.client.components.ImageDescriptionButton;
 import com.github.groupa.client.components.ImageRater;
+import com.github.groupa.client.components.MetadataField;
 import com.github.groupa.client.components.SearchField;
 
 public class ImageView {
@@ -118,7 +119,7 @@ public class ImageView {
 	private JPanel createLeftPanel() {
 		JPanel leftPanel = new JPanel();
 		leftPanel.add(new ImageDescriptionButton(library).getButton());
-
+		
 		return leftPanel;
 	}
 
@@ -134,9 +135,7 @@ public class ImageView {
 
 	private JPanel createRightPanel() {
 		JPanel rightPanel = new JPanel();
-		JLabel label = new JLabel("Right Toolbar");
-
-		rightPanel.add(label);
+		rightPanel.add(new MetadataField().getPanel());
 
 		return rightPanel;
 	}
