@@ -7,7 +7,6 @@ import java.io.IOException;
 
 import models.ImageModel;
 
-import org.apache.commons.io.FileUtils;
 import org.apache.tika.config.TikaConfig;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.mime.MediaType;
