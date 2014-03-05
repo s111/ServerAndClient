@@ -24,6 +24,8 @@ public class GlobalTest extends WithApplication {
 
 		File[] listOfFiles = directory.listFiles();
 		
+		if (listOfFiles == null) return;
+		
 		int size = 0;
 		
 		for (File image : listOfFiles) {
