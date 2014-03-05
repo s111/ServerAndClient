@@ -1,6 +1,7 @@
 package com.github.groupa.client;
 
 import java.awt.BorderLayout;
+import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -30,6 +31,7 @@ public class ImageView {
 	private JButton nextButton = new JButton("=>");
 	private JButton previousButton = new JButton("<=");
 	private JButton backToMainButton = new JButton("<= Exit to Main");
+	private JButton tagImageButton = new JButton("Tag Picture");
 
 	public ImageView() {
 		setUpImageViewer();
@@ -89,6 +91,13 @@ public class ImageView {
 				// Call change view method on App
 			}
 		});
+		
+		tagImageButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent action) {
+				// Tag picture and put in metadata
+			}
+		});
 	}
 
 	public void displayNextImage() {
@@ -118,8 +127,10 @@ public class ImageView {
 
 	private JPanel createLeftPanel() {
 		JPanel leftPanel = new JPanel();
+		leftPanel.setLayout(new GridLayout(0,1));
 		leftPanel.add(new ImageDescriptionButton(library).getButton());
-		
+		leftPanel.add(tagImageButton);
+
 		return leftPanel;
 	}
 

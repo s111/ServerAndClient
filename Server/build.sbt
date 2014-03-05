@@ -9,7 +9,8 @@ libraryDependencies ++= Seq(
   "org.apache.commons" % "commons-imaging" % "1.0-SNAPSHOT",
   "net.coobird" % "thumbnailator" % "0.4.7",
   "commons-io" % "commons-io" % "2.4",
-  "org.mockito" % "mockito-all" % "1.9.5"
+  "org.mockito" % "mockito-all" % "1.9.5",
+  "org.apache.tika" % "tika-app" % "1.5"
 )     
 
 resolvers += "apache.snapshots" at "http://repository.apache.org/snapshots"

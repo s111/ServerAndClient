@@ -22,6 +22,7 @@ public class MainFrame {
 	private void setUpMainFrame() {
 		frame = new JFrame(title);
 		frame.setMinimumSize(new Dimension(640, 480));
+		frame.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		
