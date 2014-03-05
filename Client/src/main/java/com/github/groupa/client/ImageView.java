@@ -17,6 +17,7 @@ import javax.swing.KeyStroke;
 
 import com.github.groupa.client.components.ImageDescriptionButton;
 import com.github.groupa.client.components.ImageRater;
+import com.github.groupa.client.components.SearchField;
 
 public class ImageView {
 	private Library library = new Library();
@@ -91,9 +92,8 @@ public class ImageView {
 
 	private JPanel createTopPanel() {
 		JPanel topPanel = new JPanel();
-		JLabel label = new JLabel("Top Toolbar");
-
-		topPanel.add(label);
+		
+		topPanel.add(new SearchField().getPanel());
 
 		return topPanel;
 	}
