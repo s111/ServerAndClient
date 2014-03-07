@@ -26,7 +26,7 @@ public class Library {
 
 		public boolean isSatisfied(ImageObject img) {
 			if (type == ConstraintType.HAS_IMAGE) {
-				return wanted == img.hasImage();
+				return wanted == img.hasImageRaw();
 			} else if (type == ConstraintType.HAS_TAG) {
 				return wanted == img.hasTag((String) crit);
 			}

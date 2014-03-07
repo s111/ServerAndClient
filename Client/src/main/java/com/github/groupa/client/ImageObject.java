@@ -2,75 +2,105 @@ package com.github.groupa.client;
 
 import java.awt.Image;
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.LinkedList;
+import java.io.InputStream;
 import java.util.List;
 
 import javax.imageio.ImageIO;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import retrofit.client.Response;
+
+import com.github.groupa.client.jsonobjects.ImageFull;
+import com.github.groupa.client.jsonobjects.ImageInfo;
 import com.github.groupa.client.servercommunication.RESTService;
 
 public class ImageObject {
-	private Image image = null;
-	private long id = -1;
-	private int rating = 0;
-	private String description = null;
+	private static final Logger logger = LoggerFactory
+			.getLogger(ImageObject.class);
+
 	private RESTService restService;
-	private HashMap<String, Integer> sizeMap = new HashMap<>();
-	private List<String> tags = new LinkedList<>();
+
+	private long id;
+
+	private Image imageRaw;
+
+	private ImageInfo imageInfo;
+	
+	private ImageFull imageFull;
 
 	public ImageObject(long id, RESTService restService) {
 		this.id = id;
 		this.restService = restService;
-
-		sizeMap.put("xs", 48);
-		sizeMap.put("s", 64);
-		sizeMap.put("m", 128);
-		sizeMap.put("l", 192);
-		sizeMap.put("xl", 256);
 	}
 
-	public boolean hasImage() {
-		return image != null;
+	public boolean hasImageRaw() {
+		return imageRaw != null;
 	}
 
-	public Image getImage() {
-		try {
-			return (image == null) ? (image = ImageIO.read(restService.getThumbnailXLarge(id).getBody().in()))
-					: image;
-		} catch (IOException e) {
-			return null;
+	public boolean hasImageInfo() {
+		return imageInfo != null;
+	}
+
+	public Image getImageRaw() {
+		if (!hasImageRaw()) {
+			loadImage();
 		}
+
+		return imageRaw;
+	}
+
+	public ImageInfo getImageInfo() {
+		if (!hasImageInfo()) {
+			loadImageInfo();
+		}
+
+		return imageInfo;
+	}
+
+	private void loadImage() {
+		Response imageRawResponse = restService.getImageRaw(id);
+
+		try {
+			InputStream imageRawStream = imageRawResponse.getBody().in();
+
+			imageRaw = ImageIO.read(imageRawStream);
+		} catch (IOException exception) {
+			logger.warn("Failed to load image: " + exception.getMessage());
+		}
+	}
+
+	private void loadImageInfo() {
+		imageInfo = restService.getImageInfo(id);
+		imageFull = imageInfo.getImage();
 	}
 
 	public long getId() {
 		return id;
 	}
 
-	/***
-	 * Valid value for rating is 0 < rating <= 5
-	 * 
-	 * @param rating
-	 * @return
+	public int getRating() {
+		return imageFull.getRating();
+	}
+
+	public String getDescription() {
+		return imageFull.getDescription();
+	}
+
+	public List<String> getTags() {
+		return imageFull.getTags();
+	}
+
+	/**
+	 * @param rating 0 < rating <= 5
 	 */
 	public void rate(int rating) {
 		restService.rateImage(id, rating);
 	}
 
-	public int getRating() {
-		return rating;
-	}
-
 	public void describe(String description) {
 		restService.describeImage(id, description);
-	}
-
-	public String getDescription() {
-		return description;
-	}
-
-	public List<String> getTags() {
-		return tags;
 	}
 
 	public void addTag(String tag) {
@@ -78,10 +108,10 @@ public class ImageObject {
 	}
 
 	public boolean hasTag(String tag) {
-		return tags.contains(tag);
+		return imageFull.getTags().contains(tag);
 	}
 
 	public boolean hasTags(List<String> tags) {
-		return this.tags.containsAll(tags);
+		return imageFull.getTags().containsAll(tags);
 	}
 }

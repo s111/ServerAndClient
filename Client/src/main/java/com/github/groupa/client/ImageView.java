@@ -170,7 +170,7 @@ public class ImageView {
 			return;
 		}
 
-		imageLabel.setIcon(new ImageIcon(img.getImage()));
+		imageLabel.setIcon(new ImageIcon(img.getImageRaw()));
 	}
 
 	public JPanel getPanel() {

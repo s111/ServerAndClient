@@ -23,22 +23,22 @@ public class App {
 				| IllegalAccessException | UnsupportedLookAndFeelException e1) {
 		}
 
+		serverAPIBaseURL = JOptionPane.showInputDialog("Server API BaseURL",
+				serverAPIBaseURL);
+
+		RestAdapter restAdapter = new RestAdapter.Builder().setEndpoint(
+				serverAPIBaseURL).build();
+
+		restService = restAdapter.create(RESTService.class);
+
+		getImages(serverAPIBaseURL);
+
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
 				MainFrame mainFrame = new MainFrame("App");
-				serverAPIBaseURL = JOptionPane.showInputDialog("Host address",
-						serverAPIBaseURL);
-
-				RestAdapter restAdapter = new RestAdapter.Builder()
-						.setEndpoint(serverAPIBaseURL).build();
-
-				restService = restAdapter.create(RESTService.class);
 
 				mainFrame.display();
-
-				getImages(serverAPIBaseURL);
-
 				mainFrame.replaceContent(new ImageView().getPanel());
 			}
 		});

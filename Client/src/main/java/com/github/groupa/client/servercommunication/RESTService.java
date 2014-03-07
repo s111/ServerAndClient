@@ -1,8 +1,5 @@
 package com.github.groupa.client.servercommunication;
 
-import com.github.groupa.client.jsonobjects.ImageInfo;
-import com.github.groupa.client.jsonobjects.ImageList;
-
 import retrofit.client.Response;
 import retrofit.http.Field;
 import retrofit.http.FormUrlEncoded;
@@ -12,6 +9,9 @@ import retrofit.http.POST;
 import retrofit.http.Part;
 import retrofit.http.Path;
 import retrofit.mime.TypedFile;
+
+import com.github.groupa.client.jsonobjects.ImageInfo;
+import com.github.groupa.client.jsonobjects.ImageList;
 
 public interface RESTService {
 	@GET("/images")
