@@ -1,44 +1,22 @@
 package com.github.groupa.client;
 
-import java.io.IOException;
-
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
 
-import org.apache.log4j.BasicConfigurator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import retrofit.RestAdapter;
 
-import com.github.groupa.client.servercommunication.HTTPRequester;
-import com.github.groupa.client.servercommunication.Requester;
-import com.github.groupa.client.jsonobjects.Image;
 import com.github.groupa.client.jsonobjects.ImageList;
+import com.github.groupa.client.jsonobjects.ImageShort;
+import com.github.groupa.client.servercommunication.RESTService;
 
 public class App {
-	public static String host;
+	private static String serverAPIBaseURL = "http://localhost:9000/api";
 
-	private static final Logger logger = LoggerFactory.getLogger(App.class);
-
-	private static void getImages(String host) throws IOException {
-		Requester requester = new HTTPRequester(host);
-		ImageList imageList = requester.getImageList(0);
-		if (imageList == null)
-			return;
-		for (Image image : imageList.images) {
-			Library.add(new ImageObject(image.id, requester));
-		}
-
-	}
+	private static RESTService restService;
 
 	public static void main(String[] args) {
-		/*
-		 * Quick and simple way to configure slf4j Should probably use a config
-		 * as we expand
-		 */
-		BasicConfigurator.configure();
-
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (ClassNotFoundException | InstantiationException
@@ -49,19 +27,32 @@ public class App {
 			@Override
 			public void run() {
 				MainFrame mainFrame = new MainFrame("App");
-				host = JOptionPane.showInputDialog("Host address",
-						"localhost:9000");
+				serverAPIBaseURL = JOptionPane.showInputDialog("Host address",
+						serverAPIBaseURL);
+
+				RestAdapter restAdapter = new RestAdapter.Builder()
+						.setEndpoint(serverAPIBaseURL).build();
+
+				restService = restAdapter.create(RESTService.class);
 
 				mainFrame.display();
 
-				try {
-					getImages(host);
-				} catch (IOException e) {
-					logger.warn("Could not import image due to IOException");
-				}
+				getImages(serverAPIBaseURL);
 
 				mainFrame.replaceContent(new ImageView().getPanel());
 			}
 		});
+	}
+
+	private static void getImages(String serverAPIBaseURL) {
+		ImageList imageList = restService.getImageList();
+
+		if (imageList == null)
+			return;
+
+		for (ImageShort image : imageList.getImages()) {
+			Library.add(new ImageObject(image.getId(), restService));
+		}
+
 	}
 }
