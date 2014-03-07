@@ -13,17 +13,14 @@ import javax.persistence.OneToMany;
 
 import jsonobjects.ImageFull;
 import jsonobjects.ImageInfo;
-import jsonserializers.TagSerializer;
 import play.data.validation.Constraints.Required;
 import play.db.ebean.Model;
 import play.mvc.Http.Request;
 
 import com.avaje.ebean.Page;
 import com.avaje.ebean.PagingList;
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
