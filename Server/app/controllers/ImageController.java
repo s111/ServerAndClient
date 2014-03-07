@@ -5,7 +5,7 @@ import play.mvc.Controller;
 import play.mvc.Result;
 import collection.ImageModelList;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.JsonNode;
 
 public class ImageController extends Controller {
 	public static Result getImages(int offset, int limit) {
@@ -16,9 +16,9 @@ public class ImageController extends Controller {
 
 		ImageModelList imageModelList = new ImageModelList(request(), offset, limit);
 		
-		ObjectNode rootNode = imageModelList.generateJSON();
+		JsonNode imageListNode = imageModelList.generateJSON();
 
-		return ok(rootNode);
+		return ok(imageListNode);
 	}
 
 	private static boolean isNotWithinBoundaries(int offset, int limit) {

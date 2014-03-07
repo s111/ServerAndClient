@@ -1,35 +1,35 @@
 package collection;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import play.libs.Json;
+import jsonobjects.ImageList;
+import jsonobjects.ImageShort;
+import models.ImageModel;
 import play.mvc.Http.Request;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import controllers.routes;
-import models.ImageModel;
 
 public class ImageModelList {
 	List<ImageModel> imageModels;
-	
+
 	Request request;
-	
+
 	int offset;
 	int limit;
-	
+
 	public ImageModelList(Request request, int offset, int limit) {
 		this.request = request;
 		this.offset = offset;
 		this.limit = limit;
-		
+
 		imageModels = ImageModel.getPageList(offset, limit);
 	}
-	
-	public ObjectNode generateJSON() {
+
+	public JsonNode generateJSON() {
 		int lastOffset = calculateLastOffset();
 		int previousOffset = calculatePreviousOffset();
 		int nextOffset = calculateNextOffset();
@@ -40,36 +40,35 @@ public class ImageModelList {
 		String previous = getAbsoluteURLToImageListOrNull(previousOffset);
 		String last = getAbsoluteURLToImageList(lastOffset);
 
-		ObjectNode rootNode = Json.newObject();
-		rootNode.put("href", href);
-		rootNode.put("offset", offset);
-		rootNode.put("limit", limit);
-		rootNode.put("first", first);
-		rootNode.put("next", next);
-		rootNode.put("previous", previous);
-		rootNode.put("last", last);
-		rootNode.put("images", generateImageListJSON());
+		List<ImageShort> images = new ArrayList<>();
 
-		return rootNode;
-	}
-	
-	private ArrayNode generateImageListJSON() {
-		ObjectMapper mapper = new ObjectMapper();
+		for (ImageModel imageModel : imageModels) {
+			ImageShort imageShort = new ImageShort();
 
-		ArrayNode images = mapper.convertValue(imageModels, ArrayNode.class);
+			long id = imageModel.id;
 
-		for (JsonNode image : images) {
-			long id = image.get("id").asLong();
-
-			((ObjectNode) image).removeAll();
-			((ObjectNode) image).put("id", id);
-			((ObjectNode) image).put("href", routes.GetImage.info(id)
-					.absoluteURL(request));
+			imageShort.setId(id);
+			imageShort.setHref(routes.GetImage.info(id).absoluteURL(request));
+			
+			images.add(imageShort);
 		}
 
-		return images;
+		ImageList imageList = new ImageList();
+		imageList.setHref(href);
+		imageList.setOffset(offset);
+		imageList.setLimit(limit);
+		imageList.setNext(next);
+		imageList.setPrevious(previous);
+		imageList.setFirst(first);
+		imageList.setLast(last);
+		imageList.setImages(images);
+
+		ObjectMapper mapper = new ObjectMapper();
+		JsonNode imageListNode = mapper.convertValue(imageList, JsonNode.class);
+
+		return imageListNode;
 	}
-	
+
 	private int calculateLastOffset() {
 		int numRows = ImageModel.getRowCount();
 		int pages = numRows / limit;
@@ -99,7 +98,7 @@ public class ImageModelList {
 
 		return previousOffset;
 	}
-	
+
 	private String getAbsoluteURLToImageListOrNull(int offset) {
 		return offset >= 0 ? getAbsoluteURLToImageList(offset) : null;
 	}

@@ -11,10 +11,11 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 
+import jsonobjects.ImageFull;
+import jsonobjects.ImageInfo;
 import jsonserializers.TagSerializer;
 import play.data.validation.Constraints.Required;
 import play.db.ebean.Model;
-import play.libs.Json;
 import play.mvc.Http.Request;
 
 import com.avaje.ebean.Page;
@@ -40,16 +41,13 @@ public class ImageModel extends Model {
 	public int rating;
 
 	@Required
-	@JsonIgnore
 	public String filename;
 	public String description;
 
 	@ManyToMany(mappedBy = "images")
-	@JsonSerialize(using = TagSerializer.class)
 	public List<TagModel> tags = new ArrayList<>();
 
 	@OneToMany(mappedBy = "image")
-	@JsonIgnore
 	public Map<Integer, ThumbnailModel> thumbnails = new HashMap<>();
 
 	public ImageModel(String filename) {
@@ -112,7 +110,6 @@ public class ImageModel extends Model {
 		return imageModels.get(0);
 	}
 
-	@JsonIgnore
 	public ImageModel getNext() {
 		List<ImageModel> imageModels = find.where().gt("id", id).findList();
 
@@ -123,7 +120,6 @@ public class ImageModel extends Model {
 		return imageModels.get(0);
 	}
 
-	@JsonIgnore
 	public ImageModel getPrevious() {
 		List<ImageModel> imageModels = find.where().lt("id", id).findList();
 
@@ -165,7 +161,8 @@ public class ImageModel extends Model {
 		save();
 	}
 
-	public static ArrayNode generateImageArrayJSON(Request request, List<ImageModel> imageModels) {
+	public static ArrayNode generateImageArrayJSON(Request request,
+			List<ImageModel> imageModels) {
 		ObjectMapper mapper = new ObjectMapper();
 
 		ArrayNode images = mapper.convertValue(imageModels, ArrayNode.class);
@@ -182,12 +179,7 @@ public class ImageModel extends Model {
 		return images;
 	}
 
-	public ObjectNode generateImageInfoJSON(Request request) {
-		ObjectMapper mapper = new ObjectMapper();
-
-		ObjectNode rootNode = Json.newObject();
-		rootNode.put("href", routes.GetImage.info(id).absoluteURL(request));
-
+	public JsonNode generateImageInfoJSON(Request request) {
 		ImageModel nextImageModel = getNext();
 		ImageModel previousImageModel = getPrevious();
 		ImageModel firstImageModel = getFirst();
@@ -214,17 +206,35 @@ public class ImageModel extends Model {
 			lastId = lastImageModel.id;
 		}
 
-		rootNode.put("next", getAbsoluteURLToImageOrNull(request, nextId));
-		rootNode.put("previous",
-				getAbsoluteURLToImageOrNull(request, previousId));
-		rootNode.put("first", getAbsoluteURLToImageOrNull(request, firstId));
-		rootNode.put("last", getAbsoluteURLToImageOrNull(request, lastId));
+		ImageInfo imageInfo = new ImageInfo();
+		imageInfo.setHref(routes.GetImage.info(id).absoluteURL(request));
+		imageInfo.setNext(getAbsoluteURLToImageOrNull(request, nextId));
+		imageInfo.setPrevious(getAbsoluteURLToImageOrNull(request, previousId));
+		imageInfo.setFirst(getAbsoluteURLToImageOrNull(request, firstId));
+		imageInfo.setLast(getAbsoluteURLToImageOrNull(request, lastId));
+		imageInfo.setImage(toImageFull());
+		
+		ObjectMapper mapper = new ObjectMapper();
+		JsonNode imageInfoNode = mapper.convertValue(imageInfo, JsonNode.class);
 
-		ObjectNode image = mapper.convertValue(this, ObjectNode.class);
+		return imageInfoNode;
+	}
 
-		rootNode.put("image", image);
+	private ImageFull toImageFull() {
+		ImageFull imageFull = new ImageFull();
+		imageFull.setId(id);
+		imageFull.setRating(rating);
+		imageFull.setDescription(description);
 
-		return rootNode;
+		List<String> tagsAsString = new ArrayList<>();
+
+		for (TagModel tag : tags) {
+			tagsAsString.add(tag.name);
+		}
+
+		imageFull.setTags(tagsAsString);
+
+		return imageFull;
 	}
 
 	private static String getAbsoluteURLToImageOrNull(Request request, long id) {

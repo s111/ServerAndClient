@@ -19,7 +19,7 @@ import play.mvc.Http.MultipartFormData;
 import play.mvc.Http.MultipartFormData.FilePart;
 import play.mvc.Result;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.io.Files;
 
 public class ImageUploader extends Controller {
@@ -77,9 +77,9 @@ public class ImageUploader extends Controller {
 			ImageModel imageModel = ImageModel.create(IMAGE_DIRECTORY
 					+ filename);
 
-			ObjectNode rootNode = imageModel.generateImageInfoJSON(request());
+			JsonNode imageInfoNode = imageModel.generateImageInfoJSON(request());
 
-			return created(rootNode);
+			return created(imageInfoNode);
 		} else {
 			return badRequest();
 		}

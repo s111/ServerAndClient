@@ -6,7 +6,7 @@ import models.ImageModel;
 import play.mvc.Controller;
 import play.mvc.Result;
 
-import com.fasterxml.jackson.databind.node.ObjectNode;
+import com.fasterxml.jackson.databind.JsonNode;
 
 public class GetImage extends Controller {
 	public static Result info(long id) {
@@ -15,9 +15,9 @@ public class GetImage extends Controller {
 		if (imageModel == null)
 			return badRequest();
 
-		ObjectNode rootNode = imageModel.generateImageInfoJSON(request());
+		JsonNode imageInfoNode = imageModel.generateImageInfoJSON(request());
 
-		return ok(rootNode);
+		return ok(imageInfoNode);
 	}
 
 	public static Result file(long id) {
