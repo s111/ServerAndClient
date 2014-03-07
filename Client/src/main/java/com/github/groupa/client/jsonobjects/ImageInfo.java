@@ -1,18 +1,13 @@
 package com.github.groupa.client.jsonobjects;
 
-import java.util.List;
-
-public class ImageList {
+public class ImageInfo {
 	private String href;
 	private String first;
 	private String next;
 	private String previous;
 	private String last;
 	
-	private int offset;
-	private int limit;
-	
-	private List<ImageShort> images;
+	private ImageFull image;
 
 	public String getHref() {
 		return href;
@@ -34,15 +29,7 @@ public class ImageList {
 		return last;
 	}
 
-	public int getOffset() {
-		return offset;
-	}
-
-	public int getLimit() {
-		return limit;
-	}
-
-	public List<ImageShort> getImages() {
-		return images;
+	public ImageFull getImage() {
+		return image;
 	}
 }
