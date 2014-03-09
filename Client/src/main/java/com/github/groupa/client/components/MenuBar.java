@@ -9,9 +9,14 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import com.github.groupa.client.App;
+import com.github.groupa.client.Library;
+import com.github.groupa.client.views.ImageView;
+import com.github.groupa.client.views.View;
+
 public class MenuBar {
 	private JMenuBar menuBar;
-	private JMenuItem importItem;
+	private JMenuItem importItem, imageViewItem;
 
 	public MenuBar() {
 		createMenuBar();
@@ -20,9 +25,10 @@ public class MenuBar {
 	private void createMenuBar() {
 		menuBar = new JMenuBar();
 		importItem = new JMenuItem("Import image");
-
+		imageViewItem = new JMenuItem("Activate ImageView");
 		JMenu fileMenu = new JMenu("File");
 		fileMenu.add(importItem);
+		fileMenu.add(imageViewItem);
 
 		menuBar.add(fileMenu);
 
@@ -44,6 +50,14 @@ public class MenuBar {
 				}
 			}
 		});
+		imageViewItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent action) {
+				App.mainFrame.showView(View.IMAGE_VIEW);
+			}
+		});
+		
+		
 	}
 
 	public JMenuBar getMenuBar() {
