@@ -2,6 +2,7 @@ package com.github.groupa.client;
 
 import java.awt.Container;
 import java.awt.Dimension;
+import java.util.Stack;
 
 import javax.swing.JFrame;
 
@@ -12,6 +13,8 @@ public class MainFrame {
 	private Container contentPane;
 
 	private String title;
+
+	private Stack<Container> views = new Stack<>();
 
 	public MainFrame(String title) {
 		this.title = title;
@@ -24,9 +27,9 @@ public class MainFrame {
 		frame.setMinimumSize(new Dimension(640, 480));
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		
+
 		frame.setJMenuBar(new MenuBar().getMenuBar());
-		
+
 		contentPane = frame.getContentPane();
 	}
 
@@ -38,8 +41,25 @@ public class MainFrame {
 		return frame;
 	}
 
-	public void replaceContent(Container content) {
+	public void setNewView(Container content) {
+		views.push(content);
+		setView();
+	}
+
+	public void setLastView() {
+		if (hasPreviousView()) {
+			views.pop();
+			setView();
+		}
+	}
+
+	public boolean hasPreviousView() {
+		return views.size() > 1;
+	}
+
+	private void setView() {
 		contentPane.removeAll();
-		contentPane.add(content);
+		contentPane.add(views.peek());
+		frame.pack();
 	}
 }

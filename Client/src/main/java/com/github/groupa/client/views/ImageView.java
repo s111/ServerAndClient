@@ -1,4 +1,4 @@
-package com.github.groupa.client;
+package com.github.groupa.client.views;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
@@ -16,24 +16,29 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
+import com.github.groupa.client.ImageObject;
+import com.github.groupa.client.Library;
+import com.github.groupa.client.MainFrame;
 import com.github.groupa.client.components.ImageDescriptionButton;
 import com.github.groupa.client.components.ImageRater;
 import com.github.groupa.client.components.MetadataField;
 import com.github.groupa.client.components.SearchField;
 
 public class ImageView {
-	private Library library = new Library();
-	
+	private Library library;
+	private MainFrame mainFrame;
 	private JPanel mainPanel;
 
 	private JLabel imageLabel = new JLabel();
 	
 	private JButton nextButton = new JButton("=>");
 	private JButton previousButton = new JButton("<=");
-	private JButton backToMainButton = new JButton("<= Exit to Main");
+	private JButton previousViewButton = new JButton("<= Previous view");
 	private JButton tagImageButton = new JButton("Tag Picture");
 
-	public ImageView() {
+	public ImageView(Library library, MainFrame mainFrame) {
+		this.library = library;
+		this.mainFrame = mainFrame;
 		setUpImageViewer();
 		setImage(library.getImage());
 	}
@@ -85,10 +90,10 @@ public class ImageView {
 			}
 		});
 		
-		backToMainButton.addActionListener(new ActionListener() {
+		previousViewButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent action) {
-				// Call change view method on App
+				mainFrame.setLastView();
 			}
 		});
 		
@@ -111,7 +116,7 @@ public class ImageView {
 	private JPanel createTopPanel() {
 		JPanel topPanel = new JPanel();
 		
-		topPanel.add(backToMainButton);
+		topPanel.add(previousViewButton);
 		topPanel.add(new SearchField().getPanel());
 
 		return topPanel;
