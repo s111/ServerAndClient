@@ -17,7 +17,6 @@ import com.github.groupa.client.jsonobjects.ImageList;
 import com.github.groupa.client.jsonobjects.ImageShort;
 import com.github.groupa.client.servercommunication.RESTService;
 import com.github.groupa.client.views.GridView;
-import com.github.groupa.client.views.ImageView;
 
 public class App {
 	private static final Logger logger = LoggerFactory.getLogger(App.class);
@@ -38,6 +37,9 @@ public class App {
 		serverAPIBaseURL = JOptionPane.showInputDialog("Server API BaseURL",
 				serverAPIBaseURL);
 
+		if (serverAPIBaseURL == null)
+			return;
+
 		RestAdapter restAdapter = new RestAdapter.Builder()
 				.setEndpoint(serverAPIBaseURL)
 				.setErrorHandler(new RESTErrorHandler()).build();
@@ -52,7 +54,8 @@ public class App {
 				MainFrame mainFrame = new MainFrame("App");
 
 				mainFrame.display();
-				mainFrame.setNewView(new GridView(new Library(), mainFrame).getPanel());
+				mainFrame.setNewView(new GridView(new Library(), mainFrame)
+						.getPanel());
 			}
 		});
 	}
