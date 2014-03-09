@@ -38,8 +38,7 @@ public class GridView {
 		testButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent action) {
-				mainFrame.setNewView(new ImageView(library, mainFrame)
-						.getPanel());
+				mainFrame.showView("imageview");
 			}
 		});
 	}

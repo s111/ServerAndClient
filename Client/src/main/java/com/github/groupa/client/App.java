@@ -17,6 +17,8 @@ import com.github.groupa.client.jsonobjects.ImageList;
 import com.github.groupa.client.jsonobjects.ImageShort;
 import com.github.groupa.client.servercommunication.RESTService;
 import com.github.groupa.client.views.GridView;
+import com.github.groupa.client.views.ImageView;
+import com.github.groupa.client.views.View;
 
 public class App {
 	private static final Logger logger = LoggerFactory.getLogger(App.class);
@@ -24,6 +26,8 @@ public class App {
 	private static String serverAPIBaseURL = "http://localhost:9000/api";
 
 	private static RESTService restService;
+
+	private static MainFrame mainFrame;
 
 	public static void main(String[] args) {
 		BasicConfigurator.configure();
@@ -51,11 +55,17 @@ public class App {
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
-				MainFrame mainFrame = new MainFrame("App");
+				mainFrame = new MainFrame("App");
 
 				mainFrame.display();
-				mainFrame.setNewView(new GridView(new Library(), mainFrame)
-						.getPanel());
+				mainFrame.addView(
+						new ImageView(new Library(), mainFrame).getPanel(),
+						View.IMAGE_VIEW);
+				mainFrame.addView(
+						new GridView(new Library(), mainFrame).getPanel(),
+						View.GRID_VIEW);
+
+				mainFrame.showView(View.GRID_VIEW);
 			}
 		});
 	}
@@ -66,6 +76,9 @@ public class App {
 		try {
 			imageList = restService.getImageList();
 		} catch (ConnectException e) {
+			JOptionPane.showMessageDialog(mainFrame.getFrame(),
+					"Failed to load initial set of images");
+
 			logger.error("Could not connect to the server: " + e.getMessage());
 		}
 

@@ -1,8 +1,8 @@
 package com.github.groupa.client;
 
+import java.awt.CardLayout;
 import java.awt.Container;
 import java.awt.Dimension;
-import java.util.Stack;
 
 import javax.swing.JFrame;
 
@@ -14,7 +14,7 @@ public class MainFrame {
 
 	private String title;
 
-	private Stack<Container> views = new Stack<>();
+	private CardLayout cardLayout;
 
 	public MainFrame(String title) {
 		this.title = title;
@@ -30,7 +30,10 @@ public class MainFrame {
 
 		frame.setJMenuBar(new MenuBar().getMenuBar());
 
+		cardLayout = new CardLayout();
+
 		contentPane = frame.getContentPane();
+		contentPane.setLayout(cardLayout);
 	}
 
 	public void display() {
@@ -41,25 +44,15 @@ public class MainFrame {
 		return frame;
 	}
 
-	public void setNewView(Container content) {
-		views.push(content);
-		setView();
+	public void addView(Container content, String name) {
+		contentPane.add(content, name);
 	}
 
-	public void setLastView() {
-		if (hasPreviousView()) {
-			views.pop();
-			setView();
-		}
+	public void showLastView() {
+		cardLayout.previous(contentPane);
 	}
 
-	public boolean hasPreviousView() {
-		return views.size() > 1;
-	}
-
-	private void setView() {
-		contentPane.removeAll();
-		contentPane.add(views.peek());
-		frame.pack();
+	public void showView(String name) {
+		cardLayout.show(contentPane, name);
 	}
 }

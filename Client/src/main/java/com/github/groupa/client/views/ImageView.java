@@ -31,22 +31,24 @@ public class ImageView {
 	private JPanel mainPanel;
 
 	private JLabel imageLabel = new JLabel();
-	
+
 	private JButton nextButton = new JButton("=>");
 	private JButton previousButton = new JButton("<=");
 	private JButton previousViewButton = new JButton("<= Previous view");
-	
+
 	public ImageView(Library library, MainFrame mainFrame) {
 		this.library = library;
 		this.mainFrame = mainFrame;
 		setUpImageViewer();
-		setImage(library.getImage());
+
+		ImageObject image = library.getImage();
+		setImage(image);
 	}
 
 	private void setUpImageViewer() {
 		mainPanel = new JPanel();
 		mainPanel.setLayout(new BorderLayout());
-		
+
 		addPanelsToMainPanel();
 		addButtonActionListeners();
 		addKeyBindings();
@@ -54,19 +56,20 @@ public class ImageView {
 
 	@SuppressWarnings("serial")
 	private void addKeyBindings() {
-		InputMap inputMap = mainPanel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+		InputMap inputMap = mainPanel
+				.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
 		ActionMap actionMap = mainPanel.getActionMap();
-		
+
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), "keyLeft");
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), "keyRight");
-		
+
 		actionMap.put("keyLeft", new AbstractAction() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				displayPreviousImage();
 			}
 		});
-		
+
 		actionMap.put("keyRight", new AbstractAction() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -82,21 +85,21 @@ public class ImageView {
 				displayNextImage();
 			}
 		});
-		
+
 		previousButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent action) {
 				displayPreviousImage();
 			}
 		});
-		
+
 		previousViewButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent action) {
-				mainFrame.setLastView();
+				mainFrame.showLastView();
 			}
 		});
-	
+
 	}
 
 	public void displayNextImage() {
@@ -109,7 +112,7 @@ public class ImageView {
 
 	private JPanel createTopPanel() {
 		JPanel topPanel = new JPanel();
-		
+
 		topPanel.add(previousViewButton);
 		topPanel.add(new SearchField().getPanel());
 
@@ -126,7 +129,7 @@ public class ImageView {
 
 	private JPanel createLeftPanel() {
 		JPanel leftPanel = new JPanel();
-		leftPanel.setLayout(new GridLayout(0,1));
+		leftPanel.setLayout(new GridLayout(0, 1));
 		leftPanel.add(new ImageDescriptionButton(library).getButton());
 		leftPanel.add(new ImageTag(library).getTagButton());
 
