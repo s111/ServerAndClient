@@ -20,6 +20,11 @@
 			<version>1.7.6</version>
 		</dependency>
 		<dependency>
+			<groupId>com.miglayout</groupId>
+			<artifactId>miglayout</artifactId>
+			<version>3.7.4</version>
+		</dependency>
+		<dependency>
 			<groupId>com.squareup.retrofit</groupId>
 			<artifactId>retrofit</artifactId>
 			<version>1.4.1</version>
