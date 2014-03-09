@@ -1,5 +1,7 @@
 package com.github.groupa.client.servercommunication;
 
+import java.net.ConnectException;
+
 import retrofit.client.Response;
 import retrofit.http.Field;
 import retrofit.http.FormUrlEncoded;
@@ -15,13 +17,13 @@ import com.github.groupa.client.jsonobjects.ImageList;
 
 public interface RESTService {
 	@GET("/images")
-	public ImageList getImageList();
+	public ImageList getImageList() throws ConnectException;
 
 	@GET("/images/{id}")
-	public ImageInfo getImageInfo(@Path("id") long id);
+	public ImageInfo getImageInfo(@Path("id") long id) throws ConnectException;
 
 	@GET("/images/{id}/raw")
-	public Response getImageRaw(@Path("id") long id);
+	public Response getImageRaw(@Path("id") long id) throws ConnectException;
 
 	@GET("/images/{id}/compressed")
 	public Response getImageCompressed(@Path("id") long id);

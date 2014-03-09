@@ -1,9 +1,15 @@
 package com.github.groupa.client;
 
+import java.net.ConnectException;
+
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.UnsupportedLookAndFeelException;
+
+import org.apache.log4j.BasicConfigurator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import retrofit.RestAdapter;
 
@@ -14,11 +20,15 @@ import com.github.groupa.client.views.GridView;
 import com.github.groupa.client.views.ImageView;
 
 public class App {
+	private static final Logger logger = LoggerFactory.getLogger(App.class);
+
 	private static String serverAPIBaseURL = "http://localhost:9000/api";
 
 	private static RESTService restService;
 
 	public static void main(String[] args) {
+		BasicConfigurator.configure();
+
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (ClassNotFoundException | InstantiationException
@@ -28,8 +38,9 @@ public class App {
 		serverAPIBaseURL = JOptionPane.showInputDialog("Server API BaseURL",
 				serverAPIBaseURL);
 
-		RestAdapter restAdapter = new RestAdapter.Builder().setEndpoint(
-				serverAPIBaseURL).build();
+		RestAdapter restAdapter = new RestAdapter.Builder()
+				.setEndpoint(serverAPIBaseURL)
+				.setErrorHandler(new RESTErrorHandler()).build();
 
 		restService = restAdapter.create(RESTService.class);
 
@@ -47,10 +58,17 @@ public class App {
 	}
 
 	private static void getImages(String serverAPIBaseURL) {
-		ImageList imageList = restService.getImageList();
+		ImageList imageList = null;
 
-		if (imageList == null)
+		try {
+			imageList = restService.getImageList();
+		} catch (ConnectException e) {
+			logger.error("Could not connect to the server: " + e.getMessage());
+		}
+
+		if (imageList == null) {
 			return;
+		}
 
 		for (ImageShort image : imageList.getImages()) {
 			Library.add(new ImageObject(image.getId(), restService));

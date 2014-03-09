@@ -3,6 +3,7 @@ package com.github.groupa.client;
 import java.awt.Image;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.ConnectException;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -60,7 +61,17 @@ public class ImageObject {
 	}
 
 	private void loadImage() {
-		Response imageRawResponse = restService.getImageRaw(id);
+		Response imageRawResponse = null;
+		
+		try {
+			imageRawResponse = restService.getImageRaw(id);
+		} catch (ConnectException e) {
+			logger.warn("Could not get raw image for id: " + id);
+		}
+		
+		if (imageRawResponse == null) {
+			return;
+		}
 
 		try {
 			InputStream imageRawStream = imageRawResponse.getBody().in();
@@ -72,7 +83,12 @@ public class ImageObject {
 	}
 
 	private void loadImageInfo() {
-		imageInfo = restService.getImageInfo(id);
+		try {
+			imageInfo = restService.getImageInfo(id);
+		} catch (ConnectException e) {
+			logger.warn("Could not load image info for image with id: " + id);
+		}
+		
 		imageFull = imageInfo.getImage();
 	}
 
