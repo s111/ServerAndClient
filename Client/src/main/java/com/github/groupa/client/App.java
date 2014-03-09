@@ -28,6 +28,8 @@ public class App {
 	private static RESTService restService;
 
 	public static MainFrame mainFrame;
+	
+	private static Library parentLibrary;
 
 	public static void main(String[] args) {
 		BasicConfigurator.configure();
@@ -50,19 +52,19 @@ public class App {
 
 		restService = restAdapter.create(RESTService.class);
 
+		parentLibrary = new Library();
 		getImages(serverAPIBaseURL);
 
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
 				mainFrame = new MainFrame("App");
-
 				mainFrame.display();
 				mainFrame.addView(
-						new ImageView(new Library()).getPanel(),
+						new ImageView(parentLibrary).getPanel(),
 						View.IMAGE_VIEW);
 				mainFrame.addView(
-						new GridView(new Library()).getPanel(),
+						new GridView(parentLibrary).getPanel(),
 						View.GRID_VIEW);
 
 				mainFrame.showView(View.GRID_VIEW);
@@ -87,7 +89,7 @@ public class App {
 		}
 
 		for (ImageShort image : imageList.getImages()) {
-			Library.add(new ImageObject(image.getId(), restService));
+			parentLibrary.add(new ImageObject(image.getId(), restService));
 		}
 
 	}
