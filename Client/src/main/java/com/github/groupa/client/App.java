@@ -16,6 +16,8 @@ import retrofit.RestAdapter;
 import com.github.groupa.client.jsonobjects.ImageList;
 import com.github.groupa.client.jsonobjects.ImageShort;
 import com.github.groupa.client.servercommunication.RESTService;
+import com.github.groupa.client.views.GridView;
+import com.github.groupa.client.views.ImageView;
 
 public class App {
 	private static final Logger logger = LoggerFactory.getLogger(App.class);
@@ -50,7 +52,7 @@ public class App {
 				MainFrame mainFrame = new MainFrame("App");
 
 				mainFrame.display();
-				mainFrame.replaceContent(new ImageView().getPanel());
+				mainFrame.setNewView(new GridView(new Library(), mainFrame).getPanel());
 			}
 		});
 	}
