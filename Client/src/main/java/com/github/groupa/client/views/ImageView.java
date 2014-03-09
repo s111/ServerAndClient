@@ -21,6 +21,7 @@ import com.github.groupa.client.Library;
 import com.github.groupa.client.MainFrame;
 import com.github.groupa.client.components.ImageDescriptionButton;
 import com.github.groupa.client.components.ImageRater;
+import com.github.groupa.client.components.ImageTag;
 import com.github.groupa.client.components.MetadataField;
 import com.github.groupa.client.components.SearchField;
 
@@ -34,8 +35,7 @@ public class ImageView {
 	private JButton nextButton = new JButton("=>");
 	private JButton previousButton = new JButton("<=");
 	private JButton previousViewButton = new JButton("<= Previous view");
-	private JButton tagImageButton = new JButton("Tag Picture");
-
+	
 	public ImageView(Library library, MainFrame mainFrame) {
 		this.library = library;
 		this.mainFrame = mainFrame;
@@ -96,13 +96,7 @@ public class ImageView {
 				mainFrame.setLastView();
 			}
 		});
-		
-		tagImageButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent action) {
-				// Tag picture and put in metadata
-			}
-		});
+	
 	}
 
 	public void displayNextImage() {
@@ -134,7 +128,7 @@ public class ImageView {
 		JPanel leftPanel = new JPanel();
 		leftPanel.setLayout(new GridLayout(0,1));
 		leftPanel.add(new ImageDescriptionButton(library).getButton());
-		leftPanel.add(tagImageButton);
+		leftPanel.add(new ImageTag(library).getTagButton());
 
 		return leftPanel;
 	}
