@@ -23,13 +23,13 @@ import com.github.groupa.client.views.View;
 public class App {
 	private static final Logger logger = LoggerFactory.getLogger(App.class);
 
-	private static String serverAPIBaseURL = "http://localhost:9000/api";
-
-	private static RESTService restService;
+	public static String serverAPIBaseURL = "http://localhost:9000/api";
 
 	public static MainFrame mainFrame;
-	
+
 	private static Library parentLibrary;
+
+	private static RESTService restService;
 
 	public static void main(String[] args) {
 		BasicConfigurator.configure();
@@ -60,13 +60,10 @@ public class App {
 			public void run() {
 				mainFrame = new MainFrame("App");
 				mainFrame.display();
-				mainFrame.addView(
-						new ImageView(parentLibrary).getPanel(),
+				mainFrame.addView(new ImageView(parentLibrary).getPanel(),
 						View.IMAGE_VIEW);
-				mainFrame.addView(
-						new GridView(parentLibrary).getPanel(),
+				mainFrame.addView(new GridView(parentLibrary).getPanel(),
 						View.GRID_VIEW);
-
 				mainFrame.showView(View.GRID_VIEW);
 			}
 		});
