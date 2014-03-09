@@ -2,8 +2,6 @@ package com.github.groupa.client;
 
 import java.net.ConnectException;
 
-import org.omg.CORBA.portable.UnknownException;
-
 import retrofit.ErrorHandler;
 import retrofit.RetrofitError;
 
@@ -22,7 +20,7 @@ public class RESTErrorHandler implements ErrorHandler {
 			return new ConnectException(message);
 		}
 
-		return new UnknownException(error);
+		return new UnknownError(message);
 	}
 
 }

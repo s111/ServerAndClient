@@ -13,10 +13,9 @@ import org.apache.commons.imaging.formats.tiff.TiffImageMetadata;
 import org.apache.commons.imaging.formats.tiff.constants.TiffConstants;
 import org.apache.commons.imaging.formats.tiff.write.TiffOutputDirectory;
 import org.apache.commons.imaging.formats.tiff.write.TiffOutputSet;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
-
-import com.google.common.io.Files;
 
 public class ExifWriter {
 	private TiffImageMetadata exif;
@@ -91,8 +90,8 @@ public class ExifWriter {
 
 			new ExifRewriter().updateExifMetadataLossless(image, outputStream,
 					outputSet);
-
-			Files.move(tempImage, image);
+			
+			FileUtils.moveFile(tempImage, image);
 		} finally {
 			IOUtils.closeQuietly(outputStream);
 		}
