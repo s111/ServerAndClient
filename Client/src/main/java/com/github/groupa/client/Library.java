@@ -13,7 +13,7 @@ public class Library {
 	private int modCount = 0;
 	private List<ImageObject> images = new ArrayList<>();
 	private int activeImage = 0;
-	
+
 	private Library parent;
 
 	private List<Constraint> constraints = new LinkedList<>();
@@ -109,7 +109,7 @@ public class Library {
 	public Library() {
 		parent = null;
 	}
-	
+
 	public Library(Library parent) {
 		this.parent = parent;
 		this.modCount = parent.getModCount();
@@ -120,26 +120,26 @@ public class Library {
 		ensureSync();
 		return modCount;
 	}
-	
+
 	public List<ImageObject> getImages() {
 		ensureSync();
 		return images;
 	}
-	
+
 	public ImageObject getImage(int idx) {
 		return get(idx);
 	}
-	
+
 	public ImageObject getImage() {
 		return get(activeImage);
 	}
 
 	public ImageObject getNextImage() {
-		return get(activeImage - 1);
+		return get(activeImage + 1);
 	}
 
 	public ImageObject getPrevImage() {
-		return get(activeImage + 1);
+		return get(activeImage - 1);
 	}
 
 	public int imageCount() {
@@ -148,7 +148,8 @@ public class Library {
 	}
 
 	public Library refresh() {
-		if (parent == null) return this;
+		if (parent == null)
+			return this;
 		images.clear();
 		modCount = parent.getModCount();
 		images.addAll(parent.getImages());

@@ -10,8 +10,6 @@ import javax.swing.JMenuItem;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import com.github.groupa.client.App;
-import com.github.groupa.client.Library;
-import com.github.groupa.client.views.ImageView;
 import com.github.groupa.client.views.View;
 
 public class MenuBar {
@@ -56,8 +54,7 @@ public class MenuBar {
 				App.mainFrame.showView(View.IMAGE_VIEW);
 			}
 		});
-		
-		
+
 	}
 
 	public JMenuBar getMenuBar() {

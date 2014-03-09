@@ -28,7 +28,7 @@ public class ImageObject {
 	private Image imageRaw;
 
 	private ImageInfo imageInfo;
-	
+
 	private ImageFull imageFull;
 
 	public ImageObject(long id, RESTService restService) {
@@ -62,13 +62,13 @@ public class ImageObject {
 
 	private void loadImage() {
 		Response imageRawResponse = null;
-		
+
 		try {
 			imageRawResponse = restService.getImageRaw(id);
 		} catch (ConnectException e) {
 			logger.warn("Could not get raw image for id: " + id);
 		}
-		
+
 		if (imageRawResponse == null) {
 			return;
 		}
@@ -88,7 +88,7 @@ public class ImageObject {
 		} catch (ConnectException e) {
 			logger.warn("Could not load image info for image with id: " + id);
 		}
-		
+
 		imageFull = imageInfo.getImage();
 	}
 
@@ -97,19 +97,26 @@ public class ImageObject {
 	}
 
 	public int getRating() {
+		loadImageInfo();
+
 		return imageFull.getRating();
 	}
 
 	public String getDescription() {
+		loadImageInfo();
+
 		return imageFull.getDescription();
 	}
 
 	public List<String> getTags() {
+		loadImageInfo();
+
 		return imageFull.getTags();
 	}
 
 	/**
-	 * @param rating 0 < rating <= 5
+	 * @param rating
+	 *            0 < rating <= 5
 	 */
 	public void rate(int rating) {
 		restService.rateImage(id, rating);

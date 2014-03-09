@@ -5,6 +5,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.util.Observable;
 
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
@@ -19,15 +20,15 @@ import javax.swing.KeyStroke;
 import com.github.groupa.client.App;
 import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.Library;
-import com.github.groupa.client.MainFrame;
 import com.github.groupa.client.components.ImageDescriptionButton;
 import com.github.groupa.client.components.ImageRater;
 import com.github.groupa.client.components.ImageTag;
 import com.github.groupa.client.components.MetadataField;
 import com.github.groupa.client.components.SearchField;
 
-public class ImageView {
+public class ImageView extends Observable {
 	private Library library;
+
 	private JPanel mainPanel;
 
 	private JLabel imageLabel = new JLabel();
@@ -36,8 +37,11 @@ public class ImageView {
 	private JButton previousButton = new JButton("<=");
 	private JButton previousViewButton = new JButton("<= Previous view");
 
+	private MetadataField metadataField;
+
 	public ImageView(Library library) {
 		this.library = library;
+
 		setUpImageViewer();
 
 		ImageObject image = library.getImage();
@@ -47,6 +51,10 @@ public class ImageView {
 	private void setUpImageViewer() {
 		mainPanel = new JPanel();
 		mainPanel.setLayout(new BorderLayout());
+
+		metadataField = new MetadataField();
+
+		addObserver(metadataField);
 
 		addPanelsToMainPanel();
 		addButtonActionListeners();
@@ -147,7 +155,7 @@ public class ImageView {
 
 	private JPanel createRightPanel() {
 		JPanel rightPanel = new JPanel();
-		rightPanel.add(new MetadataField().getPanel());
+		rightPanel.add(metadataField.getPanel());
 
 		return rightPanel;
 	}
@@ -172,6 +180,9 @@ public class ImageView {
 		}
 
 		imageLabel.setIcon(new ImageIcon(img.getImageRaw()));
+
+		setChanged();
+		notifyObservers(img);
 	}
 
 	public JPanel getPanel() {
