@@ -10,6 +10,7 @@ import retrofit.http.Multipart;
 import retrofit.http.POST;
 import retrofit.http.Part;
 import retrofit.http.Path;
+import retrofit.http.Query;
 import retrofit.mime.TypedFile;
 
 import com.github.groupa.client.jsonobjects.ImageInfo;
@@ -17,7 +18,8 @@ import com.github.groupa.client.jsonobjects.ImageList;
 
 public interface RESTService {
 	@GET("/images")
-	public ImageList getImageList() throws ConnectException;
+	public ImageList getImageList(@Query("offset") int offset,
+			@Query("limit") int limit) throws ConnectException;
 
 	@GET("/images/{id}")
 	public ImageInfo getImageInfo(@Path("id") long id) throws ConnectException;
@@ -42,22 +44,23 @@ public interface RESTService {
 
 	@GET("/images/{id}/xl")
 	public Response getThumbnailXLarge(@Path("id") long id);
-	
+
 	@GET("/tags/{tag}")
 	public ImageList getImageListForTag(@Path("tag") String tag);
-	
+
 	@Multipart
 	@POST("/image")
 	public ImageInfo uploadImage(@Part("value") TypedFile image);
-	
+
 	@FormUrlEncoded
 	@POST("/images/{id}/rate")
 	public Response rateImage(@Path("id") long id, @Field("value") int rating);
-	
+
 	@FormUrlEncoded
 	@POST("/images/{id}/describe")
-	public Response describeImage(@Path("id") long id, @Field("value") String description);
-	
+	public Response describeImage(@Path("id") long id,
+			@Field("value") String description);
+
 	@FormUrlEncoded
 	@POST("/images/{id}/tag")
 	public Response tagImage(@Path("id") long id, @Field("value") String tags);
