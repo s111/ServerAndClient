@@ -74,7 +74,7 @@ public class App {
 		ImageList imageList = null;
 
 		try {
-			imageList = restService.getImageList();
+			imageList = restService.getImageList(0, 0);
 		} catch (ConnectException e) {
 			JOptionPane.showMessageDialog(mainFrame.getFrame(),
 					"Failed to load initial set of images");
