@@ -18,6 +18,7 @@ import javax.swing.KeyStroke;
 
 import com.github.groupa.client.components.ImageDescriptionButton;
 import com.github.groupa.client.components.ImageRater;
+import com.github.groupa.client.components.ImageTag;
 import com.github.groupa.client.components.MetadataField;
 import com.github.groupa.client.components.SearchField;
 
@@ -31,7 +32,7 @@ public class ImageView {
 	private JButton nextButton = new JButton("=>");
 	private JButton previousButton = new JButton("<=");
 	private JButton backToMainButton = new JButton("<= Exit to Main");
-	private JButton tagImageButton = new JButton("Tag Picture");
+	
 
 	public ImageView() {
 		setUpImageViewer();
@@ -91,13 +92,7 @@ public class ImageView {
 				// Call change view method on App
 			}
 		});
-		
-		tagImageButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent action) {
-				// Tag picture and put in metadata
-			}
-		});
+	
 	}
 
 	public void displayNextImage() {
@@ -129,7 +124,7 @@ public class ImageView {
 		JPanel leftPanel = new JPanel();
 		leftPanel.setLayout(new GridLayout(0,1));
 		leftPanel.add(new ImageDescriptionButton(library).getButton());
-		leftPanel.add(tagImageButton);
+		leftPanel.add(new ImageTag(library).getTagButton());
 
 		return leftPanel;
 	}
