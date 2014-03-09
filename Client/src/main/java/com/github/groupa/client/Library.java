@@ -95,6 +95,10 @@ public class Library {
 		refresh();
 	}
 
+	public ImageObject getImage(int idx) {
+		return get(idx);
+	}
+	
 	public ImageObject getImage() {
 		return get(activeImage);
 	}

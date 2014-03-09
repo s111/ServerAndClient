@@ -1,12 +1,18 @@
 package com.github.groupa.client.views;
 
 import java.awt.BorderLayout;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.Component;
+import java.awt.Image;
+import java.util.ArrayList;
+import java.util.List;
 
-import javax.swing.JButton;
+import javax.swing.ImageIcon;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import net.miginfocom.swing.MigLayout;
+
+import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.Library;
 import com.github.groupa.client.MainFrame;
 
@@ -15,12 +21,18 @@ public class GridView {
 	private MainFrame mainFrame;
 
 	private JPanel mainPanel;
-	private JButton testButton;
+	private JPanel thumbPanel;
+	private MigLayout layout;
+	private int imageCount = -1;
+	private List<Thumb> thumbs = new ArrayList<>();
 	
 	public GridView(Library library, MainFrame mainFrame) {
 		this.library = library;
 		this.mainFrame = mainFrame;
 		setUpImageViewer();
+		
+		generateThumbs();
+		addThumbsToPanel();
 	}
 	
 	public JPanel getPanel() {
@@ -29,19 +41,62 @@ public class GridView {
 	
 	private void setUpImageViewer() {
 		mainPanel = new JPanel();
-		//mainPanel.setLayout(new BorderLayout());
-		
-		testButton = new JButton("ImageView");
-		addButtonActionListeners();
-		mainPanel.add(testButton);
+		mainPanel.setLayout(new BorderLayout());
+		thumbPanel = new JPanel();
+		layout = new MigLayout("wrap 4");
+		thumbPanel.setLayout(layout);
+		mainPanel.add(thumbPanel, BorderLayout.SOUTH);
 	}
 	
-	private void addButtonActionListeners() {
-		testButton.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent action) {
-				mainFrame.setNewView(new ImageView(library, mainFrame).getPanel());
+	//	mainFrame.setNewView(new ImageView(library, mainFrame).getPanel());
+	
+	private void addThumbsToPanel() {
+		thumbPanel.removeAll();
+		for (Thumb thumb : thumbs) {
+			Component component = thumb.getSmallThumb();
+			thumbPanel.add(component);
+		}
+	}
+	
+	private void generateThumbs() {
+		imageCount = library.imageCount();
+		thumbs.clear();
+		for (int i = 0; i < imageCount; i++) {
+			Thumb thumb = new Thumb(library.getImage(i), i);
+			thumbs.add(thumb);
+		}
+	}
+	
+	private class Thumb {
+		protected ImageObject img;
+		protected int idx;
+		private JLabel small = null;
+		private JLabel large = null;
+		
+		public Thumb(ImageObject img, int idx) {
+			this.img = img;
+			this.idx = idx;
+		}
+		
+		public JLabel getSmallThumb() {
+			if (small == null) {
+				small = toLabel(150, img.getImageRaw());
 			}
-		});
+			return small;
+		}
+		
+		public JLabel getLargeThumb() {
+			if (large == null) {
+				large = toLabel(300, img.getImageRaw());
+			}
+			return large;
+		}
+		
+		private JLabel toLabel(int width, Image image) {
+			JLabel label = new JLabel();
+			label.setIcon(new ImageIcon(image.getScaledInstance(width, -1, Image.SCALE_FAST)));
+
+			return label;
+		}
 	}
 }
