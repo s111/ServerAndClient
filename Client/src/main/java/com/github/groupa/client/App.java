@@ -27,7 +27,7 @@ public class App {
 
 	private static RESTService restService;
 
-	private static MainFrame mainFrame;
+	public static MainFrame mainFrame;
 
 	public static void main(String[] args) {
 		BasicConfigurator.configure();
@@ -59,10 +59,10 @@ public class App {
 
 				mainFrame.display();
 				mainFrame.addView(
-						new ImageView(new Library(), mainFrame).getPanel(),
+						new ImageView(new Library()).getPanel(),
 						View.IMAGE_VIEW);
 				mainFrame.addView(
-						new GridView(new Library(), mainFrame).getPanel(),
+						new GridView(new Library()).getPanel(),
 						View.GRID_VIEW);
 
 				mainFrame.showView(View.GRID_VIEW);

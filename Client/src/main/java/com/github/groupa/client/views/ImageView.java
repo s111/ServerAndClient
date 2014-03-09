@@ -16,6 +16,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
+import com.github.groupa.client.App;
 import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.Library;
 import com.github.groupa.client.MainFrame;
@@ -27,7 +28,6 @@ import com.github.groupa.client.components.SearchField;
 
 public class ImageView {
 	private Library library;
-	private MainFrame mainFrame;
 	private JPanel mainPanel;
 
 	private JLabel imageLabel = new JLabel();
@@ -36,9 +36,8 @@ public class ImageView {
 	private JButton previousButton = new JButton("<=");
 	private JButton previousViewButton = new JButton("<= Previous view");
 
-	public ImageView(Library library, MainFrame mainFrame) {
+	public ImageView(Library library) {
 		this.library = library;
-		this.mainFrame = mainFrame;
 		setUpImageViewer();
 
 		ImageObject image = library.getImage();
@@ -96,7 +95,7 @@ public class ImageView {
 		previousViewButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent action) {
-				mainFrame.showLastView();
+				App.mainFrame.showLastView();
 			}
 		});
 

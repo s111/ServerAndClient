@@ -20,7 +20,6 @@ import com.github.groupa.client.MainFrame;
 
 public class GridView {
 	private Library library;
-	private MainFrame mainFrame;
 
 	private JPanel mainPanel;
 	private JPanel thumbPanel;
@@ -28,9 +27,8 @@ public class GridView {
 	private int imageCount = -1;
 	private List<Thumb> thumbs = new ArrayList<>();
 
-	public GridView(Library library, MainFrame mainFrame) {
+	public GridView(Library library) {
 		this.library = library;
-		this.mainFrame = mainFrame;
 		setUpImageViewer();
 		
 		generateThumbs();
