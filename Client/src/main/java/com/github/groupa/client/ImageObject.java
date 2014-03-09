@@ -69,7 +69,9 @@ public class ImageObject {
 			logger.warn("Could not get raw image for id: " + id);
 		}
 		
-		if (imageRawResponse == null) return;
+		if (imageRawResponse == null) {
+			return;
+		}
 
 		try {
 			InputStream imageRawStream = imageRawResponse.getBody().in();

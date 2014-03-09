@@ -18,8 +18,7 @@ import com.github.groupa.client.jsonobjects.ImageShort;
 import com.github.groupa.client.servercommunication.RESTService;
 
 public class App {
-	private static final Logger logger = LoggerFactory
-			.getLogger(App.class);
+	private static final Logger logger = LoggerFactory.getLogger(App.class);
 
 	private static String serverAPIBaseURL = "http://localhost:9000/api";
 
@@ -27,7 +26,7 @@ public class App {
 
 	public static void main(String[] args) {
 		BasicConfigurator.configure();
-		
+
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (ClassNotFoundException | InstantiationException
@@ -65,8 +64,9 @@ public class App {
 			logger.error("Could not connect to the server: " + e.getMessage());
 		}
 
-		if (imageList == null)
+		if (imageList == null) {
 			return;
+		}
 
 		for (ImageShort image : imageList.getImages()) {
 			Library.add(new ImageObject(image.getId(), restService));
