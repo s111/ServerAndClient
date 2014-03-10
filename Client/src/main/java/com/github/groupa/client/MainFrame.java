@@ -4,31 +4,34 @@ import java.awt.CardLayout;
 import java.awt.Container;
 import java.awt.Dimension;
 
+import javax.inject.Inject;
 import javax.swing.JFrame;
-
-import com.github.groupa.client.components.MenuBar;
+import javax.swing.JMenuBar;
 
 public class MainFrame {
 	private JFrame frame;
 	private Container contentPane;
 
-	private String title;
-
 	private CardLayout cardLayout;
 
-	public MainFrame(String title) {
-		this.title = title;
-
+	@Inject
+	public MainFrame() {
 		setUpMainFrame();
 	}
 
+	public void setTitle(String title) {
+		frame.setTitle(title);
+	}
+
+	public void setMenuBar(JMenuBar menuBar) {
+		frame.setJMenuBar(menuBar);
+	}
+
 	private void setUpMainFrame() {
-		frame = new JFrame(title);
+		frame = new JFrame();
 		frame.setMinimumSize(new Dimension(640, 480));
 		frame.setLocationRelativeTo(null);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-		frame.setJMenuBar(new MenuBar().getMenuBar());
 
 		cardLayout = new CardLayout();
 

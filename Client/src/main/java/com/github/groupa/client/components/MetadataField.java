@@ -11,6 +11,8 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 
 import com.github.groupa.client.ImageObject;
+import com.github.groupa.client.events.MetadataChangedEvent;
+import com.google.common.eventbus.Subscribe;
 
 public class MetadataField implements Observer {
 	private final int FILLER_HEIGHT = 15;
@@ -88,5 +90,10 @@ public class MetadataField implements Observer {
 			System.out.println(imageObject.getId() + " "
 					+ imageObject.getRating());
 		}
+	}
+
+	@Subscribe
+	public void metadataChanged(MetadataChangedEvent metadataChangedEvent) {
+
 	}
 }

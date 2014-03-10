@@ -6,6 +6,7 @@ import java.awt.Image;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -14,6 +15,7 @@ import net.miginfocom.swing.MigLayout;
 
 import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.Library;
+import com.github.groupa.client.MainFrame;
 
 public class GridView {
 	private Library library;
@@ -24,10 +26,14 @@ public class GridView {
 	private int imageCount = -1;
 	private List<Thumb> thumbs = new ArrayList<>();
 
-	public GridView(Library library) {
-		this.library = library;
-		setUpImageViewer();
+	private MainFrame mainFrame;
 
+	@Inject
+	public GridView(MainFrame mainFrame, Library library) {
+		this.mainFrame = mainFrame;
+		this.library = library;
+
+		setUpImageViewer();
 		generateThumbs();
 		addThumbsToPanel();
 	}
@@ -44,8 +50,6 @@ public class GridView {
 		thumbPanel.setLayout(layout);
 		mainPanel.add(thumbPanel, BorderLayout.SOUTH);
 	}
-
-	// App.mainFrame.setNewView(new ImageView(library, mainFrame).getPanel());
 
 	private void addThumbsToPanel() {
 		thumbPanel.removeAll();

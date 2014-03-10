@@ -7,6 +7,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.util.Observable;
 
+import javax.inject.Inject;
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
 import javax.swing.ImageIcon;
@@ -17,9 +18,9 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
-import com.github.groupa.client.App;
 import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.Library;
+import com.github.groupa.client.MainFrame;
 import com.github.groupa.client.components.ImageDescriptionButton;
 import com.github.groupa.client.components.ImageRater;
 import com.github.groupa.client.components.ImageTag;
@@ -39,7 +40,11 @@ public class ImageView extends Observable {
 
 	private MetadataField metadataField;
 
-	public ImageView(Library library) {
+	private MainFrame mainFrame;
+
+	@Inject
+	public ImageView(MainFrame mainFrame, Library library) {
+		this.mainFrame = mainFrame;
 		this.library = library;
 
 		setUpImageViewer();
@@ -103,7 +108,7 @@ public class ImageView extends Observable {
 		previousViewButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent action) {
-				App.mainFrame.showLastView();
+				mainFrame.showLastView();
 			}
 		});
 
