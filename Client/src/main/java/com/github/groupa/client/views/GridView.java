@@ -1,7 +1,5 @@
 package com.github.groupa.client.views;
 
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Image;
@@ -16,7 +14,6 @@ import net.miginfocom.swing.MigLayout;
 
 import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.Library;
-import com.github.groupa.client.MainFrame;
 
 public class GridView {
 	private Library library;
@@ -30,7 +27,7 @@ public class GridView {
 	public GridView(Library library) {
 		this.library = library;
 		setUpImageViewer();
-		
+
 		generateThumbs();
 		addThumbsToPanel();
 	}
@@ -48,9 +45,8 @@ public class GridView {
 		mainPanel.add(thumbPanel, BorderLayout.SOUTH);
 	}
 
-	
-	//	App.mainFrame.setNewView(new ImageView(library, mainFrame).getPanel());
-	
+	// App.mainFrame.setNewView(new ImageView(library, mainFrame).getPanel());
+
 	private void addThumbsToPanel() {
 		thumbPanel.removeAll();
 		for (Thumb thumb : thumbs) {
@@ -58,7 +54,7 @@ public class GridView {
 			thumbPanel.add(component);
 		}
 	}
-	
+
 	private void generateThumbs() {
 		imageCount = library.imageCount();
 		thumbs.clear();
@@ -67,35 +63,36 @@ public class GridView {
 			thumbs.add(thumb);
 		}
 	}
-	
+
 	private class Thumb {
 		protected ImageObject img;
 		protected int idx;
 		private JLabel small = null;
 		private JLabel large = null;
-		
+
 		public Thumb(ImageObject img, int idx) {
 			this.img = img;
 			this.idx = idx;
 		}
-		
+
 		public JLabel getSmallThumb() {
 			if (small == null) {
 				small = toLabel(150, img.getImageRaw());
 			}
 			return small;
 		}
-		
+
 		public JLabel getLargeThumb() {
 			if (large == null) {
 				large = toLabel(300, img.getImageRaw());
 			}
 			return large;
 		}
-		
+
 		private JLabel toLabel(int width, Image image) {
 			JLabel label = new JLabel();
-			label.setIcon(new ImageIcon(image.getScaledInstance(width, -1, Image.SCALE_FAST)));
+			label.setIcon(new ImageIcon(image.getScaledInstance(width, -1,
+					Image.SCALE_FAST)));
 
 			return label;
 		}
