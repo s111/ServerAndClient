@@ -11,8 +11,6 @@ import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import retrofit.RestAdapter;
-
 import com.github.groupa.client.components.MenuBar;
 import com.github.groupa.client.jsonobjects.ImageList;
 import com.github.groupa.client.jsonobjects.ImageShort;
@@ -41,7 +39,9 @@ public class Application {
 
 		trySettingANativeLookAndFeel();
 		askForBaseURL();
-		setUpRESTService();
+
+		restService = Main.injector.getInstance(RESTService.class);
+
 		setUpLibrary();
 		setUpGUI();
 	}
@@ -73,14 +73,6 @@ public class Application {
 		}
 	}
 
-	private void setUpRESTService() {
-		RestAdapter restAdapter = new RestAdapter.Builder()
-				.setEndpoint(serverAPIBaseURL)
-				.setErrorHandler(new RESTErrorHandler()).build();
-
-		restService = restAdapter.create(RESTService.class);
-	}
-
 	private void setUpLibrary() {
 		ImageList imageList = null;
 
@@ -96,7 +88,11 @@ public class Application {
 		}
 
 		for (ImageShort image : imageList.getImages()) {
-			library.add(new ImageObject(image.getId(), restService));
+			ImageObject imageObject = Main.injector
+					.getInstance(ImageObject.class);
+			imageObject.setId(image.getId());
+
+			library.add(imageObject);
 		}
 	}
 

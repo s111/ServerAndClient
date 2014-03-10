@@ -2,19 +2,18 @@ package com.github.groupa.client.components;
 
 import java.awt.Dimension;
 import java.awt.Font;
-import java.util.Observable;
-import java.util.Observer;
 
+import javax.inject.Inject;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-import com.github.groupa.client.ImageObject;
-import com.github.groupa.client.events.MetadataChangedEvent;
+import com.github.groupa.client.events.ImageInfoChangedEvent;
+import com.github.groupa.client.jsonobjects.ImageFull;
 import com.google.common.eventbus.Subscribe;
 
-public class MetadataField implements Observer {
+public class MetadataField {
 	private final int FILLER_HEIGHT = 15;
 	private final int FILLER_WIDTH = 10;
 
@@ -24,6 +23,7 @@ public class MetadataField implements Observer {
 	private JLabel tagsLabel = new JLabel();
 	private JLabel ratingLabel = new JLabel();
 
+	@Inject
 	public MetadataField() {
 		panel = new JPanel();
 
@@ -78,22 +78,12 @@ public class MetadataField implements Observer {
 		panel.add(Box.createRigidArea(filler));
 	}
 
-	@Override
-	public void update(Observable observable, Object object) {
-		if (object instanceof ImageObject) {
-			ImageObject imageObject = (ImageObject) object;
-
-			setRating(imageObject.getRating());
-			setDescription(imageObject.getDescription());
-			setTags(imageObject.getTags().toString());
-
-			System.out.println(imageObject.getId() + " "
-					+ imageObject.getRating());
-		}
-	}
-
 	@Subscribe
-	public void metadataChanged(MetadataChangedEvent metadataChangedEvent) {
+	public void imageInfoChanged(ImageInfoChangedEvent imageInfoChangedEvent) {
+		ImageFull imageFull = imageInfoChangedEvent.getImageFull();
 
+		setRating(imageFull.getRating());
+		setDescription(imageFull.getDescription());
+		setTags(imageFull.getTags().toString());
 	}
 }

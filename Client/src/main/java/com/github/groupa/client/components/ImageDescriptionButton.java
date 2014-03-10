@@ -44,8 +44,5 @@ public class ImageDescriptionButton implements ActionListener {
 			return;
 
 		image.describe(description);
-
-		JOptionPane.showMessageDialog(null, "Your description of this image:\n"
-				+ description);
 	}
 }

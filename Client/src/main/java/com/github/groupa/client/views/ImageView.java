@@ -5,7 +5,6 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.util.Observable;
 
 import javax.inject.Inject;
 import javax.swing.AbstractAction;
@@ -26,8 +25,11 @@ import com.github.groupa.client.components.ImageRater;
 import com.github.groupa.client.components.ImageTag;
 import com.github.groupa.client.components.MetadataField;
 import com.github.groupa.client.components.SearchField;
+import com.github.groupa.client.events.ImageChangedEvent;
+import com.github.groupa.client.events.ImageInfoChangedEvent;
+import com.google.common.eventbus.EventBus;
 
-public class ImageView extends Observable {
+public class ImageView {
 	private Library library;
 
 	private JPanel mainPanel;
@@ -38,12 +40,13 @@ public class ImageView extends Observable {
 	private JButton previousButton = new JButton("<=");
 	private JButton previousViewButton = new JButton("<= Previous view");
 
-	private MetadataField metadataField;
-
 	private MainFrame mainFrame;
 
+	private EventBus eventBus;
+
 	@Inject
-	public ImageView(MainFrame mainFrame, Library library) {
+	public ImageView(EventBus eventBus, MainFrame mainFrame, Library library) {
+		this.eventBus = eventBus;
 		this.mainFrame = mainFrame;
 		this.library = library;
 
@@ -56,10 +59,6 @@ public class ImageView extends Observable {
 	private void setUpImageViewer() {
 		mainPanel = new JPanel();
 		mainPanel.setLayout(new BorderLayout());
-
-		metadataField = new MetadataField();
-
-		addObserver(metadataField);
 
 		addPanelsToMainPanel();
 		addButtonActionListeners();
@@ -151,8 +150,12 @@ public class ImageView extends Observable {
 	private JPanel createBottomPanel() {
 		JPanel bottomPanel = new JPanel();
 
+		ImageRater imageRate = new ImageRater(library);
+
+		eventBus.register(imageRate);
+
 		bottomPanel.add(previousButton);
-		bottomPanel.add(new ImageRater(library).getPanel());
+		bottomPanel.add(imageRate.getPanel());
 		bottomPanel.add(nextButton);
 
 		return bottomPanel;
@@ -160,6 +163,11 @@ public class ImageView extends Observable {
 
 	private JPanel createRightPanel() {
 		JPanel rightPanel = new JPanel();
+
+		MetadataField metadataField = new MetadataField();
+
+		eventBus.register(metadataField);
+
 		rightPanel.add(metadataField.getPanel());
 
 		return rightPanel;
@@ -184,10 +192,10 @@ public class ImageView extends Observable {
 			return;
 		}
 
-		imageLabel.setIcon(new ImageIcon(img.getImageRaw()));
+		eventBus.post(new ImageChangedEvent());
+		eventBus.post(new ImageInfoChangedEvent(img.getImageInfo()));
 
-		setChanged();
-		notifyObservers(img);
+		imageLabel.setIcon(new ImageIcon(img.getImageRaw()));
 	}
 
 	public JPanel getPanel() {

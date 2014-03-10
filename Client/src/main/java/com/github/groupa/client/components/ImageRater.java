@@ -6,12 +6,13 @@ import java.awt.event.ActionListener;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
 import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.Library;
+import com.github.groupa.client.events.ImageChangedEvent;
+import com.google.common.eventbus.Subscribe;
 
 public class ImageRater {
 	private static final int MAX_RATING = 5;
@@ -21,6 +22,8 @@ public class ImageRater {
 	private JPanel panel = new JPanel();
 
 	private Library library;
+
+	private ButtonGroup ratingGroup;
 
 	public ImageRater(Library library) {
 		this.library = library;
@@ -46,7 +49,7 @@ public class ImageRater {
 	}
 
 	private void addRadioButtonsToGroup() {
-		ButtonGroup ratingGroup = new ButtonGroup();
+		ratingGroup = new ButtonGroup();
 
 		for (int i = 0; i < MAX_RATING; i++) {
 			ratingGroup.add(buttons[i]);
@@ -67,11 +70,13 @@ public class ImageRater {
 						return;
 
 					image.rate(rating);
-
-					JOptionPane.showMessageDialog(null, "You Rated " + rating
-							+ "!");
 				}
 			});
 		}
+	}
+
+	@Subscribe
+	public void imageChanged(ImageChangedEvent imageInfoChangedEvent) {
+		ratingGroup.clearSelection();
 	}
 }

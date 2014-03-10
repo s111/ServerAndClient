@@ -12,24 +12,24 @@ import com.github.groupa.client.Library;
 public class ImageTag implements ActionListener {
 	private JButton tagButton;
 	private String tag;
-	
+
 	private Library library;
-	
-	public ImageTag (Library library) {
+
+	public ImageTag(Library library) {
 		this.library = library;
-		
+
 		createTagButton();
 	}
-	
+
 	public JButton getTagButton() {
 		return tagButton;
 	}
-	
+
 	private void createTagButton() {
 		tagButton = new JButton("Add Tag");
 		tagButton.addActionListener(this);
 	}
-	
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		ImageObject image = library.getImage();
@@ -41,11 +41,7 @@ public class ImageTag implements ActionListener {
 
 		if (tag == null)
 			return;
-		image.addTag(tag);
 
-		JOptionPane.showMessageDialog(null, "The tag added to this image is:\n"
-				+ tag);
-		
+		image.addTag(tag);
 	}
-	
 }

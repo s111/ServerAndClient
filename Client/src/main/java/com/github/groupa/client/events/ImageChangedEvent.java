@@ -1,5 +1,5 @@
 package com.github.groupa.client.events;
 
-public class MetadataChangedEvent {
+public class ImageChangedEvent {
 
 }

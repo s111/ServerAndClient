@@ -7,15 +7,18 @@ import java.net.ConnectException;
 import java.util.List;
 
 import javax.imageio.ImageIO;
+import javax.inject.Inject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import retrofit.client.Response;
 
+import com.github.groupa.client.events.ImageInfoChangedEvent;
 import com.github.groupa.client.jsonobjects.ImageFull;
 import com.github.groupa.client.jsonobjects.ImageInfo;
 import com.github.groupa.client.servercommunication.RESTService;
+import com.google.common.eventbus.EventBus;
 
 public class ImageObject {
 	private static final Logger logger = LoggerFactory
@@ -31,9 +34,16 @@ public class ImageObject {
 
 	private ImageFull imageFull;
 
-	public ImageObject(long id, RESTService restService) {
-		this.id = id;
+	private EventBus eventBus;
+
+	@Inject
+	public ImageObject(EventBus eventBus, RESTService restService) {
+		this.eventBus = eventBus;
 		this.restService = restService;
+	}
+
+	public void setId(long id) {
+		this.id = id;
 	}
 
 	public boolean hasImageRaw() {
@@ -53,9 +63,9 @@ public class ImageObject {
 	}
 
 	public ImageInfo getImageInfo() {
-		if (!hasImageInfo()) {
-			loadImageInfo();
-		}
+		// We need to check with the server for actual changes, for now just
+		// always load image info
+		loadImageInfo();
 
 		return imageInfo;
 	}
@@ -120,14 +130,20 @@ public class ImageObject {
 	 */
 	public void rate(int rating) {
 		restService.rateImage(id, rating);
+
+		eventBus.post(new ImageInfoChangedEvent(getImageInfo()));
 	}
 
 	public void describe(String description) {
 		restService.describeImage(id, description);
+
+		eventBus.post(new ImageInfoChangedEvent(getImageInfo()));
 	}
 
 	public void addTag(String tag) {
 		restService.tagImage(id, tag);
+
+		eventBus.post(new ImageInfoChangedEvent(getImageInfo()));
 	}
 
 	public boolean hasTag(String tag) {
