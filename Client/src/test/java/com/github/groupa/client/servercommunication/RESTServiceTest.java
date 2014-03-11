@@ -1,6 +1,7 @@
 package com.github.groupa.client.servercommunication;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 import java.net.ConnectException;
 
@@ -29,6 +30,9 @@ public class RESTServiceTest {
 			throws ConnectException {
 		ImageList imageList = restService.getImageList(0, 2);
 
+		assertNotNull(imageList);
 		assertEquals(2, imageList.getImages().size());
+		assertEquals(1, imageList.getImages().get(0).getId());
+		assertEquals(2, imageList.getImages().get(1).getId());
 	}
 }

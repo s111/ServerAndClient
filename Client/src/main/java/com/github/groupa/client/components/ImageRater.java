@@ -28,11 +28,10 @@ public class ImageRater {
 	public ImageRater(Library library) {
 		this.library = library;
 
-		createRadioButtons();
-		addRadioButtonsToGroup();
-
 		panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
 
+		createRadioButtons();
+		addRadioButtonsToGroup();
 		addRadioButtonsToPanel();
 	}
 

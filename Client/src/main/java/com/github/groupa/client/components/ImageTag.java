@@ -10,24 +10,19 @@ import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.Library;
 
 public class ImageTag implements ActionListener {
-	private JButton tagButton;
-	private String tag;
+	private JButton button;
 
 	private Library library;
 
 	public ImageTag(Library library) {
 		this.library = library;
 
-		createTagButton();
+		button = new JButton("Add Tag");
+		button.addActionListener(this);
 	}
 
 	public JButton getTagButton() {
-		return tagButton;
-	}
-
-	private void createTagButton() {
-		tagButton = new JButton("Add Tag");
-		tagButton.addActionListener(this);
+		return button;
 	}
 
 	@Override
@@ -37,7 +32,7 @@ public class ImageTag implements ActionListener {
 		if (image == null)
 			return;
 
-		tag = JOptionPane.showInputDialog("Enter a tag to this image");
+		String tag = JOptionPane.showInputDialog("Enter a tag to this image");
 
 		if (tag == null)
 			return;

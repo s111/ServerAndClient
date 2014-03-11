@@ -5,11 +5,11 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 public class SearchField {
-	JPanel panel;
+	private JPanel panel;
 
-	JTextField searchField;
+	private JTextField searchField;
 
-	JButton searchButton;
+	private JButton searchButton;
 
 	public SearchField() {
 		panel = new JPanel();
