@@ -1,53 +1,25 @@
 package controllers;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import jsonobjects.ImageList;
+import jsonobjects.ImageShort;
+import models.ImageModel;
+import models.TagModel;
+import play.mvc.Controller;
+import play.mvc.Result;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-
-import models.ImageModel;
-import models.TagModel;
-import play.libs.Json;
-import play.mvc.Controller;
-import play.mvc.Result;
 
 public class TagController extends Controller {
 	public static Result getImages(String tag, int offset, int limit) {
 		if (isNotWithinBoundaries(tag, offset, limit))
 			return badRequest();
 
-		ObjectNode rootNode = createJSONForImages(tag, offset, limit);
-
 		List<ImageModel> imageModels = TagModel.get(tag).images;
 
-		ArrayNode images = createJSONArrayFromImageModels(imageModels);
-
-		rootNode.put("images", images);
-
-		return ok(rootNode);
-	}
-	
-	private static ArrayNode createJSONArrayFromImageModels(
-			List<ImageModel> imageModels) {
-		ObjectMapper mapper = new ObjectMapper();
-
-		ArrayNode images = mapper.convertValue(imageModels, ArrayNode.class);
-
-		for (JsonNode image : images) {
-			long id = image.get("id").asLong();
-
-			((ObjectNode) image).removeAll();
-			((ObjectNode) image).put("id", id);
-			((ObjectNode) image).put("href", routes.GetImage.info(id)
-					.absoluteURL(request()));
-		}
-
-		return images;
-	}
-	
-	private static ObjectNode createJSONForImages(String tag, int offset, int limit) {
 		int lastOffset = calculateLastOffset(tag, limit);
 		int previousOffset = calculatePreviousOffset(offset, limit);
 		int nextOffset = calculateNextOffset(offset, limit);
@@ -58,18 +30,41 @@ public class TagController extends Controller {
 		String previous = getAbsoluteURLToImageListOrNull(previousOffset, limit);
 		String last = getAbsoluteURLToImageList(lastOffset, limit);
 
-		ObjectNode rootNode = Json.newObject();
-		rootNode.put("href", href);
-		rootNode.put("offset", offset);
-		rootNode.put("limit", limit);
-		rootNode.put("first", first);
-		rootNode.put("next", next);
-		rootNode.put("previous", previous);
-		rootNode.put("last", last);
+		List<ImageShort> images = getImagesShort(imageModels);
 
-		return rootNode;
+		ImageList imageList = new ImageList();
+		imageList.setHref(href);
+		imageList.setOffset(offset);
+		imageList.setLimit(limit);
+		imageList.setNext(next);
+		imageList.setPrevious(previous);
+		imageList.setFirst(first);
+		imageList.setLast(last);
+		imageList.setImages(images);
+
+		ObjectMapper mapper = new ObjectMapper();
+		JsonNode imageListNode = mapper.convertValue(imageList, JsonNode.class);
+
+		return ok(imageListNode);
 	}
-	
+
+	private static List<ImageShort> getImagesShort(List<ImageModel> imageModels) {
+		List<ImageShort> images = new ArrayList<>();
+
+		for (ImageModel imageModel : imageModels) {
+			ImageShort imageShort = new ImageShort();
+
+			long id = imageModel.id;
+
+			imageShort.setId(id);
+			imageShort.setHref(routes.GetImage.info(id).absoluteURL(request()));
+
+			images.add(imageShort);
+		}
+
+		return images;
+	}
+
 	private static int calculateLastOffset(String tag, int limit) {
 		int numRows = TagModel.get(tag).images.size();
 		int pages = numRows / limit;
@@ -99,7 +94,7 @@ public class TagController extends Controller {
 
 		return previousOffset;
 	}
-	
+
 	private static String getAbsoluteURLToImageListOrNull(int offset, int limit) {
 		return offset >= 0 ? getAbsoluteURLToImageList(offset, limit) : null;
 	}
@@ -108,8 +103,9 @@ public class TagController extends Controller {
 		return routes.ImageController.getImages(offset, limit).absoluteURL(
 				request());
 	}
-	
-	private static boolean isNotWithinBoundaries(String tag, int offset, int limit) {
+
+	private static boolean isNotWithinBoundaries(String tag, int offset,
+			int limit) {
 		int numRows = TagModel.get(tag).images.size();
 
 		return (offset < 0 || limit < 0 || offset > numRows);
