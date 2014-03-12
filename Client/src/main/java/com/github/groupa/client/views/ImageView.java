@@ -173,12 +173,20 @@ public class ImageView {
 	}
 
 	private void resizeToPanel() {
-		Image image = library.getImage().getImageRaw();
+		ImageObject imageObject = library.getImage();
+
+		if (imageObject == null) {
+			return;
+		}
+
+		Image image = imageObject.getImageRaw();
+
 		int width = picturePanel.getWidth();
 		int height = picturePanel.getHeight();
 
-		if (image == null)
+		if (image == null) {
 			return;
+		}
 
 		BufferedImage resizedImage = resizeImage(image, width, height);
 		updateImage(resizedImage);
