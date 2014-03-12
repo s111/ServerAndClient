@@ -45,7 +45,7 @@ public class ThumbPanel extends JPanel implements Scrollable {
 		addThumbsToPanel();
 		addListeners();
 	}
-	
+
 	private void addListeners() {
 		addComponentListener(new ComponentListener() {
 			@Override
@@ -58,16 +58,14 @@ public class ThumbPanel extends JPanel implements Scrollable {
 
 			@Override
 			public void componentResized(ComponentEvent arg0) {
-				System.out.println(arg0 + " : " + getSize());
 			}
 
 			@Override
 			public void componentShown(ComponentEvent arg0) {
-				System.out.println(arg0 + " : " + getSize());
 			}
 		});
 	}
-	
+
 	private void addThumbsToPanel() {
 		removeAll();
 		for (Thumb thumb : thumbs) {
@@ -86,8 +84,7 @@ public class ThumbPanel extends JPanel implements Scrollable {
 			thumbs.add(thumb);
 		}
 	}
-	
-	
+
 	private class Thumb {
 		protected ImageObject img;
 		protected int idx;
@@ -135,14 +132,14 @@ public class ThumbPanel extends JPanel implements Scrollable {
 			return label;
 		}
 	}
-	
+
 	private class ThumbListener implements MouseListener {
 		private Thumb thumb;
-		
+
 		public ThumbListener(Thumb thumb) {
 			this.thumb = thumb;
 		}
-		
+
 		@Override
 		public void mouseClicked(MouseEvent arg0) {
 			if (arg0.getButton() == MouseEvent.BUTTON1) {
@@ -178,8 +175,7 @@ public class ThumbPanel extends JPanel implements Scrollable {
 
 	@Override
 	public int getScrollableBlockIncrement(Rectangle visibleRect,
-            int orientation,
-            int direction) {
+			int orientation, int direction) {
 		if (orientation == SwingConstants.VERTICAL) {
 			return 120;
 		}

@@ -1,4 +1,5 @@
 package com.github.groupa.client.views;
+
 import java.awt.BorderLayout;
 
 import javax.inject.Inject;
@@ -16,7 +17,7 @@ public class GridView {
 
 	private JPanel mainPanel;
 	private JPanel thumbPanel;
-	
+
 	private MainFrame mainFrame;
 
 	@Inject
