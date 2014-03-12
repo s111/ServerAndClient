@@ -1,11 +1,17 @@
 package com.github.groupa.client.views;
 
+import java.awt.AlphaComposite;
 import java.awt.BorderLayout;
+import java.awt.Graphics2D;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
 
 import javax.inject.Inject;
 import javax.swing.AbstractAction;
@@ -66,8 +72,7 @@ public class ImageView {
 
 	@SuppressWarnings("serial")
 	private void addKeyBindings() {
-		InputMap inputMap = mainPanel
-				.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+		InputMap inputMap = mainPanel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
 		ActionMap actionMap = mainPanel.getActionMap();
 
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), "keyLeft");
@@ -130,9 +135,19 @@ public class ImageView {
 	}
 
 	private JPanel createPicturePanel() {
-		JPanel picturePanel = new JPanel();
+		final JPanel picturePanel = new JPanel();
 
 		picturePanel.add(imageLabel);
+
+		picturePanel.addComponentListener(new ComponentAdapter() {
+			@Override
+			public void componentResized(ComponentEvent arg0) {
+				int width = picturePanel.getWidth();
+				int height = picturePanel.getHeight();
+				BufferedImage resizedImage = resizeImage(width, height);
+				updateImage(resizedImage);
+			}
+		});
 
 		return picturePanel;
 	}
@@ -197,8 +212,7 @@ public class ImageView {
 		img.loadImageWithCallback(new Callback<Image>() {
 			@Override
 			public void success(Image image) {
-				imageLabel.setText("");
-				imageLabel.setIcon(new ImageIcon(image));
+				updateImage(image);
 			}
 
 			@Override
@@ -213,5 +227,20 @@ public class ImageView {
 
 	public JPanel getPanel() {
 		return mainPanel;
+	}
+
+	private void updateImage(Image image) {
+		imageLabel.setText("");
+		imageLabel.setIcon(new ImageIcon(image));
+	}
+
+	private BufferedImage resizeImage(int width, int height) {
+		Image image = library.getImage().getImageRaw();
+
+		final BufferedImage resizedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+		final Graphics2D g = resizedImage.createGraphics();
+		g.drawImage(image, 0, 0, width, height, null);
+		g.dispose();
+		return resizedImage;
 	}
 }
