@@ -25,6 +25,8 @@ public class ImageObject {
 	private static final Logger logger = LoggerFactory
 			.getLogger(ImageObject.class);
 
+	private static final Object staticLock = new Object();
+
 	private RESTService restService;
 
 	private long id;
@@ -98,7 +100,11 @@ public class ImageObject {
 		try {
 			InputStream imageRawStream = imageRawResponse.getBody().in();
 
-			imageRaw = ImageIO.read(imageRawStream);
+			synchronized (staticLock) {
+				imageRaw = ImageIO.read(imageRawStream);
+			}
+
+			imageRawStream.close();
 		} catch (IOException exception) {
 			logger.warn("Failed to load image: " + exception.getMessage());
 		}
