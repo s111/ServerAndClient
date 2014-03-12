@@ -1,5 +1,6 @@
 package com.github.groupa.client.components;
 
+import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Image;
@@ -11,11 +12,14 @@ import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.Scrollable;
 import javax.swing.SwingConstants;
+import javax.swing.UIManager;
+import javax.swing.border.Border;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -98,6 +102,10 @@ public class ThumbPanel extends JPanel implements Scrollable {
 			label = new JLabel();
 			label.setText("Image not loaded");
 		}
+		
+		public JLabel getLabel() {
+			return label;
+		}
 
 		public JLabel getSmallThumb() {
 			if (small == null) {
@@ -106,8 +114,8 @@ public class ThumbPanel extends JPanel implements Scrollable {
 					public void success(Image image) {
 						small = image;
 						label.setText("");
-						label.setIcon(new ImageIcon(image.getScaledInstance(130,
-								-1, Image.SCALE_FAST)));
+						label.setIcon(new ImageIcon(image.getScaledInstance(
+								130, -1, Image.SCALE_FAST)));
 					}
 
 					@Override
@@ -126,8 +134,8 @@ public class ThumbPanel extends JPanel implements Scrollable {
 					public void success(Image image) {
 						large = image;
 						label.setText("");
-						label.setIcon(new ImageIcon(image.getScaledInstance(130,
-								-1, Image.SCALE_FAST)));
+						label.setIcon(new ImageIcon(image.getScaledInstance(
+								130, -1, Image.SCALE_FAST)));
 					}
 
 					@Override
@@ -150,6 +158,26 @@ public class ThumbPanel extends JPanel implements Scrollable {
 		@Override
 		public void mouseClicked(MouseEvent arg0) {
 			if (arg0.getButton() == MouseEvent.BUTTON1) {
+				if (arg0.getClickCount() == 1) {
+					
+					JLabel label = thumb.getLargeThumb();
+					Border border = BorderFactory.createLineBorder(Color.blue, 2);
+					label.setBorder(border);
+					if (!arg0.isControlDown()) {
+						for (Thumb thumb : thumbs) {
+							if (!thumb.equals(this.thumb)) {
+								thumb.getSmallThumb().setBorder(null);
+							}
+						}
+					} else {
+						for (Thumb thumb : thumbs) {
+							if (!thumb.equals(this.thumb)) {
+								thumb.getSmallThumb();
+							}
+						}
+					}
+					//TODO: Make this useful
+				}
 				if (arg0.getClickCount() == 2) {
 					library.setActiveImage(thumb.img);
 					mainFrame.showView(View.IMAGE_VIEW);
