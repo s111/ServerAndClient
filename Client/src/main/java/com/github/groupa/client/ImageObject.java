@@ -65,7 +65,10 @@ public class ImageObject {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {
-				loadImage();
+				if (!hasImageRaw()) {
+					loadImage();
+				}
+
 				callback.success(imageRaw);
 			}
 		}).start();

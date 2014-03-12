@@ -2,6 +2,7 @@ package com.github.groupa.client.views;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
+import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -17,6 +18,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 
+import com.github.groupa.client.Callback;
 import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.Library;
 import com.github.groupa.client.MainFrame;
@@ -34,7 +36,7 @@ public class ImageView {
 
 	private JPanel mainPanel;
 
-	private JLabel imageLabel = new JLabel();
+	private JLabel imageLabel = new JLabel("image not loaded");
 
 	private JButton nextButton = new JButton("=>");
 	private JButton previousButton = new JButton("<=");
@@ -195,7 +197,17 @@ public class ImageView {
 		eventBus.post(new ImageChangedEvent());
 		eventBus.post(new ImageInfoChangedEvent(img.getImageInfo()));
 
-		imageLabel.setIcon(new ImageIcon(img.getImageRaw()));
+		img.loadImageWithCallback(new Callback<Image>() {
+			@Override
+			public void success(Image image) {
+				imageLabel.setText("");
+				imageLabel.setIcon(new ImageIcon(image));
+			}
+
+			@Override
+			public void failure() {
+			}
+		});
 	}
 
 	public JPanel getPanel() {
