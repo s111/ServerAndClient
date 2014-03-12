@@ -14,6 +14,7 @@ import java.awt.image.BufferedImage;
 import javax.inject.Inject;
 import javax.swing.AbstractAction;
 import javax.swing.ActionMap;
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.InputMap;
 import javax.swing.JButton;
@@ -21,6 +22,9 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
+import javax.swing.border.Border;
+import javax.swing.border.EtchedBorder;
+import javax.swing.border.TitledBorder;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 
@@ -75,7 +79,8 @@ public class ImageView {
 
 	@SuppressWarnings("serial")
 	private void addKeyBindings() {
-		InputMap inputMap = mainPanel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+		InputMap inputMap = mainPanel
+				.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
 		ActionMap actionMap = mainPanel.getActionMap();
 
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), "keyLeft");
@@ -168,9 +173,14 @@ public class ImageView {
 	}
 
 	private void resizeToPanel() {
+		Image image = library.getImage().getImageRaw();
 		int width = picturePanel.getWidth();
 		int height = picturePanel.getHeight();
-		BufferedImage resizedImage = resizeImage(width, height);
+
+		if (image == null)
+			return;
+
+		BufferedImage resizedImage = resizeImage(image, width, height);
 		updateImage(resizedImage);
 	}
 
@@ -205,6 +215,8 @@ public class ImageView {
 		eventBus.register(metadataField);
 
 		rightPanel.add(metadataField.getPanel());
+
+		setTitledEtchedBorder("Metadata", rightPanel);
 
 		return rightPanel;
 	}
@@ -243,6 +255,18 @@ public class ImageView {
 		});
 	}
 
+	public void setTitledEtchedBorder(String title, JPanel pane) {
+		TitledBorder border;
+
+		Border loweredetched;
+
+		loweredetched = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED);
+
+		border = BorderFactory.createTitledBorder(loweredetched, title);
+
+		pane.setBorder(border);
+	}
+
 	public void activateImageView() {
 		setImage(library.getImage());
 	}
@@ -256,10 +280,9 @@ public class ImageView {
 		imageLabel.setIcon(new ImageIcon(image));
 	}
 
-	private BufferedImage resizeImage(int width, int height) {
-		Image image = library.getImage().getImageRaw();
-
-		final BufferedImage resizedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+	private BufferedImage resizeImage(Image image, int width, int height) {
+		final BufferedImage resizedImage = new BufferedImage(width, height,
+				BufferedImage.TYPE_INT_RGB);
 		final Graphics2D g = resizedImage.createGraphics();
 		g.drawImage(image, 0, 0, width, height, null);
 		g.dispose();
