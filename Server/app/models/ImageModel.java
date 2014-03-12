@@ -210,7 +210,7 @@ public class ImageModel extends Model {
 		imageInfo.setFirst(getAbsoluteURLToImageOrNull(request, firstId));
 		imageInfo.setLast(getAbsoluteURLToImageOrNull(request, lastId));
 		imageInfo.setImage(toImageFull());
-		
+
 		ObjectMapper mapper = new ObjectMapper();
 		JsonNode imageInfoNode = mapper.convertValue(imageInfo, JsonNode.class);
 

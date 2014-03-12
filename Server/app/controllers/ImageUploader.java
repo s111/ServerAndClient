@@ -6,6 +6,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 import models.ImageModel;
+import models.TagModel;
 
 import org.apache.tika.config.TikaConfig;
 import org.apache.tika.metadata.Metadata;
@@ -76,8 +77,10 @@ public class ImageUploader extends Controller {
 
 			ImageModel imageModel = ImageModel.create(IMAGE_DIRECTORY
 					+ filename);
+			imageModel.tag(TagModel.create("id:" + imageModel.id));
 
-			JsonNode imageInfoNode = imageModel.generateImageInfoJSON(request());
+			JsonNode imageInfoNode = imageModel
+					.generateImageInfoJSON(request());
 
 			return created(imageInfoNode);
 		} else {

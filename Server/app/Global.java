@@ -1,9 +1,10 @@
 import java.io.File;
 
-import controllers.ImageUploader;
 import models.ImageModel;
+import models.TagModel;
 import play.Application;
 import play.GlobalSettings;
+import controllers.ImageUploader;
 
 public class Global extends GlobalSettings {
 	@Override
@@ -26,7 +27,10 @@ public class Global extends GlobalSettings {
 					continue;
 				if (ImageModel.find.where().eq("filename", filenameInDatabase)
 						.findUnique() == null) {
-					ImageModel.create(filenameInDatabase);
+					ImageModel imageModel = ImageModel
+							.create(filenameInDatabase);
+
+					imageModel.tag(TagModel.create("id:" + imageModel.id));
 				}
 			}
 		}
