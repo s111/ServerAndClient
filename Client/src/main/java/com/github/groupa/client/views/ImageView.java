@@ -79,8 +79,7 @@ public class ImageView {
 
 	@SuppressWarnings("serial")
 	private void addKeyBindings() {
-		InputMap inputMap = mainPanel
-				.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+		InputMap inputMap = mainPanel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
 		ActionMap actionMap = mainPanel.getActionMap();
 
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), "keyLeft");
@@ -152,6 +151,7 @@ public class ImageView {
 			public void componentResized(ComponentEvent arg0) {
 				resizeToPanel();
 			}
+
 		});
 
 		picturePanel.addAncestorListener(new AncestorListener() {
@@ -255,6 +255,7 @@ public class ImageView {
 			@Override
 			public void success(Image image) {
 				updateImage(image);
+				resizeToPanel();
 			}
 
 			@Override
@@ -289,8 +290,7 @@ public class ImageView {
 	}
 
 	private BufferedImage resizeImage(Image image, int width, int height) {
-		final BufferedImage resizedImage = new BufferedImage(width, height,
-				BufferedImage.TYPE_INT_RGB);
+		final BufferedImage resizedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 		final Graphics2D g = resizedImage.createGraphics();
 		g.drawImage(image, 0, 0, width, height, null);
 		g.dispose();
