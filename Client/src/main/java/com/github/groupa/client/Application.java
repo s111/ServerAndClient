@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.groupa.client.components.MenuBar;
+import com.github.groupa.client.factories.ImageObjectFactory;
 import com.github.groupa.client.jsonobjects.ImageList;
 import com.github.groupa.client.jsonobjects.ImageShort;
 import com.github.groupa.client.servercommunication.RESTService;
@@ -87,10 +88,11 @@ public class Application {
 			return;
 		}
 
+		ImageObjectFactory imageObjectFactory = Main.injector
+				.getInstance(ImageObjectFactory.class);
+
 		for (ImageShort image : imageList.getImages()) {
-			ImageObject imageObject = Main.injector
-					.getInstance(ImageObject.class);
-			imageObject.setId(image.getId());
+			ImageObject imageObject = imageObjectFactory.create(image.getId());
 
 			library.add(imageObject);
 		}

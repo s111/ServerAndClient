@@ -8,10 +8,12 @@ import com.github.groupa.client.Application;
 import com.github.groupa.client.Library;
 import com.github.groupa.client.MainFrame;
 import com.github.groupa.client.RESTErrorHandler;
+import com.github.groupa.client.factories.ImageObjectFactory;
 import com.github.groupa.client.servercommunication.RESTService;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
+import com.google.inject.assistedinject.FactoryModuleBuilder;
 
 public class DIModule extends AbstractModule {
 	@Override
@@ -20,6 +22,8 @@ public class DIModule extends AbstractModule {
 		bind(EventBus.class).in(Singleton.class);
 		bind(MainFrame.class).in(Singleton.class);
 		bind(Library.class).in(Singleton.class);
+
+		install(new FactoryModuleBuilder().build(ImageObjectFactory.class));
 	}
 
 	@Provides

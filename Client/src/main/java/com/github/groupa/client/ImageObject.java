@@ -19,6 +19,7 @@ import com.github.groupa.client.jsonobjects.ImageFull;
 import com.github.groupa.client.jsonobjects.ImageInfo;
 import com.github.groupa.client.servercommunication.RESTService;
 import com.google.common.eventbus.EventBus;
+import com.google.inject.assistedinject.Assisted;
 
 public class ImageObject {
 	private static final Logger logger = LoggerFactory
@@ -37,12 +38,10 @@ public class ImageObject {
 	private EventBus eventBus;
 
 	@Inject
-	public ImageObject(EventBus eventBus, RESTService restService) {
+	public ImageObject(EventBus eventBus, RESTService restService,
+			@Assisted long id) {
 		this.eventBus = eventBus;
 		this.restService = restService;
-	}
-
-	public void setId(long id) {
 		this.id = id;
 	}
 

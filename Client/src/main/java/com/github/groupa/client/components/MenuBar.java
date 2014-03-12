@@ -17,6 +17,7 @@ import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.Library;
 import com.github.groupa.client.Main;
 import com.github.groupa.client.MainFrame;
+import com.github.groupa.client.factories.ImageObjectFactory;
 import com.github.groupa.client.jsonobjects.ImageInfo;
 import com.github.groupa.client.servercommunication.RESTService;
 import com.github.groupa.client.views.View;
@@ -76,9 +77,10 @@ public class MenuBar {
 							.uploadImage(new TypedFile("image/*", chooser
 									.getSelectedFile()));
 
-					ImageObject imageObject = Main.injector
-							.getInstance(ImageObject.class);
-					imageObject.setId(imageInfo.getImage().getId());
+					ImageObjectFactory imageObjectFactory = Main.injector
+							.getInstance(ImageObjectFactory.class);
+					ImageObject imageObject = imageObjectFactory
+							.create(imageInfo.getImage().getId());
 
 					library.add(imageObject);
 
