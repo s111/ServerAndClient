@@ -61,6 +61,16 @@ public class ImageObject {
 		return imageRaw;
 	}
 
+	public void loadImageWithCallback(final Callback<Image> callback) {
+		new Thread(new Runnable() {
+			@Override
+			public void run() {
+				loadImage();
+				callback.success(imageRaw);
+			}
+		}).start();
+	}
+
 	public ImageInfo getImageInfo() {
 		// We need to check with the server for actual changes, for now just
 		// always load image info
