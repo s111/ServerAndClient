@@ -11,11 +11,14 @@ public class ImageController extends Controller {
 	public static Result getImages(int offset, int limit) {
 		if (isNotWithinBoundaries(offset, limit))
 			return badRequest();
-		
-		if (limit == 0) limit = ImageModel.getAll().size();
 
-		ImageModelList imageModelList = new ImageModelList(request(), offset, limit);
-		
+		if (limit == 0) {
+			limit = ImageModel.getRowCount();
+		}
+
+		ImageModelList imageModelList = new ImageModelList(request(), offset,
+				limit);
+
 		JsonNode imageListNode = imageModelList.generateJSON();
 
 		return ok(imageListNode);

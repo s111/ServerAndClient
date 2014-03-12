@@ -73,7 +73,7 @@ public class ImageModelList {
 		int numRows = ImageModel.getRowCount();
 		int pages = 0;
 
-		if (pages != 0) {
+		if (limit != 0) {
 			pages = numRows / limit;
 		}
 
