@@ -8,9 +8,17 @@ import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import retrofit.mime.TypedFile;
+
+import com.github.groupa.client.ImageObject;
+import com.github.groupa.client.Library;
+import com.github.groupa.client.Main;
 import com.github.groupa.client.MainFrame;
+import com.github.groupa.client.jsonobjects.ImageInfo;
+import com.github.groupa.client.servercommunication.RESTService;
 import com.github.groupa.client.views.View;
 
 public class MenuBar {
@@ -18,10 +26,14 @@ public class MenuBar {
 	private JMenuItem importItem, imageViewItem;
 
 	private MainFrame mainFrame;
+	private RESTService restService;
+	private Library library;
 
 	@Inject
-	public MenuBar(MainFrame mainFrame) {
+	public MenuBar(MainFrame mainFrame, Library library, RESTService restService) {
 		this.mainFrame = mainFrame;
+		this.library = library;
+		this.restService = restService;
 
 		setUpMenuBar();
 	}
@@ -60,8 +72,18 @@ public class MenuBar {
 				int returnVal = chooser.showOpenDialog(null);
 
 				if (returnVal == JFileChooser.APPROVE_OPTION) {
-					System.out.println("You chose to open this file: "
-							+ chooser.getSelectedFile().getName());
+					ImageInfo imageInfo = restService
+							.uploadImage(new TypedFile("image/*", chooser
+									.getSelectedFile()));
+
+					ImageObject imageObject = Main.injector
+							.getInstance(ImageObject.class);
+					imageObject.setId(imageInfo.getImage().getId());
+
+					library.add(imageObject);
+
+					JOptionPane.showMessageDialog(mainFrame.getFrame(),
+							"Image uploaded!");
 				}
 			}
 		});
