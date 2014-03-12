@@ -1,6 +1,5 @@
 package com.github.groupa.client.views;
 
-import java.awt.AlphaComposite;
 import java.awt.BorderLayout;
 import java.awt.Graphics2D;
 import java.awt.GridLayout;
@@ -9,7 +8,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 
@@ -23,6 +21,8 @@ import javax.swing.JComponent;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.KeyStroke;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
 
 import com.github.groupa.client.Callback;
 import com.github.groupa.client.ImageObject;
@@ -52,6 +52,8 @@ public class ImageView {
 
 	private EventBus eventBus;
 
+	private JPanel picturePanel;
+
 	@Inject
 	public ImageView(EventBus eventBus, MainFrame mainFrame, Library library) {
 		this.eventBus = eventBus;
@@ -63,6 +65,7 @@ public class ImageView {
 
 	private void setUpImageViewer() {
 		mainPanel = new JPanel();
+
 		mainPanel.setLayout(new BorderLayout());
 
 		addPanelsToMainPanel();
@@ -135,21 +138,40 @@ public class ImageView {
 	}
 
 	private JPanel createPicturePanel() {
-		final JPanel picturePanel = new JPanel();
+		picturePanel = new JPanel();
 
 		picturePanel.add(imageLabel);
 
 		picturePanel.addComponentListener(new ComponentAdapter() {
 			@Override
 			public void componentResized(ComponentEvent arg0) {
-				int width = picturePanel.getWidth();
-				int height = picturePanel.getHeight();
-				BufferedImage resizedImage = resizeImage(width, height);
-				updateImage(resizedImage);
+				resizeToPanel();
+			}
+		});
+
+		picturePanel.addAncestorListener(new AncestorListener() {
+			@Override
+			public void ancestorRemoved(AncestorEvent event) {
+			}
+
+			@Override
+			public void ancestorMoved(AncestorEvent event) {
+			}
+
+			@Override
+			public void ancestorAdded(AncestorEvent event) {
+				resizeToPanel();
 			}
 		});
 
 		return picturePanel;
+	}
+
+	private void resizeToPanel() {
+		int width = picturePanel.getWidth();
+		int height = picturePanel.getHeight();
+		BufferedImage resizedImage = resizeImage(width, height);
+		updateImage(resizedImage);
 	}
 
 	private JPanel createLeftPanel() {
@@ -220,7 +242,7 @@ public class ImageView {
 			}
 		});
 	}
-	
+
 	public void activateImageView() {
 		setImage(library.getImage());
 	}
