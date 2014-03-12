@@ -21,7 +21,7 @@ public class Global extends GlobalSettings {
 			String filenameInDatabase = ImageUploader.IMAGE_DIRECTORY
 					+ filename;
 
-			if (filename.matches("^(.+).png$")) {
+			if (filename.matches("^(.+).(png|jpg)$")) {
 				if (filename.contains("thumb"))
 					continue;
 				if (ImageModel.find.where().eq("filename", filenameInDatabase)
