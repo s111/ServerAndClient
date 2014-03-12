@@ -20,6 +20,7 @@ import com.github.groupa.client.MainFrame;
 import com.github.groupa.client.factories.ImageObjectFactory;
 import com.github.groupa.client.jsonobjects.ImageInfo;
 import com.github.groupa.client.servercommunication.RESTService;
+import com.github.groupa.client.views.ImageView;
 import com.github.groupa.client.views.View;
 
 public class MenuBar {
@@ -29,13 +30,15 @@ public class MenuBar {
 	private MainFrame mainFrame;
 	private RESTService restService;
 	private Library library;
+	private ImageView imageView;
 
 	@Inject
-	public MenuBar(MainFrame mainFrame, Library library, RESTService restService) {
+	public MenuBar(MainFrame mainFrame, Library library, RESTService restService, ImageView imageView) {
 		this.mainFrame = mainFrame;
 		this.library = library;
 		this.restService = restService;
-
+		this.imageView = imageView;
+		
 		setUpMenuBar();
 	}
 
@@ -94,6 +97,7 @@ public class MenuBar {
 			@Override
 			public void actionPerformed(ActionEvent event) {
 				mainFrame.showView(View.IMAGE_VIEW);
+				imageView.activateImageView();
 			}
 		});
 	}

@@ -10,6 +10,7 @@ import com.github.groupa.client.MainFrame;
 import com.github.groupa.client.RESTErrorHandler;
 import com.github.groupa.client.factories.ImageObjectFactory;
 import com.github.groupa.client.servercommunication.RESTService;
+import com.github.groupa.client.views.ImageView;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
@@ -22,6 +23,7 @@ public class DIModule extends AbstractModule {
 		bind(EventBus.class).in(Singleton.class);
 		bind(MainFrame.class).in(Singleton.class);
 		bind(Library.class).in(Singleton.class);
+		bind(ImageView.class).in(Singleton.class);
 
 		install(new FactoryModuleBuilder().build(ImageObjectFactory.class));
 	}

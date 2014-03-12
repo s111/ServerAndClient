@@ -53,9 +53,6 @@ public class ImageView {
 		this.library = library;
 
 		setUpImageViewer();
-
-		ImageObject image = library.getImage();
-		setImage(image);
 	}
 
 	private void setUpImageViewer() {
@@ -208,6 +205,10 @@ public class ImageView {
 			public void failure() {
 			}
 		});
+	}
+	
+	public void activateImageView() {
+		setImage(library.getImage());
 	}
 
 	public JPanel getPanel() {
