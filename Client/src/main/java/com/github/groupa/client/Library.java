@@ -5,6 +5,8 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 
+import com.google.inject.Inject;
+
 public class Library {
 	public enum ConstraintType {
 		HAS_IMAGE, HAS_TAG,
@@ -14,7 +16,7 @@ public class Library {
 	private List<ImageObject> images = new ArrayList<>();
 	private int activeImage = 0;
 
-	private Library parent;
+	private Library parent = null;
 
 	private List<Constraint> constraints = new LinkedList<>();
 
@@ -106,11 +108,11 @@ public class Library {
 		return img;
 	}
 
+	@Inject
 	public Library() {
-		parent = null;
 	}
-
-	public Library(Library parent) {
+	
+	public void setParent(Library parent) {
 		this.parent = parent;
 		this.modCount = parent.getModCount();
 		refresh();
@@ -140,6 +142,16 @@ public class Library {
 
 	public ImageObject getPrevImage() {
 		return get(activeImage - 1);
+	}
+	
+	public void setActiveImage(ImageObject image) {
+		long id = image.getId();
+		for (int i = 0; i < images.size(); i++) {
+			if (images.get(i).getId() == id) {
+				activeImage = i;
+				break;
+			}
+		}
 	}
 
 	public int imageCount() {
