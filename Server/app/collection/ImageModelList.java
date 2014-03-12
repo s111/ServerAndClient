@@ -49,7 +49,7 @@ public class ImageModelList {
 
 			imageShort.setId(id);
 			imageShort.setHref(routes.GetImage.info(id).absoluteURL(request));
-			
+
 			images.add(imageShort);
 		}
 
@@ -71,7 +71,12 @@ public class ImageModelList {
 
 	private int calculateLastOffset() {
 		int numRows = ImageModel.getRowCount();
-		int pages = numRows / limit;
+		int pages = 0;
+
+		if (pages != 0) {
+			pages = numRows / limit;
+		}
+
 		int lastOffset = pages * limit;
 
 		return lastOffset;

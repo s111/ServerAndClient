@@ -143,7 +143,10 @@ public class ImageModel extends Model {
 
 		PagingList<ImageModel> imageModels = find.findPagingList(limit);
 
-		int page = offset / limit;
+		int page = 0;
+		if (limit != 0) {
+			page = offset / limit;
+		}
 
 		Page<ImageModel> imagesOnPage = imageModels.getPage(page);
 
