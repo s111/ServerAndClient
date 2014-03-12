@@ -17,6 +17,7 @@ import com.github.groupa.client.Callback;
 import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.Library;
 import com.github.groupa.client.MainFrame;
+import com.github.groupa.client.components.SearchField;
 
 public class GridView {
 	private Library library;
@@ -50,6 +51,7 @@ public class GridView {
 		layout = new MigLayout("wrap 4");
 		thumbPanel.setLayout(layout);
 		mainPanel.add(thumbPanel, BorderLayout.SOUTH);
+		mainPanel.add(new SearchField(library).getPanel());
 	}
 
 	private void addThumbsToPanel() {
