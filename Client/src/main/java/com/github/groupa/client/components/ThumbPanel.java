@@ -88,47 +88,54 @@ public class ThumbPanel extends JPanel implements Scrollable {
 	private class Thumb {
 		protected ImageObject img;
 		protected int idx;
-		private JLabel small = null;
-		private JLabel large = null;
+		private JLabel label;
+		private Image small = null;
+		private Image large = null;
 
 		public Thumb(ImageObject img, int idx) {
 			this.img = img;
 			this.idx = idx;
+			label = new JLabel();
+			label.setText("Image not loaded");
 		}
 
 		public JLabel getSmallThumb() {
 			if (small == null) {
-				small = new JLabel("image not loaded");
+				img.loadImageWithCallback(new Callback<Image>() {
+					@Override
+					public void success(Image image) {
+						small = image;
+						label.setText("");
+						label.setIcon(new ImageIcon(image.getScaledInstance(130,
+								-1, Image.SCALE_FAST)));
+					}
+
+					@Override
+					public void failure() {
+						label.setText("Error loading image");
+					}
+				});
 			}
-
-			img.loadImageWithCallback(new Callback<Image>() {
-				@Override
-				public void success(Image image) {
-					small.setText("");
-					small.setIcon(new ImageIcon(image.getScaledInstance(130,
-							-1, Image.SCALE_FAST)));
-				}
-
-				@Override
-				public void failure() {
-				}
-			});
-
-			return small;
+			return label;
 		}
 
 		public JLabel getLargeThumb() {
 			if (large == null) {
-				large = toLabel(300, img.getImageRaw());
+				img.loadImageWithCallback(new Callback<Image>() {
+					@Override
+					public void success(Image image) {
+						large = image;
+						label.setText("");
+						label.setIcon(new ImageIcon(image.getScaledInstance(130,
+								-1, Image.SCALE_FAST)));
+					}
+
+					@Override
+					public void failure() {
+						label.setText("Error loading image");
+					}
+				});
 			}
-			return large;
-		}
-
-		private JLabel toLabel(int width, Image image) {
-			JLabel label = new JLabel();
-			label.setIcon(new ImageIcon(image.getScaledInstance(width, -1,
-					Image.SCALE_FAST)));
-
 			return label;
 		}
 	}
