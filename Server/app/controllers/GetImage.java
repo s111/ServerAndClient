@@ -1,5 +1,8 @@
 package controllers;
 
+import generators.AbsoluteURLGenerator;
+import generators.ImageModelJsonGenerator;
+
 import java.io.File;
 
 import models.ImageModel;
@@ -13,9 +16,15 @@ public class GetImage extends Controller {
 		ImageModel imageModel = ImageModel.get(id);
 
 		if (imageModel == null)
-			return badRequest();
+			return notFound();
 
-		JsonNode imageInfoNode = imageModel.generateImageInfoJSON(request());
+		AbsoluteURLGenerator absoluteURLGenerator = new AbsoluteURLGenerator(
+				imageModel, request());
+
+		ImageModelJsonGenerator imageModelJsonGenerator = new ImageModelJsonGenerator(
+				imageModel, absoluteURLGenerator);
+
+		JsonNode imageInfoNode = imageModelJsonGenerator.toJson();
 
 		return ok(imageInfoNode);
 	}

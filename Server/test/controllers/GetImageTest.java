@@ -9,6 +9,7 @@ import static play.test.Helpers.start;
 import static play.test.Helpers.stop;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import models.ImageModel;
@@ -29,7 +30,7 @@ import com.avaje.ebeaninternal.server.ddl.DdlGenerator;
 
 public class GetImageTest {
 	private List<Long> ids;
-	
+
 	@BeforeClass
 	public static void startApp() {
 		start(fakeApplication());
@@ -51,17 +52,23 @@ public class GetImageTest {
 		ddl.setup((SpiEbeanServer) server, new H2Platform(), config);
 		ddl.runScript(false, ddl.generateDropDdl());
 		ddl.runScript(false, ddl.generateCreateDdl());
-		
+
 		addImagesToDB();
 	}
-	
+
 	private void addImagesToDB() {
-		// Since I can't find a way to reset the database id auto increment, I'm saving the ids
+		// Since I can't find a way to reset the database id auto increment, I'm
+		// saving the ids
 		ids = new ArrayList<>();
-		
+
 		for (int i = 1; i < 10; i++) {
-			ids.add(ImageModel.create(ImageUploader.IMAGE_DIRECTORY + "0" + i + ".png").id);
+			long id = ImageModel.create(ImageUploader.IMAGE_DIRECTORY + "0" + i
+					+ ".png").id;
+
+			ids.add(id);
 		}
+
+		Collections.sort(ids);
 	}
 
 	@Test
@@ -79,16 +86,19 @@ public class GetImageTest {
 
 		isOK(result);
 		isJSON(result);
-		contains(result, "\"next\":\"http:///api/images/" + ids.get(6) +"\"");
+		contains(result, "\"next\":\"http:///api/images/" + ids.get(6) + "\"");
 	}
 
 	@Test
 	public void getImageInfo_for_image_5_expect_previous_image_4() {
 		Result result = callGetImageInfo(ids.get(5));
 
+		System.out.println(ids.toString());
+
 		isOK(result);
 		isJSON(result);
-		contains(result, "\"previous\":\"http:///api/images/" + ids.get(4) + "\"");
+		contains(result, "\"previous\":\"http:///api/images/" + ids.get(4)
+				+ "\"");
 	}
 
 	@Test
@@ -99,7 +109,16 @@ public class GetImageTest {
 		isJSON(result);
 		contains(result, "\"first\":\"http:///api/images/" + ids.get(0) + "\"");
 	}
-	
+
+	@Test
+	public void getImageInfo_for_image_5_expect_last_image_8() {
+		Result result = callGetImageInfo(ids.get(5));
+
+		isOK(result);
+		isJSON(result);
+		contains(result, "\"last\":\"http:///api/images/" + ids.get(8) + "\"");
+	}
+
 	private Result callGetImageInfo(long id) {
 		return callAction(controllers.routes.ref.GetImage.info(id));
 	}

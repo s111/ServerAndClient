@@ -1,5 +1,8 @@
 package controllers;
 
+import generators.AbsoluteURLGenerator;
+import generators.ImageModelJsonGenerator;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -79,8 +82,13 @@ public class ImageUploader extends Controller {
 					+ filename);
 			imageModel.tag(TagModel.create("id:" + imageModel.id));
 
-			JsonNode imageInfoNode = imageModel
-					.generateImageInfoJSON(request());
+			AbsoluteURLGenerator absoluteURLGenerator = new AbsoluteURLGenerator(
+					imageModel, request());
+
+			ImageModelJsonGenerator imageModelJsonGenerator = new ImageModelJsonGenerator(
+					imageModel, absoluteURLGenerator);
+
+			JsonNode imageInfoNode = imageModelJsonGenerator.toJson();
 
 			return created(imageInfoNode);
 		} else {

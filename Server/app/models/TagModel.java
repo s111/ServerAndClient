@@ -7,8 +7,6 @@ import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import play.db.ebean.Model;
 
 @Entity
@@ -17,9 +15,8 @@ public class TagModel extends Model {
 
 	@Id
 	public String name;
-	
+
 	@ManyToMany
-	@JsonIgnore
 	public List<ImageModel> images = new ArrayList<>();
 
 	public static Finder<Long, TagModel> find = new Finder<>(Long.class,
@@ -28,7 +25,7 @@ public class TagModel extends Model {
 	public TagModel(String name) {
 		this.name = name;
 	}
-	
+
 	public static TagModel create(String name) {
 		TagModel tagModel = new TagModel(name);
 		tagModel.save();
@@ -38,9 +35,10 @@ public class TagModel extends Model {
 
 	public static TagModel get(String name) {
 		TagModel tagModel = find.where().eq("name", name).findUnique();
-		
-		if (tagModel == null) tagModel = create(name);
-		
+
+		if (tagModel == null)
+			tagModel = create(name);
+
 		return tagModel;
 	}
 
