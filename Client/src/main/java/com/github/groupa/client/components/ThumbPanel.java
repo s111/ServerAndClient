@@ -26,6 +26,7 @@ import net.miginfocom.swing.MigLayout;
 import com.github.groupa.client.Callback;
 import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.Library;
+import com.github.groupa.client.SingleLibrary;
 import com.github.groupa.client.MainFrame;
 import com.github.groupa.client.views.ImageView;
 import com.github.groupa.client.views.View;

@@ -63,7 +63,7 @@ public class ImageRater {
 			buttons[i].addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent action) {
-					ImageObject image = library.getImage();
+					ImageObject image = library.getActiveImage();
 
 					if (image == null)
 						return;

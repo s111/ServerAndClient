@@ -14,7 +14,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import retrofit.mime.TypedFile;
 
 import com.github.groupa.client.ImageObject;
-import com.github.groupa.client.Library;
+import com.github.groupa.client.SingleLibrary;
 import com.github.groupa.client.Main;
 import com.github.groupa.client.MainFrame;
 import com.github.groupa.client.factories.ImageObjectFactory;
@@ -29,11 +29,11 @@ public class MenuBar {
 
 	private MainFrame mainFrame;
 	private RESTService restService;
-	private Library library;
+	private SingleLibrary library;
 	private ImageView imageView;
 
 	@Inject
-	public MenuBar(MainFrame mainFrame, Library library, RESTService restService, ImageView imageView) {
+	public MenuBar(MainFrame mainFrame, SingleLibrary library, RESTService restService, ImageView imageView) {
 		this.mainFrame = mainFrame;
 		this.library = library;
 		this.restService = restService;

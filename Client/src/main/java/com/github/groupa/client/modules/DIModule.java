@@ -6,6 +6,7 @@ import retrofit.RestAdapter;
 
 import com.github.groupa.client.Application;
 import com.github.groupa.client.Library;
+import com.github.groupa.client.SingleLibrary;
 import com.github.groupa.client.MainFrame;
 import com.github.groupa.client.RESTErrorHandler;
 import com.github.groupa.client.factories.ImageObjectFactory;
@@ -23,7 +24,7 @@ public class DIModule extends AbstractModule {
 		bind(Application.class).in(Singleton.class);
 		bind(EventBus.class).in(Singleton.class);
 		bind(MainFrame.class).in(Singleton.class);
-		bind(Library.class).in(Singleton.class);
+		bind(Library.class).to(SingleLibrary.class).in(Singleton.class);
 		bind(ImageView.class).in(Singleton.class);
 		bind(GridView.class).in(Singleton.class);
 

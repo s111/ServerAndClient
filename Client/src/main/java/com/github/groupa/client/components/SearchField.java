@@ -9,6 +9,7 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import com.github.groupa.client.Library;
+import com.github.groupa.client.SingleLibrary;
 
 public class SearchField implements ActionListener {
 	private JPanel panel;
@@ -40,7 +41,7 @@ public class SearchField implements ActionListener {
 		String text = searchField.getText();
 		if (text == null || text == "") JOptionPane.showInputDialog("Nothing was entered!");
 		
-		library.addConstraint(Library.ConstraintType.HAS_TAG, text);
+		
 		
 	}
 }

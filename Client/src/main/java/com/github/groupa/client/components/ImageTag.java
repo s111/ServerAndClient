@@ -27,7 +27,7 @@ public class ImageTag implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		ImageObject image = library.getImage();
+		ImageObject image = library.getActiveImage();
 
 		if (image == null)
 			return;

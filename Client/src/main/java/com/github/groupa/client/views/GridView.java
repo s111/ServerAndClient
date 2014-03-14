@@ -7,6 +7,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import com.github.groupa.client.Library;
+import com.github.groupa.client.SingleLibrary;
 import com.github.groupa.client.MainFrame;
 import com.github.groupa.client.components.SearchField;
 import com.github.groupa.client.components.ThumbPanel;
