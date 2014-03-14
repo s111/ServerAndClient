@@ -3,11 +3,14 @@ package com.github.groupa.client;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.github.groupa.client.events.LibraryAddEvent;
+import com.google.common.eventbus.EventBus;
 import com.google.inject.Inject;
 
 public class SingleLibrary implements Library {
 	private List<ImageObject> images = new ArrayList<>();
 	private int activeImage = 0;
+	private EventBus eventBus;
 
 	private ImageObject get(int num) {
 		int count = imageCount();
@@ -22,13 +25,18 @@ public class SingleLibrary implements Library {
 
 	@Override
 	public ImageObject add(ImageObject img) {
-		if (!images.contains(img))
+		if (!images.contains(img)) {
+			int idx = imageCount();
 			images.add(img);
+			eventBus.post(new LibraryAddEvent(this, img, idx));
+		}
+		
 		return img;
 	}
 
 	@Inject
-	public SingleLibrary() {
+	public SingleLibrary(EventBus eventBus) {
+		this.eventBus = eventBus;
 	}
 
 	@Override

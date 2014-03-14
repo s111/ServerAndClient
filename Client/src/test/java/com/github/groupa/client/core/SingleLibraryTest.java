@@ -1,20 +1,24 @@
 package com.github.groupa.client.core;
 import static org.junit.Assert.*;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.github.groupa.client.ImageObject;
-import com.github.groupa.client.Library;
 import com.github.groupa.client.SingleLibrary;
+import com.github.groupa.client.events.LibraryAddEvent;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 
 
 public class SingleLibraryTest {
 	private SingleLibrary library;
+	private EventBus eventBus;
+	private ImageObject expectedImage = null;
+	private int expectedIdx = -1;
 	
 	public void testSetup() {
-		library = new SingleLibrary();
+		eventBus = new EventBus();
+		library = new SingleLibrary(eventBus);
 	}
 	
 	public void testCleanup() {
@@ -28,6 +32,7 @@ public class SingleLibraryTest {
 		testAddAndSize();
 		testEdgeWrap();
 		testActiveImage();
+		testEventBus();
 		testCleanup();
 	}
 	
@@ -70,6 +75,22 @@ public class SingleLibraryTest {
 		assertEquals(img[1], library.getActiveImage());
 	}
 
+	private void testEventBus() {
+		eventBus.register(this);
+		clearLibrary();
+		for (expectedIdx = 0; expectedIdx < 3; expectedIdx++) {
+			expectedImage = getMockImage(expectedIdx);
+			library.add(expectedImage);
+		}
+	}
+	
+	@Subscribe
+	public void libraryAddListener(LibraryAddEvent event) {
+		assertEquals(expectedImage, event.getImage());
+		assertEquals(expectedIdx, event.getIdx());
+		assertEquals(library, event.getLibrary());
+	}
+	
 	private ImageObject getMockImage(long id) {
 		return new MockImageObject(id);
 	}
