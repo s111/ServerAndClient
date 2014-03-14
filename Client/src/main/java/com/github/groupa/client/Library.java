@@ -12,4 +12,5 @@ public interface Library {
 	public ImageObject getActiveImage();
 	public void setActiveImage(ImageObject image);
 	public void setActiveImage(int idx);
+	public boolean hasImage(ImageObject image);
 }

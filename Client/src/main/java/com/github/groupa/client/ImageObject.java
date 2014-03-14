@@ -149,19 +149,19 @@ public class ImageObject {
 	public void rate(int rating) {
 		restService.rateImage(id, rating);
 
-		eventBus.post(new ImageInfoChangedEvent(getImageInfo()));
+		eventBus.post(new ImageInfoChangedEvent(this));
 	}
 
 	public void describe(String description) {
 		restService.describeImage(id, description);
 
-		eventBus.post(new ImageInfoChangedEvent(getImageInfo()));
+		eventBus.post(new ImageInfoChangedEvent(this));
 	}
 
 	public void addTag(String tag) {
 		restService.tagImage(id, tag);
 
-		eventBus.post(new ImageInfoChangedEvent(getImageInfo()));
+		eventBus.post(new ImageInfoChangedEvent(this));
 	}
 
 	public boolean hasTag(String tag) {

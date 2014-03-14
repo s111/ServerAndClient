@@ -9,6 +9,7 @@ import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import com.github.groupa.client.events.DisplayedImageChangedEvent;
 import com.github.groupa.client.events.ImageInfoChangedEvent;
 import com.github.groupa.client.jsonobjects.ImageFull;
 import com.google.common.eventbus.Subscribe;
@@ -79,8 +80,8 @@ public class MetadataField {
 	}
 
 	@Subscribe
-	public void imageInfoChanged(ImageInfoChangedEvent imageInfoChangedEvent) {
-		ImageFull imageFull = imageInfoChangedEvent.getImageFull();
+	public void imageInfoChanged(DisplayedImageChangedEvent event) {
+		ImageFull imageFull = event.getImageObject().getImageInfo().getImage();
 
 		setRating(imageFull.getRating());
 		setDescription(imageFull.getDescription());

@@ -11,7 +11,7 @@ import javax.swing.JRadioButton;
 
 import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.Library;
-import com.github.groupa.client.events.ImageChangedEvent;
+import com.github.groupa.client.events.DisplayedImageChangedEvent;
 import com.google.common.eventbus.Subscribe;
 
 public class ImageRater {
@@ -75,7 +75,7 @@ public class ImageRater {
 	}
 
 	@Subscribe
-	public void imageChanged(ImageChangedEvent imageInfoChangedEvent) {
+	public void imageChanged(DisplayedImageChangedEvent imageInfoChangedEvent) {
 		ratingGroup.clearSelection();
 	}
 }

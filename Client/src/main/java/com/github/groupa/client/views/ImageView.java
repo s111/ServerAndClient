@@ -38,7 +38,7 @@ import com.github.groupa.client.components.ImageRater;
 import com.github.groupa.client.components.ImageTag;
 import com.github.groupa.client.components.MetadataField;
 import com.github.groupa.client.components.SearchField;
-import com.github.groupa.client.events.ImageChangedEvent;
+import com.github.groupa.client.events.DisplayedImageChangedEvent;
 import com.github.groupa.client.events.ImageInfoChangedEvent;
 import com.google.common.eventbus.EventBus;
 
@@ -249,8 +249,7 @@ public class ImageView {
 			return;
 		}
 
-		eventBus.post(new ImageChangedEvent());
-		eventBus.post(new ImageInfoChangedEvent(img.getImageInfo()));
+		eventBus.post(new DisplayedImageChangedEvent(img));
 
 		img.loadImageWithCallback(new Callback<Image>() {
 			@Override
