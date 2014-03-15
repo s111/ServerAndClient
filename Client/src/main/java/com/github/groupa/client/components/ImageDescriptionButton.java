@@ -7,15 +7,15 @@ import javax.swing.JButton;
 import javax.swing.JOptionPane;
 
 import com.github.groupa.client.ImageObject;
-import com.github.groupa.client.Library;
+import com.github.groupa.client.views.ImageView;
 
 public class ImageDescriptionButton implements ActionListener {
 	private JButton button;
 
-	private Library library;
+	private ImageView imageView;
 
-	public ImageDescriptionButton(Library library) {
-		this.library = library;
+	public ImageDescriptionButton(ImageView imageView) {
+		this.imageView = imageView;
 
 		button = new JButton("Add Description");
 		button.addActionListener(this);
@@ -27,7 +27,7 @@ public class ImageDescriptionButton implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent event) {
-		ImageObject image = library.getActiveImage();
+		ImageObject image = imageView.getActiveImageObject();
 
 		if (image == null)
 			return;

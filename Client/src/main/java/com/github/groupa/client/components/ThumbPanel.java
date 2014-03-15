@@ -18,7 +18,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.Scrollable;
 import javax.swing.SwingConstants;
-import javax.swing.UIManager;
 import javax.swing.border.Border;
 
 import net.miginfocom.swing.MigLayout;
@@ -26,29 +25,74 @@ import net.miginfocom.swing.MigLayout;
 import com.github.groupa.client.Callback;
 import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.Library;
-import com.github.groupa.client.SingleLibrary;
-import com.github.groupa.client.MainFrame;
-import com.github.groupa.client.views.ImageView;
+import com.github.groupa.client.events.LibraryAddEvent;
+import com.github.groupa.client.events.SwitchViewEvent;
+import com.github.groupa.client.views.GridView;
 import com.github.groupa.client.views.View;
-import com.google.inject.Inject;
+import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 
+@SuppressWarnings("serial")
 public class ThumbPanel extends JPanel implements Scrollable {
-	private final List<Thumb> thumbs = new ArrayList<>();
-	private Library library;
-	private ImageView imageView;
-	private MainFrame mainFrame;
+	private List<Thumb> thumbs = null;
 	private MigLayout layout = new MigLayout("wrap 4");
+	private EventBus eventBus;
+	private GridView gridView;
 
-	@Inject
-	public ThumbPanel(Library library, ImageView imageView, MainFrame mainFrame) {
+	public ThumbPanel(EventBus eventBus, GridView gridView) {
 		super();
-		this.library = library;
-		this.imageView = imageView;
-		this.mainFrame = mainFrame;
+		this.eventBus = eventBus;
+		this.gridView = gridView;
+		eventBus.register(this);
 		setLayout(layout);
-		generateThumbs();
-		addThumbsToPanel();
 		addListeners();
+	}
+	
+	@Subscribe
+	public void switchViewListener(SwitchViewEvent event) {
+		if (event.hasSwitched() && View.GRID_VIEW.equals(event.getView())) {
+			generateThumbs();
+			addThumbsToPanel();
+		}
+	}
+	
+	@Subscribe
+	public void libraryAddImageListener(LibraryAddEvent event) {
+		if (event.getLibrary().equals(gridView.getLibrary())) {
+			ImageObject image = event.getImage();
+			Thumb thumb = new Thumb(image);
+			thumbs.add(thumb);
+			addThumbToPanel(thumb);
+		}
+	}
+
+	@Override
+	public Dimension getPreferredScrollableViewportSize() {
+		return new Dimension(640, 480);
+	}
+
+	@Override
+	public int getScrollableBlockIncrement(Rectangle visibleRect,
+			int orientation, int direction) {
+		if (orientation == SwingConstants.VERTICAL) {
+			return 120;
+		}
+		return 0;
+	}
+
+	@Override
+	public boolean getScrollableTracksViewportHeight() {
+		return false;
+	}
+
+	@Override
+	public boolean getScrollableTracksViewportWidth() {
+		return false;
+	}
+
+	@Override
+	public int getScrollableUnitIncrement(Rectangle arg0, int arg1, int arg2) {
+		return 10;
 	}
 
 	private void addListeners() {
@@ -74,32 +118,36 @@ public class ThumbPanel extends JPanel implements Scrollable {
 	private void addThumbsToPanel() {
 		removeAll();
 		for (Thumb thumb : thumbs) {
-			Component component = thumb.getSmallThumb();
-			add(component);
-			component.addMouseListener(new ThumbListener(thumb));
+			addThumbToPanel(thumb);
 		}
 	}
 
+	private void addThumbToPanel(Thumb thumb) {
+		Component component = thumb.getSmallThumb();
+		add(component);
+		component.addMouseListener(new ThumbListener(thumb));
+	}
+	
 	private void generateThumbs() {
+		Library library = gridView.getLibrary();
+		if (library == null) return;
 		int imageCount = library.imageCount();
-		thumbs.clear();
+		thumbs = new ArrayList<>();
 		for (int i = 0; i < imageCount; i++) {
 			ImageObject image = library.getImage(i);
-			Thumb thumb = new Thumb(image, i);
+			Thumb thumb = new Thumb(image);
 			thumbs.add(thumb);
 		}
 	}
 
 	private class Thumb {
 		protected ImageObject img;
-		protected int idx;
 		private JLabel label;
 		private Image small = null;
 		private Image large = null;
 
-		public Thumb(ImageObject img, int idx) {
+		public Thumb(ImageObject img) {
 			this.img = img;
-			this.idx = idx;
 			label = new JLabel();
 			label.setText("Image not loaded");
 		}
@@ -177,12 +225,9 @@ public class ThumbPanel extends JPanel implements Scrollable {
 							}
 						}
 					}
-					//TODO: Make this useful
 				}
 				if (arg0.getClickCount() == 2) {
-					library.setActiveImage(thumb.img);
-					mainFrame.showView(View.IMAGE_VIEW);
-					imageView.activateImageView();
+					eventBus.post(new SwitchViewEvent(View.IMAGE_VIEW, thumb.img));
 				}
 			}
 		}
@@ -202,34 +247,5 @@ public class ThumbPanel extends JPanel implements Scrollable {
 		@Override
 		public void mouseReleased(MouseEvent arg0) {
 		}
-	}
-
-	@Override
-	public Dimension getPreferredScrollableViewportSize() {
-		return new Dimension(640, 480);
-	}
-
-	@Override
-	public int getScrollableBlockIncrement(Rectangle visibleRect,
-			int orientation, int direction) {
-		if (orientation == SwingConstants.VERTICAL) {
-			return 120;
-		}
-		return 0;
-	}
-
-	@Override
-	public boolean getScrollableTracksViewportHeight() {
-		return false;
-	}
-
-	@Override
-	public boolean getScrollableTracksViewportWidth() {
-		return false;
-	}
-
-	@Override
-	public int getScrollableUnitIncrement(Rectangle arg0, int arg1, int arg2) {
-		return 10;
 	}
 }

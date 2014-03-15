@@ -111,8 +111,9 @@ public class Application {
 
 	private void setUpViews() {
 		ImageView imageView = Main.injector.getInstance(ImageView.class);
+		imageView.setLibrary(library);
 		GridView gridView = Main.injector.getInstance(GridView.class);
-
+		gridView.setLibrary(library);
 		mainFrame.addView(imageView.getPanel(), View.IMAGE_VIEW);
 		mainFrame.addView(gridView.getPanel(), View.GRID_VIEW);
 		mainFrame.showView(View.GRID_VIEW);

@@ -31,21 +31,23 @@ import javax.swing.event.AncestorListener;
 import com.github.groupa.client.Callback;
 import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.Library;
-import com.github.groupa.client.SingleLibrary;
-import com.github.groupa.client.MainFrame;
 import com.github.groupa.client.components.ImageDescriptionButton;
 import com.github.groupa.client.components.ImageRater;
 import com.github.groupa.client.components.ImageTag;
 import com.github.groupa.client.components.MetadataField;
 import com.github.groupa.client.components.SearchField;
 import com.github.groupa.client.events.DisplayedImageChangedEvent;
-import com.github.groupa.client.events.ImageInfoChangedEvent;
+import com.github.groupa.client.events.SwitchViewEvent;
 import com.google.common.eventbus.EventBus;
+import com.google.common.eventbus.Subscribe;
 
 public class ImageView {
-	private Library library;
+	private Library library = null;
+	private ImageObject activeImageObject = null;
+	private int displayedImageIndex = 0;
 
 	private JPanel mainPanel;
+	private JPanel picturePanel;
 
 	private JLabel imageLabel = new JLabel("image not loaded");
 
@@ -53,24 +55,86 @@ public class ImageView {
 	private JButton previousButton = new JButton("<=");
 	private JButton previousViewButton = new JButton("<= Previous view");
 
-	private MainFrame mainFrame;
-
 	private EventBus eventBus;
 
-	private JPanel picturePanel;
-
 	@Inject
-	public ImageView(EventBus eventBus, MainFrame mainFrame, Library library) {
+	public ImageView(EventBus eventBus) {
 		this.eventBus = eventBus;
-		this.mainFrame = mainFrame;
-		this.library = library;
 
+		eventBus.register(this);
 		setUpImageViewer();
+	}
+
+	@Subscribe
+	public void switchViewListener(SwitchViewEvent event) {
+		if (event.hasSwitched() && View.IMAGE_VIEW.equals(event.getView())) {
+			ImageObject img = event.getImageObject();
+			if (img != null) {
+				if (library == null) return;
+				int idx = library.indexOf(img);
+				if (idx < 0) return;
+				displayedImageIndex = idx;
+			}
+			setImage(displayedImageIndex);
+		}
+	}
+
+	public JPanel getPanel() {
+		return mainPanel;
+	}
+
+	public ImageObject getActiveImageObject() {
+		return activeImageObject;
+	}
+
+	public void setLibrary(Library library) {
+		this.library = library;
+		activeImageObject = null;
+		displayedImageIndex = 0;
+		imageLabel.setText("");
+		imageLabel.setIcon(null);
+	}
+
+	public Library getLibrary() {
+		return library;
+	}
+
+	public void displayNextImage() {
+		setImage(displayedImageIndex + 1);
+	}
+
+	public void displayPreviousImage() {
+		setImage(displayedImageIndex - 1);
+	}
+
+	private void setImage(int idx) {
+		if (library == null) {
+			throw new IllegalStateException("Library not available");
+		}
+		int count = library.imageCount();
+		if (count == 0) {
+			return;
+		}
+		displayedImageIndex = (count + idx) % count;
+		activeImageObject = library.getImage(displayedImageIndex);
+
+		eventBus.post(new DisplayedImageChangedEvent(activeImageObject));
+
+		activeImageObject.loadImageWithCallback(new Callback<Image>() {
+			@Override
+			public void success(Image image) {
+				updateImage(image);
+				resizeToPanel();
+			}
+
+			@Override
+			public void failure() {
+			}
+		});
 	}
 
 	private void setUpImageViewer() {
 		mainPanel = new JPanel();
-
 		mainPanel.setLayout(new BorderLayout());
 
 		addPanelsToMainPanel();
@@ -80,7 +144,8 @@ public class ImageView {
 
 	@SuppressWarnings("serial")
 	private void addKeyBindings() {
-		InputMap inputMap = mainPanel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+		InputMap inputMap = mainPanel
+				.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
 		ActionMap actionMap = mainPanel.getActionMap();
 
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), "keyLeft");
@@ -119,32 +184,22 @@ public class ImageView {
 		previousViewButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent action) {
-				mainFrame.showLastView();
+				eventBus.post(new SwitchViewEvent(View.PREVIOUS));
 			}
 		});
 
 	}
 
-	public void displayNextImage() {
-		setImage(library.getNextImage());
-	}
-
-	public void displayPreviousImage() {
-		setImage(library.getPrevImage());
-	}
-
 	private JPanel createTopPanel() {
 		JPanel topPanel = new JPanel();
-
 		topPanel.add(previousViewButton);
-		topPanel.add(new SearchField(library).getPanel());
+		topPanel.add(new SearchField(this).getPanel());
 
 		return topPanel;
 	}
 
 	private JPanel createPicturePanel() {
 		picturePanel = new JPanel();
-
 		picturePanel.add(imageLabel);
 
 		picturePanel.addComponentListener(new ComponentAdapter() {
@@ -173,61 +228,43 @@ public class ImageView {
 		return picturePanel;
 	}
 
-	private void resizeToPanel() {
-		ImageObject imageObject = library.getActiveImage();
-
-		if (imageObject == null) {
-			return;
-		}
-
-		Image image = imageObject.getImageRaw();
-
-		int width = picturePanel.getWidth();
-		int height = picturePanel.getHeight();
-
-		if (image == null) {
-			return;
-		}
-
-		BufferedImage resizedImage = resizeImage(image, width, height);
-		updateImage(resizedImage);
-	}
-
 	private JPanel createLeftPanel() {
 		JPanel leftPanel = new JPanel();
 		leftPanel.setLayout(new GridLayout(0, 1));
-		leftPanel.add(new ImageDescriptionButton(library).getButton());
-		leftPanel.add(new ImageTag(library).getTagButton());
+		leftPanel.add(new ImageDescriptionButton(this).getButton());
+		leftPanel.add(new ImageTag(this).getTagButton());
 
 		return leftPanel;
 	}
 
 	private JPanel createBottomPanel() {
 		JPanel bottomPanel = new JPanel();
-
-		ImageRater imageRate = new ImageRater(library);
-
-		eventBus.register(imageRate);
-
+		ImageRater imageRate = new ImageRater(this);
 		bottomPanel.add(previousButton);
 		bottomPanel.add(imageRate.getPanel());
 		bottomPanel.add(nextButton);
 
+		eventBus.register(imageRate);
 		return bottomPanel;
 	}
 
 	private JPanel createRightPanel() {
 		JPanel rightPanel = new JPanel();
-
-		MetadataField metadataField = new MetadataField();
-
-		eventBus.register(metadataField);
-
+		MetadataField metadataField = new MetadataField(this);
 		rightPanel.add(metadataField.getPanel());
-
 		setTitledEtchedBorder("Metadata", rightPanel);
 
+		eventBus.register(metadataField);
 		return rightPanel;
+	}
+
+	private void setTitledEtchedBorder(String title, JPanel pane) {
+		Border loweredetched = BorderFactory
+				.createEtchedBorder(EtchedBorder.LOWERED);
+		TitledBorder border = BorderFactory.createTitledBorder(loweredetched,
+				title);
+
+		pane.setBorder(border);
 	}
 
 	private void addPanelsToMainPanel() {
@@ -244,44 +281,21 @@ public class ImageView {
 		mainPanel.add(rightPanel, BorderLayout.EAST);
 	}
 
-	private void setImage(ImageObject img) {
-		if (img == null) {
+	private void resizeToPanel() {
+		if (library == null || activeImageObject == null)
+			return;
+
+		Image image = activeImageObject.getImageRaw();
+
+		int width = picturePanel.getWidth();
+		int height = picturePanel.getHeight();
+
+		if (image == null) {
 			return;
 		}
 
-		eventBus.post(new DisplayedImageChangedEvent(img));
-
-		img.loadImageWithCallback(new Callback<Image>() {
-			@Override
-			public void success(Image image) {
-				updateImage(image);
-				resizeToPanel();
-			}
-
-			@Override
-			public void failure() {
-			}
-		});
-	}
-
-	public void setTitledEtchedBorder(String title, JPanel pane) {
-		TitledBorder border;
-
-		Border loweredetched;
-
-		loweredetched = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED);
-
-		border = BorderFactory.createTitledBorder(loweredetched, title);
-
-		pane.setBorder(border);
-	}
-
-	public void activateImageView() {
-		setImage(library.getActiveImage());
-	}
-
-	public JPanel getPanel() {
-		return mainPanel;
+		BufferedImage resizedImage = resizeImage(image, width, height);
+		updateImage(resizedImage);
 	}
 
 	private void updateImage(Image image) {
@@ -290,7 +304,8 @@ public class ImageView {
 	}
 
 	private BufferedImage resizeImage(Image image, int width, int height) {
-		final BufferedImage resizedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+		final BufferedImage resizedImage = new BufferedImage(width, height,
+				BufferedImage.TYPE_INT_RGB);
 		final Graphics2D g = resizedImage.createGraphics();
 		g.drawImage(image, 0, 0, width, height, null);
 		g.dispose();

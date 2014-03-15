@@ -10,8 +10,8 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 
 import com.github.groupa.client.ImageObject;
-import com.github.groupa.client.Library;
 import com.github.groupa.client.events.DisplayedImageChangedEvent;
+import com.github.groupa.client.views.ImageView;
 import com.google.common.eventbus.Subscribe;
 
 public class ImageRater {
@@ -21,13 +21,10 @@ public class ImageRater {
 	private String names[] = { "1", "2", "3", "4", "5" };
 	private JPanel panel = new JPanel();
 
-	private Library library;
-
 	private ButtonGroup ratingGroup;
-
-	public ImageRater(Library library) {
-		this.library = library;
-
+	private ImageView imageView;
+	public ImageRater(ImageView imageView) {
+		this.imageView = imageView;
 		panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
 
 		createRadioButtons();
@@ -63,7 +60,7 @@ public class ImageRater {
 			buttons[i].addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent action) {
-					ImageObject image = library.getActiveImage();
+					ImageObject image = imageView.getActiveImageObject();
 
 					if (image == null)
 						return;

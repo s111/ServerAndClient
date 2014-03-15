@@ -16,28 +16,26 @@ import retrofit.mime.TypedFile;
 import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.SingleLibrary;
 import com.github.groupa.client.Main;
-import com.github.groupa.client.MainFrame;
+import com.github.groupa.client.events.SwitchViewEvent;
 import com.github.groupa.client.factories.ImageObjectFactory;
 import com.github.groupa.client.jsonobjects.ImageInfo;
 import com.github.groupa.client.servercommunication.RESTService;
-import com.github.groupa.client.views.ImageView;
 import com.github.groupa.client.views.View;
+import com.google.common.eventbus.EventBus;
 
 public class MenuBar {
 	private JMenuBar menuBar;
 	private JMenuItem importItem, imageViewItem;
 
-	private MainFrame mainFrame;
 	private RESTService restService;
 	private SingleLibrary library;
-	private ImageView imageView;
+	private EventBus eventBus;
 
 	@Inject
-	public MenuBar(MainFrame mainFrame, SingleLibrary library, RESTService restService, ImageView imageView) {
-		this.mainFrame = mainFrame;
+	public MenuBar(EventBus eventBus, SingleLibrary library, RESTService restService) {
+		this.eventBus = eventBus;
 		this.library = library;
 		this.restService = restService;
-		this.imageView = imageView;
 		
 		setUpMenuBar();
 	}
@@ -87,8 +85,7 @@ public class MenuBar {
 
 					library.add(imageObject);
 
-					JOptionPane.showMessageDialog(mainFrame.getFrame(),
-							"Image uploaded!");
+					JOptionPane.showMessageDialog(null, "Image uploaded!");
 				}
 			}
 		});
@@ -96,8 +93,7 @@ public class MenuBar {
 		imageViewItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				mainFrame.showView(View.IMAGE_VIEW);
-				imageView.activateImageView();
+				eventBus.post(new SwitchViewEvent(View.IMAGE_VIEW));
 			}
 		});
 	}

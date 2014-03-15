@@ -3,15 +3,16 @@ package com.github.groupa.client.components;
 import java.awt.Dimension;
 import java.awt.Font;
 
-import javax.inject.Inject;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.events.DisplayedImageChangedEvent;
 import com.github.groupa.client.events.ImageInfoChangedEvent;
 import com.github.groupa.client.jsonobjects.ImageFull;
+import com.github.groupa.client.views.ImageView;
 import com.google.common.eventbus.Subscribe;
 
 public class MetadataField {
@@ -23,9 +24,10 @@ public class MetadataField {
 	private JLabel descriptionLabel = new JLabel();
 	private JLabel tagsLabel = new JLabel();
 	private JLabel ratingLabel = new JLabel();
+	private ImageView imageView;
 
-	@Inject
-	public MetadataField() {
+	public MetadataField(ImageView imageView) {
+		this.imageView = imageView;
 		panel = new JPanel();
 
 		setUpPanels();
@@ -45,6 +47,18 @@ public class MetadataField {
 
 	public void setRating(Integer rating) {
 		ratingLabel.setText(rating.toString());
+	}
+	
+	@Subscribe
+	public void imageInfoChanged(ImageInfoChangedEvent event) {
+		ImageObject image = event.getImageObject();
+		if (image.equals(imageView.getActiveImageObject())) {
+			updateFields(image);
+		}
+	}
+	@Subscribe
+	public void displayedImageChangeListener(DisplayedImageChangedEvent event) {
+		updateFields(event.getImageObject());
 	}
 
 	private void setUpPanels() {
@@ -79,9 +93,8 @@ public class MetadataField {
 		panel.add(Box.createRigidArea(filler));
 	}
 
-	@Subscribe
-	public void imageInfoChanged(DisplayedImageChangedEvent event) {
-		ImageFull imageFull = event.getImageObject().getImageInfo().getImage();
+	private void updateFields(ImageObject image) {
+		ImageFull imageFull = image.getImageInfo().getImage();
 
 		setRating(imageFull.getRating());
 		setDescription(imageFull.getDescription());

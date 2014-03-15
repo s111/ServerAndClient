@@ -9,42 +9,46 @@ import com.google.common.eventbus.Subscribe;
 
 public class ImageFinder implements Library {
 	private Library parent;
-	private List<Integer> idxList;
+	private List<ImageObject> images;
+	
 	public enum ConstraintType {
 		HAS_IMAGE, HAS_TAG,
 	}
 
 	private List<Constraint> constraints = new LinkedList<>();
 
-	public ImageFinder (Library parent) {
+	public ImageFinder(Library parent) {
 		this.parent = parent;
 		createInitialLibrary();
 	}
-	
+
 	private void createInitialLibrary() {
-		idxList = new ArrayList<>();
-		List<ImageObject> images = parent.getImages();
-		int count = images.size();
-		for (int i = 0; i < count; i++) {
-			ImageObject img = images.get(i);
+		images = new ArrayList<>();
+		for (ImageObject img : parent.getImages()) {
 			if (constraintsSatisfied(img)) {
-				idxList.add(i);
+				images.add(img);
 			}
 		}
 	}
-	
+
 	private boolean constraintsSatisfied(ImageObject img) {
 		for (Constraint constraint : constraints) {
-			if (!constraint.isSatisfied(img)) return false;
+			if (!constraint.isSatisfied(img))
+				return false;
 		}
 		return true;
 	}
-	
+
 	@Subscribe
 	public void imageInfoChangedListener(ImageInfoChangedEvent event) {
-		if (event.)
+		ImageObject image = event.getImageObject();
+		if (parent.hasImage(image) && constraintsSatisfied(image)
+				&& !images.contains(image)) {
+			images.add(image);
+		} else if (images.contains(image))
+			images.remove(image);
 	}
-	
+
 	public ImageFinder addConstraint(ConstraintType type) {
 		if (type == ConstraintType.HAS_IMAGE) {
 			constraints.add(new Constraint(type, null, true));
@@ -81,7 +85,7 @@ public class ImageFinder implements Library {
 		}
 		return this;
 	}
-	
+
 	private class Constraint {
 		private ConstraintType type;
 		private Object crit;
@@ -110,50 +114,22 @@ public class ImageFinder implements Library {
 
 	@Override
 	public List<ImageObject> getImages() {
-		// TODO Auto-generated method stub
-		return null;
+		return images;
 	}
 
 	@Override
 	public int imageCount() {
-		// TODO Auto-generated method stub
-		return 0;
+		return images.size();
 	}
 
 	@Override
 	public ImageObject getImage(int idx) {
-		// TODO Auto-generated method stub
-		return null;
+		return get(idx);
 	}
 
 	@Override
-	public ImageObject getNextImage() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public ImageObject getPrevImage() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public ImageObject getActiveImage() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void setActiveImage(ImageObject image) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void setActiveImage(int idx) {
-		// TODO Auto-generated method stub
-		
+	public boolean hasImage(ImageObject image) {
+		return images.contains(image);
 	}
 
 }
