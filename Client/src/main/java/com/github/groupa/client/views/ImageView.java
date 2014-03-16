@@ -70,9 +70,14 @@ public class ImageView {
 		if (event.hasSwitched() && View.IMAGE_VIEW.equals(event.getView())) {
 			ImageObject img = event.getImageObject();
 			if (img != null) {
-				if (library == null) return;
+				Library lib = event.getLibrary();
+				if (lib != null)
+					library = lib;
+				if (library == null)
+					return;
 				int idx = library.indexOf(img);
-				if (idx < 0) return;
+				if (idx < 0)
+					return;
 				displayedImageIndex = idx;
 			}
 			setImage(displayedImageIndex);

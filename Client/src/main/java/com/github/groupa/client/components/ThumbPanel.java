@@ -55,9 +55,15 @@ public class ThumbPanel extends JPanel implements Scrollable {
 
 	@Subscribe
 	public void switchViewListener(SwitchViewEvent event) {
-		if (event.hasSwitched() && View.GRID_VIEW.equals(event.getView())
-				&& thumbs == null) {
-			generateInitialThumbs();
+		if (event.hasSwitched() && View.GRID_VIEW.equals(event.getView())) {
+			Library lib = event.getLibrary();
+			if (lib != null) {
+				gridView.setLibrary(lib);
+				thumbs = null;
+			}
+			if (thumbs == null) {
+				generateInitialThumbs();
+			}
 		}
 	}
 
@@ -212,7 +218,7 @@ public class ThumbPanel extends JPanel implements Scrollable {
 					selectedImage(thumb);
 				} else if (arg0.getClickCount() == 2) {
 					eventBus.post(new SwitchViewEvent(View.IMAGE_VIEW,
-							thumb.img));
+							thumb.img, gridView.getLibrary()));
 				}
 			}
 		}
