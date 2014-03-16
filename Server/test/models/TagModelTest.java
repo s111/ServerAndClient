@@ -43,7 +43,7 @@ public class TagModelTest {
 		ddl.runScript(false, ddl.generateDropDdl());
 		ddl.runScript(false, ddl.generateCreateDdl());
 	}
-	
+
 	@Test
 	public void initial_database_size_expect_0() {
 		assertEquals(0, TagModel.find.all().size());
@@ -55,10 +55,7 @@ public class TagModelTest {
 
 		new TagModel(name).save();
 
-		TagModel tagModel = TagModel.find.where()
-				.eq("name", name).findUnique();
-
-		assertNotNull(tagModel);
+		assertNotNull(TagModel.get(name));
 	}
 
 	@Test
@@ -67,21 +64,9 @@ public class TagModelTest {
 
 		new TagModel(name).save();
 
-		int databaseSize = TagModel.find.all().size();
+		int databaseSize = TagModel.getAll().size();
 
 		assertEquals(1, databaseSize);
-	}
-
-	@Test
-	public void create_tag_expect_to_retrieve_tag() {
-		String name = "tagName";
-
-		TagModel.create(name);
-
-		TagModel tagModel = TagModel.find.where()
-				.eq("name", name).findUnique();
-
-		assertNotNull(tagModel);
 	}
 
 	@Test
@@ -90,9 +75,7 @@ public class TagModelTest {
 
 		TagModel.create(name);
 
-		TagModel retrievedTagModel = TagModel.get(name);
-
-		assertNotNull(retrievedTagModel);
+		assertNotNull(TagModel.get(name));
 	}
 
 	@Test
@@ -105,53 +88,52 @@ public class TagModelTest {
 
 		assertEquals(3, databaseSize);
 	}
-	
-	
+
 	@Test
 	public void tag_image_expect_tag_to_contain_one_image() {
 		String filename = ImageUploader.IMAGE_DIRECTORY + "01.png";
 		String tagName = "tag";
-		
+
 		ImageModel imageModel = new ImageModel(filename);
 		TagModel tagModel = TagModel.create(tagName);
-		
+
 		imageModel.tag(tagModel);
-		
-		assertEquals(1, tagModel.images.size());
+
+		assertEquals(1, TagModel.get(tagName).images.size());
 	}
-	
+
 	@Test
 	public void tag_image_twice_expect_tags_to_contain_one_image() {
 		String filename = ImageUploader.IMAGE_DIRECTORY + "01.png";
 		String tag1 = "tag1";
 		String tag2 = "tag2";
-		
+
 		ImageModel imageModel = new ImageModel(filename);
 		TagModel tagModel1 = TagModel.create(tag1);
 		TagModel tagModel2 = TagModel.create(tag2);
-		
+
 		imageModel.tag(tagModel1);
 		imageModel.tag(tagModel2);
-		
-		assertEquals(1, tagModel1.images.size());
-		assertEquals(1, tagModel2.images.size());
+
+		assertEquals(1, TagModel.get(tag1).images.size());
+		assertEquals(1, TagModel.get(tag2).images.size());
 	}
-	
+
 	@Test
 	public void tag_two_images_expect_tag_to_contain_two_images() {
 		String filename1 = ImageUploader.IMAGE_DIRECTORY + "01.png";
 		String filename2 = ImageUploader.IMAGE_DIRECTORY + "02.png";
-		
+
 		String tagName = "tag";
-		
+
 		ImageModel imageModel1 = new ImageModel(filename1);
 		ImageModel imageModel2 = new ImageModel(filename2);
-		
+
 		TagModel tagModel = TagModel.create(tagName);
-		
+
 		imageModel1.tag(tagModel);
 		imageModel2.tag(tagModel);
-		
-		assertEquals(2, tagModel.images.size());
+
+		assertEquals(2, TagModel.get(tagName).images.size());
 	}
 }

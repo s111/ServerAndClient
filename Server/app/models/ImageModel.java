@@ -2,15 +2,14 @@ package models;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 
+import play.Logger;
 import play.data.validation.Constraints.Required;
 import play.db.ebean.Model;
 
@@ -36,7 +35,7 @@ public class ImageModel extends Model implements Comparable<ImageModel> {
 	public List<TagModel> tags = new ArrayList<>();
 
 	@OneToMany(mappedBy = "image")
-	public Map<Integer, ThumbnailModel> thumbnails = new HashMap<>();
+	public List<ThumbnailModel> thumbnails = new ArrayList<>();
 
 	public ImageModel(String filename) {
 		this.filename = filename;
@@ -79,6 +78,8 @@ public class ImageModel extends Model implements Comparable<ImageModel> {
 	public static ImageModel create(String filename) {
 		ImageModel imageModel = new ImageModel(filename);
 		imageModel.save();
+
+		Logger.debug("Added Image to database. {id=" + imageModel.id + "}");
 
 		return imageModel;
 	}
@@ -168,7 +169,7 @@ public class ImageModel extends Model implements Comparable<ImageModel> {
 	}
 
 	public void addThumbnail(ThumbnailModel thumbnailModel) {
-		thumbnails.put(thumbnailModel.size, thumbnailModel);
+		thumbnails.add(thumbnailModel);
 
 		thumbnailModel.image = this;
 

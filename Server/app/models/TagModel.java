@@ -19,7 +19,7 @@ public class TagModel extends Model {
 	@ManyToMany
 	public List<ImageModel> images = new ArrayList<>();
 
-	public static Finder<Long, TagModel> find = new Finder<>(Long.class,
+	public static Finder<String, TagModel> find = new Finder<>(String.class,
 			TagModel.class);
 
 	public TagModel(String name) {
