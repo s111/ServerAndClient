@@ -32,6 +32,7 @@ public class Application {
 
 	private Library library;
 
+	private ImageUploader imageUploader;
 	private RESTService restService;
 
 	private EventBus eventBus;
@@ -45,7 +46,9 @@ public class Application {
 
 		trySettingANativeLookAndFeel();
 		askForBaseURL();
-
+		imageUploader = Main.injector.getInstance(ImageUploader.class);
+		imageUploader.setLibrary(library);
+		
 		restService = Main.injector.getInstance(RESTService.class);
 
 		setUpLibrary();
@@ -108,7 +111,6 @@ public class Application {
 		mainFrame.setTitle("App");
 
 		MenuBar menuBar = Main.injector.getInstance(MenuBar.class);
-
 		mainFrame.setMenuBar(menuBar.getMenuBar());
 
 		setUpViews();
