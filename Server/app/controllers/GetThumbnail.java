@@ -59,7 +59,7 @@ public class GetThumbnail extends Controller {
 
 	private static File getThumbnailFile(ImageModel imageModel, int size)
 			throws IOException {
-		ThumbnailModel thumbnailModel = ThumbnailModel.get(imageModel, size);
+		ThumbnailModel thumbnailModel = ThumbnailModel.get(imageModel.id, size);
 
 		if (thumbnailModel == null) {
 			File rawImage = new File(imageModel.filename);

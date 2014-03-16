@@ -49,8 +49,8 @@ public class ThumbnailModel extends Model {
 		return thumbnailModel;
 	}
 
-	public static ThumbnailModel get(ImageModel imageModel, int size) {
-		ThumbnailModel thumbnailModel = find.where().eq("image", imageModel)
+	public static ThumbnailModel get(long id, int size) {
+		ThumbnailModel thumbnailModel = find.where().eq("image.id", id)
 				.eq("size", size).findUnique();
 
 		return thumbnailModel;

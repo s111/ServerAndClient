@@ -54,7 +54,7 @@ public class ThumbnailTest {
 				+ "01s.png", thumbnailSize);
 
 		assertEquals(imageModel,
-				ThumbnailModel.get(imageModel, thumbnailSize).image);
+				ThumbnailModel.get(imageModel.id, thumbnailSize).image);
 	}
 
 	@Test
@@ -66,6 +66,8 @@ public class ThumbnailTest {
 
 		ImageModel imageModel = ImageModel.create(filename);
 
+		long id = imageModel.id;
+
 		ThumbnailModel.create(imageModel, ImageUploader.IMAGE_DIRECTORY
 				+ "01s.png", xs);
 		ThumbnailModel.create(imageModel, ImageUploader.IMAGE_DIRECTORY
@@ -73,8 +75,8 @@ public class ThumbnailTest {
 		ThumbnailModel.create(imageModel, ImageUploader.IMAGE_DIRECTORY
 				+ "03s.png", m);
 
-		assertEquals(imageModel, ThumbnailModel.get(imageModel, xs).image);
-		assertEquals(imageModel, ThumbnailModel.get(imageModel, s).image);
-		assertEquals(imageModel, ThumbnailModel.get(imageModel, m).image);
+		assertEquals(imageModel, ThumbnailModel.get(id, xs).image);
+		assertEquals(imageModel, ThumbnailModel.get(id, s).image);
+		assertEquals(imageModel, ThumbnailModel.get(id, m).image);
 	}
 }
