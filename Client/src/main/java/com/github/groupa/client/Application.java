@@ -12,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.groupa.client.components.MenuBar;
+import com.github.groupa.client.events.SwitchViewEvent;
 import com.github.groupa.client.factories.ImageObjectFactory;
 import com.github.groupa.client.jsonobjects.ImageList;
 import com.github.groupa.client.jsonobjects.ImageShort;
@@ -19,6 +20,7 @@ import com.github.groupa.client.servercommunication.RESTService;
 import com.github.groupa.client.views.GridView;
 import com.github.groupa.client.views.ImageView;
 import com.github.groupa.client.views.View;
+import com.google.common.eventbus.EventBus;
 
 public class Application {
 	private static final Logger logger = LoggerFactory
@@ -32,10 +34,13 @@ public class Application {
 
 	private RESTService restService;
 
-	@Inject
-	public Application(Library library) {
-		this.library = library;
+	private EventBus eventBus;
 
+	@Inject
+	public Application(EventBus eventBus) {
+		this.eventBus = eventBus;
+		library = new SingleLibrary(eventBus);
+		
 		BasicConfigurator.configure();
 
 		trySettingANativeLookAndFeel();
@@ -116,6 +121,6 @@ public class Application {
 		gridView.setLibrary(library);
 		mainFrame.addView(imageView.getPanel(), View.IMAGE_VIEW);
 		mainFrame.addView(gridView.getPanel(), View.GRID_VIEW);
-		mainFrame.showView(View.GRID_VIEW);
+		eventBus.post(new SwitchViewEvent(View.GRID_VIEW));
 	}
 }

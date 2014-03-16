@@ -5,8 +5,6 @@ import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Rectangle;
-import java.awt.event.ComponentEvent;
-import java.awt.event.ComponentListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.ArrayList;
@@ -35,9 +33,14 @@ import com.google.common.eventbus.Subscribe;
 @SuppressWarnings("serial")
 public class ThumbPanel extends JPanel implements Scrollable {
 	private List<Thumb> thumbs = null;
+	private Thumb lastSelectedThumb = null;
 	private MigLayout layout = new MigLayout("wrap 4");
 	private EventBus eventBus;
 	private GridView gridView;
+
+	private Border lastSelectedImageBorder = BorderFactory.createLineBorder(Color.blue,
+			2);
+	private Border deselectedImageBorder = BorderFactory.createEmptyBorder(2, 2, 2, 2);
 
 	public ThumbPanel(EventBus eventBus, GridView gridView) {
 		super();
@@ -45,24 +48,22 @@ public class ThumbPanel extends JPanel implements Scrollable {
 		this.gridView = gridView;
 		eventBus.register(this);
 		setLayout(layout);
-		addListeners();
 	}
-	
+
 	@Subscribe
 	public void switchViewListener(SwitchViewEvent event) {
-		if (event.hasSwitched() && View.GRID_VIEW.equals(event.getView())) {
-			generateThumbs();
-			addThumbsToPanel();
+		if (event.hasSwitched() && View.GRID_VIEW.equals(event.getView()) && thumbs == null) {
+			generateInitialThumbs();
 		}
 	}
-	
+
 	@Subscribe
 	public void libraryAddImageListener(LibraryAddEvent event) {
 		if (event.getLibrary().equals(gridView.getLibrary())) {
 			ImageObject image = event.getImage();
 			Thumb thumb = new Thumb(image);
 			thumbs.add(thumb);
-			addThumbToPanel(thumb);
+			addThumb(thumb);
 		}
 	}
 
@@ -95,65 +96,34 @@ public class ThumbPanel extends JPanel implements Scrollable {
 		return 10;
 	}
 
-	private void addListeners() {
-		addComponentListener(new ComponentListener() {
-			@Override
-			public void componentHidden(ComponentEvent arg0) {
-			}
-
-			@Override
-			public void componentMoved(ComponentEvent arg0) {
-			}
-
-			@Override
-			public void componentResized(ComponentEvent arg0) {
-			}
-
-			@Override
-			public void componentShown(ComponentEvent arg0) {
-			}
-		});
-	}
-
-	private void addThumbsToPanel() {
-		removeAll();
-		for (Thumb thumb : thumbs) {
-			addThumbToPanel(thumb);
-		}
-	}
-
-	private void addThumbToPanel(Thumb thumb) {
+	private void addThumb(Thumb thumb) {
+		thumbs.add(thumb);
 		Component component = thumb.getSmallThumb();
 		add(component);
 		component.addMouseListener(new ThumbListener(thumb));
 	}
-	
-	private void generateThumbs() {
+
+	private void generateInitialThumbs() {
 		Library library = gridView.getLibrary();
-		if (library == null) return;
-		int imageCount = library.imageCount();
+		if (library == null)
+			return;
 		thumbs = new ArrayList<>();
-		for (int i = 0; i < imageCount; i++) {
-			ImageObject image = library.getImage(i);
-			Thumb thumb = new Thumb(image);
-			thumbs.add(thumb);
+		for (ImageObject image : library.getImages()) {
+			addThumb(new Thumb(image));
 		}
 	}
 
 	private class Thumb {
 		protected ImageObject img;
 		private JLabel label;
-		private Image small = null;
-		private Image large = null;
+		private ImageIcon small = null;
+		private ImageIcon large = null;
+		public boolean selected = false;
 
 		public Thumb(ImageObject img) {
 			this.img = img;
 			label = new JLabel();
 			label.setText("Image not loaded");
-		}
-		
-		public JLabel getLabel() {
-			return label;
 		}
 
 		public JLabel getSmallThumb() {
@@ -161,10 +131,10 @@ public class ThumbPanel extends JPanel implements Scrollable {
 				img.loadImageWithCallback(new Callback<Image>() {
 					@Override
 					public void success(Image image) {
-						small = image;
+						small = new ImageIcon(image.getScaledInstance(
+								130, -1, Image.SCALE_FAST));
 						label.setText("");
-						label.setIcon(new ImageIcon(image.getScaledInstance(
-								130, -1, Image.SCALE_FAST)));
+						label.setIcon(small);
 					}
 
 					@Override
@@ -172,7 +142,7 @@ public class ThumbPanel extends JPanel implements Scrollable {
 						label.setText("Error loading image");
 					}
 				});
-			}
+			} else label.setIcon(small);
 			return label;
 		}
 
@@ -181,10 +151,10 @@ public class ThumbPanel extends JPanel implements Scrollable {
 				img.loadImageWithCallback(new Callback<Image>() {
 					@Override
 					public void success(Image image) {
-						large = image;
+						large = new ImageIcon(image.getScaledInstance(
+								260, -1, Image.SCALE_FAST));
 						label.setText("");
-						label.setIcon(new ImageIcon(image.getScaledInstance(
-								130, -1, Image.SCALE_FAST)));
+						label.setIcon(large);
 					}
 
 					@Override
@@ -192,9 +162,34 @@ public class ThumbPanel extends JPanel implements Scrollable {
 						label.setText("Error loading image");
 					}
 				});
-			}
+			} else label.setIcon(large);
 			return label;
 		}
+	}
+
+	private void selectedImage(Thumb thumb, boolean multiSelect) {
+		if (multiSelect) {
+			if (!thumb.selected) {
+				thumb.selected = true;
+				thumb.getSmallThumb().setBorder(lastSelectedImageBorder);
+			} else {
+				thumb.selected = false;
+				thumb.getSmallThumb().setBorder(deselectedImageBorder);
+			}
+		} else {
+			if (!thumb.selected) {
+				for (Thumb t : thumbs) { // Deselect other thumbs
+					t.selected = false;
+					t.getSmallThumb().setBorder(deselectedImageBorder);
+				}
+				thumb.selected = true;
+				thumb.getLargeThumb().setBorder(lastSelectedImageBorder);
+			} else {
+				thumb.selected = false;
+				thumb.getSmallThumb().setBorder(deselectedImageBorder);
+			}
+		}
+		lastSelectedThumb = thumb;
 	}
 
 	private class ThumbListener implements MouseListener {
@@ -208,26 +203,10 @@ public class ThumbPanel extends JPanel implements Scrollable {
 		public void mouseClicked(MouseEvent arg0) {
 			if (arg0.getButton() == MouseEvent.BUTTON1) {
 				if (arg0.getClickCount() == 1) {
-					
-					JLabel label = thumb.getLargeThumb();
-					Border border = BorderFactory.createLineBorder(Color.blue, 2);
-					label.setBorder(border);
-					if (!arg0.isControlDown()) {
-						for (Thumb thumb : thumbs) {
-							if (!thumb.equals(this.thumb)) {
-								thumb.getSmallThumb().setBorder(null);
-							}
-						}
-					} else {
-						for (Thumb thumb : thumbs) {
-							if (!thumb.equals(this.thumb)) {
-								thumb.getSmallThumb();
-							}
-						}
-					}
-				}
-				if (arg0.getClickCount() == 2) {
-					eventBus.post(new SwitchViewEvent(View.IMAGE_VIEW, thumb.img));
+					selectedImage(thumb, arg0.isControlDown());
+				} else if (arg0.getClickCount() == 2) {
+					eventBus.post(new SwitchViewEvent(View.IMAGE_VIEW,
+							thumb.img));
 				}
 			}
 		}
