@@ -1,13 +1,11 @@
 package controllers;
 
-import generators.ImageInfoJsonGenerator;
-import generators.ImageInfoURLGenerator;
-
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 
+import json.generators.ImageInfoJsonGenerator;
 import models.ImageModel;
 import models.TagModel;
 
@@ -22,6 +20,7 @@ import play.mvc.Controller;
 import play.mvc.Http.MultipartFormData;
 import play.mvc.Http.MultipartFormData.FilePart;
 import play.mvc.Result;
+import url.generators.ImageInfoURLGenerator;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.io.Files;

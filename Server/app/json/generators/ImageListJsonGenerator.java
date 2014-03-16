@@ -1,10 +1,12 @@
-package generators;
+package json.generators;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import jsonobjects.ImageList;
-import jsonobjects.ImageShort;
+import url.generators.ImageInfoURLGenerator;
+import url.generators.ImageListURLGenerator;
+import json.objects.ImageList;
+import json.objects.ImageShort;
 import models.ImageModel;
 
 import com.fasterxml.jackson.databind.JsonNode;

@@ -1,10 +1,11 @@
-package generators;
+package json.generators;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import jsonobjects.ImageFull;
-import jsonobjects.ImageInfo;
+import url.generators.ImageInfoURLGenerator;
+import json.objects.ImageFull;
+import json.objects.ImageInfo;
 import models.ImageModel;
 import models.TagModel;
 

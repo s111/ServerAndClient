@@ -1,4 +1,4 @@
-package jsonobjects;
+package json.objects;
 
 public class ImageInfo {
 	private String href;

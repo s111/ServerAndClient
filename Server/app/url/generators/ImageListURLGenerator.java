@@ -1,4 +1,4 @@
-package generators;
+package url.generators;
 
 import models.ImageModel;
 import play.mvc.Http.Request;

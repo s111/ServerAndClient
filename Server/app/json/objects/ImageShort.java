@@ -1,4 +1,4 @@
-package jsonobjects;
+package json.objects;
 
 public class ImageShort {
 	private long id;

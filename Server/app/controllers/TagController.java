@@ -1,16 +1,15 @@
 package controllers;
 
-import generators.ImageInfoURLGenerator;
-import generators.ImageListJsonGenerator;
-import generators.ImageListURLGenerator;
-
 import java.util.ArrayList;
 import java.util.List;
 
+import json.generators.ImageListJsonGenerator;
 import models.ImageModel;
 import models.TagModel;
 import play.mvc.Controller;
 import play.mvc.Result;
+import url.generators.ImageInfoURLGenerator;
+import url.generators.ImageListURLGenerator;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Optional;

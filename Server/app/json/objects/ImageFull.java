@@ -1,4 +1,4 @@
-package jsonobjects;
+package json.objects;
 
 import java.util.List;
 
