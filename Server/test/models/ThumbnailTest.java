@@ -1,6 +1,7 @@
 package models;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 import static play.test.Helpers.fakeApplication;
 import static play.test.Helpers.start;
 import static play.test.Helpers.stop;
@@ -16,6 +17,7 @@ import com.avaje.ebean.config.ServerConfig;
 import com.avaje.ebean.config.dbplatform.H2Platform;
 import com.avaje.ebeaninternal.api.SpiEbeanServer;
 import com.avaje.ebeaninternal.server.ddl.DdlGenerator;
+import com.google.common.base.Optional;
 
 import controllers.ImageUploader;
 
@@ -46,37 +48,47 @@ public class ThumbnailTest {
 	@Test
 	public void add_thumbnail_to_image_expect_image_to_contain_one_thumbnail() {
 		String filename = ImageUploader.IMAGE_DIRECTORY + "01.png";
-		int thumbnailSize = 1;
 
 		ImageModel imageModel = ImageModel.create(filename);
 
 		ThumbnailModel.create(imageModel, ImageUploader.IMAGE_DIRECTORY
-				+ "01s.png", thumbnailSize);
+				+ "01s.png", ThumbnailModel.SMALL);
 
-		assertEquals(imageModel,
-				ThumbnailModel.get(imageModel.id, thumbnailSize).image);
+		Optional<ThumbnailModel> thumbnailSmall = ThumbnailModel.get(
+				imageModel.id, ThumbnailModel.SMALL);
+
+		assertTrue(thumbnailSmall.isPresent());
+		assertEquals(imageModel, thumbnailSmall.get().image);
 	}
 
 	@Test
 	public void add_three_thumbnails_to_image_expect_image_to_contain_three_thumbnails() {
 		String filename = ImageUploader.IMAGE_DIRECTORY + "01.png";
-		int xs = 0;
-		int s = 1;
-		int m = 2;
 
 		ImageModel imageModel = ImageModel.create(filename);
 
 		long id = imageModel.id;
 
 		ThumbnailModel.create(imageModel, ImageUploader.IMAGE_DIRECTORY
-				+ "01s.png", xs);
+				+ "01s.png", ThumbnailModel.X_SMALL);
 		ThumbnailModel.create(imageModel, ImageUploader.IMAGE_DIRECTORY
-				+ "02s.png", s);
+				+ "02s.png", ThumbnailModel.SMALL);
 		ThumbnailModel.create(imageModel, ImageUploader.IMAGE_DIRECTORY
-				+ "03s.png", m);
+				+ "03s.png", ThumbnailModel.MEDIUM);
 
-		assertEquals(imageModel, ThumbnailModel.get(id, xs).image);
-		assertEquals(imageModel, ThumbnailModel.get(id, s).image);
-		assertEquals(imageModel, ThumbnailModel.get(id, m).image);
+		Optional<ThumbnailModel> thumbnailXSmall = ThumbnailModel.get(id,
+				ThumbnailModel.X_SMALL);
+		Optional<ThumbnailModel> thumbnailSmall = ThumbnailModel.get(id,
+				ThumbnailModel.SMALL);
+		Optional<ThumbnailModel> thumbnailMedium = ThumbnailModel.get(id,
+				ThumbnailModel.MEDIUM);
+
+		assertTrue(thumbnailXSmall.isPresent());
+		assertTrue(thumbnailSmall.isPresent());
+		assertTrue(thumbnailMedium.isPresent());
+
+		assertEquals(imageModel, thumbnailXSmall.get().image);
+		assertEquals(imageModel, thumbnailSmall.get().image);
+		assertEquals(imageModel, thumbnailMedium.get().image);
 	}
 }

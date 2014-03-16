@@ -12,13 +12,22 @@ import play.mvc.Result;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.base.Optional;
 
 public class TagController extends Controller {
 	public static Result getImages(String tag, int offset, int limit) {
 		if (isNotWithinBoundaries(tag, offset, limit))
 			return badRequest();
 
-		List<ImageModel> imageModels = TagModel.get(tag).images;
+		Optional<TagModel> retrievedTagModel = TagModel.get(tag);
+
+		List<ImageModel> imageModels;
+
+		if (retrievedTagModel.isPresent()) {
+			imageModels = retrievedTagModel.get().images;
+		} else {
+			imageModels = new ArrayList<>();
+		}
 
 		int lastOffset = calculateLastOffset(tag, limit);
 		int previousOffset = calculatePreviousOffset(offset, limit);
@@ -66,7 +75,14 @@ public class TagController extends Controller {
 	}
 
 	private static int calculateLastOffset(String tag, int limit) {
-		int numRows = TagModel.get(tag).images.size();
+		Optional<TagModel> retrievedTagModel = TagModel.get(tag);
+
+		int numRows = 0;
+
+		if (retrievedTagModel.isPresent()) {
+			numRows = retrievedTagModel.get().images.size();
+		}
+
 		int pages = numRows / limit;
 		int lastOffset = pages * limit;
 
@@ -106,7 +122,13 @@ public class TagController extends Controller {
 
 	private static boolean isNotWithinBoundaries(String tag, int offset,
 			int limit) {
-		int numRows = TagModel.get(tag).images.size();
+		Optional<TagModel> retrievedTagModel = TagModel.get(tag);
+
+		int numRows = 0;
+
+		if (retrievedTagModel.isPresent()) {
+			numRows = retrievedTagModel.get().images.size();
+		}
 
 		return (offset < 0 || limit < 0 || offset > numRows);
 	}

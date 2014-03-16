@@ -17,6 +17,7 @@ import com.avaje.ebean.config.ServerConfig;
 import com.avaje.ebean.config.dbplatform.H2Platform;
 import com.avaje.ebeaninternal.api.SpiEbeanServer;
 import com.avaje.ebeaninternal.server.ddl.DdlGenerator;
+import com.google.common.base.Optional;
 
 import controllers.ImageUploader;
 
@@ -99,7 +100,15 @@ public class TagModelTest {
 
 		imageModel.addTag(tagModel);
 
-		assertEquals(1, TagModel.get(tagName).images.size());
+		Optional<TagModel> retrievedTagModel = TagModel.get(tagName);
+
+		int numRows = 0;
+
+		if (retrievedTagModel.isPresent()) {
+			numRows = retrievedTagModel.get().images.size();
+		}
+
+		assertEquals(1, numRows);
 	}
 
 	@Test
@@ -115,8 +124,22 @@ public class TagModelTest {
 		imageModel.addTag(tagModel1);
 		imageModel.addTag(tagModel2);
 
-		assertEquals(1, TagModel.get(tag1).images.size());
-		assertEquals(1, TagModel.get(tag2).images.size());
+		Optional<TagModel> retrievedTagModel1 = TagModel.get(tag1);
+		Optional<TagModel> retrievedTagModel2 = TagModel.get(tag2);
+
+		int numRows1 = 0;
+		int numRows2 = 0;
+
+		if (retrievedTagModel1.isPresent()) {
+			numRows1 = retrievedTagModel1.get().images.size();
+		}
+
+		if (retrievedTagModel2.isPresent()) {
+			numRows2 = retrievedTagModel2.get().images.size();
+		}
+
+		assertEquals(1, numRows1);
+		assertEquals(1, numRows2);
 	}
 
 	@Test
@@ -134,6 +157,14 @@ public class TagModelTest {
 		imageModel1.addTag(tagModel);
 		imageModel2.addTag(tagModel);
 
-		assertEquals(2, TagModel.get(tagName).images.size());
+		Optional<TagModel> retrievedTagModel = TagModel.get(tagName);
+
+		int numRows = 0;
+
+		if (retrievedTagModel.isPresent()) {
+			numRows = retrievedTagModel.get().images.size();
+		}
+
+		assertEquals(2, numRows);
 	}
 }

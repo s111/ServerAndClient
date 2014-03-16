@@ -9,6 +9,8 @@ import javax.persistence.ManyToMany;
 
 import play.db.ebean.Model;
 
+import com.google.common.base.Optional;
+
 @Entity
 public class TagModel extends Model {
 	private static final long serialVersionUID = -5432412894736352438L;
@@ -33,13 +35,10 @@ public class TagModel extends Model {
 		return tagModel;
 	}
 
-	public static TagModel get(String name) {
+	public static Optional<TagModel> get(String name) {
 		TagModel tagModel = find.where().eq("name", name).findUnique();
 
-		if (tagModel == null)
-			tagModel = create(name);
-
-		return tagModel;
+		return Optional.fromNullable(tagModel);
 	}
 
 	public static List<TagModel> getAll() {

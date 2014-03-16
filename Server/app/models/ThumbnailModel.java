@@ -7,6 +7,8 @@ import javax.persistence.ManyToOne;
 import play.data.validation.Constraints.Required;
 import play.db.ebean.Model;
 
+import com.google.common.base.Optional;
+
 @Entity
 public class ThumbnailModel extends Model {
 	private static final long serialVersionUID = 6264824175207421757L;
@@ -49,10 +51,10 @@ public class ThumbnailModel extends Model {
 		return thumbnailModel;
 	}
 
-	public static ThumbnailModel get(long id, int size) {
+	public static Optional<ThumbnailModel> get(long id, int size) {
 		ThumbnailModel thumbnailModel = find.where().eq("image.id", id)
 				.eq("size", size).findUnique();
 
-		return thumbnailModel;
+		return Optional.fromNullable(thumbnailModel);
 	}
 }

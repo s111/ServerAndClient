@@ -62,9 +62,12 @@ public class GetThumbnail extends Controller {
 
 	private static File getThumbnailFile(ImageModel imageModel, int size)
 			throws IOException {
-		ThumbnailModel thumbnailModel = ThumbnailModel.get(imageModel.id, size);
+		Optional<ThumbnailModel> thumbnailModel = ThumbnailModel.get(
+				imageModel.id, size);
 
-		if (thumbnailModel == null) {
+		ThumbnailModel actualThumbnailModel;
+
+		if (!thumbnailModel.isPresent()) {
 			File rawImage = new File(imageModel.filename);
 			String filename = generateThumbnailFilename(rawImage, size);
 
@@ -100,10 +103,13 @@ public class GetThumbnail extends Controller {
 
 			Thumbnails.of(rawImage).size(w, h).toFile(filename);
 
-			thumbnailModel = ThumbnailModel.create(imageModel, filename, size);
+			actualThumbnailModel = ThumbnailModel.create(imageModel, filename,
+					size);
+		} else {
+			actualThumbnailModel = thumbnailModel.get();
 		}
 
-		File thumbnail = new File(thumbnailModel.filename);
+		File thumbnail = new File(actualThumbnailModel.filename);
 
 		return thumbnail;
 	}

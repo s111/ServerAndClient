@@ -25,8 +25,7 @@ public class AbsoluteURLGenerator {
 		Optional<ImageModel> next = imageModel.getNext();
 		Optional<ImageModel> last = ImageModel.getLast();
 
-		if (!next.isPresent() || !last.isPresent()
-				|| next.get().id == last.get().id) {
+		if (!next.isPresent() || !last.isPresent()) {
 			return null;
 		}
 
