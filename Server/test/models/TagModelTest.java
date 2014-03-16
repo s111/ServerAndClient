@@ -97,7 +97,7 @@ public class TagModelTest {
 		ImageModel imageModel = new ImageModel(filename);
 		TagModel tagModel = TagModel.create(tagName);
 
-		imageModel.tag(tagModel);
+		imageModel.addTag(tagModel);
 
 		assertEquals(1, TagModel.get(tagName).images.size());
 	}
@@ -112,8 +112,8 @@ public class TagModelTest {
 		TagModel tagModel1 = TagModel.create(tag1);
 		TagModel tagModel2 = TagModel.create(tag2);
 
-		imageModel.tag(tagModel1);
-		imageModel.tag(tagModel2);
+		imageModel.addTag(tagModel1);
+		imageModel.addTag(tagModel2);
 
 		assertEquals(1, TagModel.get(tag1).images.size());
 		assertEquals(1, TagModel.get(tag2).images.size());
@@ -131,8 +131,8 @@ public class TagModelTest {
 
 		TagModel tagModel = TagModel.create(tagName);
 
-		imageModel1.tag(tagModel);
-		imageModel2.tag(tagModel);
+		imageModel1.addTag(tagModel);
+		imageModel2.addTag(tagModel);
 
 		assertEquals(2, TagModel.get(tagName).images.size());
 	}

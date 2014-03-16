@@ -80,7 +80,7 @@ public class ImageUploader extends Controller {
 
 			ImageModel imageModel = ImageModel.create(IMAGE_DIRECTORY
 					+ filename);
-			imageModel.tag(TagModel.create("id:" + imageModel.id));
+			imageModel.addTag(TagModel.create("id:" + imageModel.id));
 
 			AbsoluteURLGenerator absoluteURLGenerator = new AbsoluteURLGenerator(
 					imageModel, request());

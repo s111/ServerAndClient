@@ -92,9 +92,7 @@ public class ImageModelTest {
 
 		long id = createdImageModel.id;
 
-		ImageModel retrievedImageModel = ImageModel.get(id);
-
-		assertNotNull(retrievedImageModel);
+		assertNotNull(ImageModel.get(id).get());
 	}
 
 	@Test
@@ -116,9 +114,9 @@ public class ImageModelTest {
 		ImageModel imageModel = new ImageModel(filename);
 		TagModel tagModel = TagModel.create(tagName);
 
-		imageModel.tag(tagModel);
+		imageModel.addTag(tagModel);
 
-		assertEquals(1, ImageModel.get(imageModel.id).tags.size());
+		assertEquals(1, ImageModel.get(imageModel.id).get().tags.size());
 	}
 
 	@Test
@@ -131,9 +129,9 @@ public class ImageModelTest {
 		TagModel tagModel1 = TagModel.create(tag1);
 		TagModel tagModel2 = TagModel.create(tag2);
 
-		imageModel.tag(tagModel1);
-		imageModel.tag(tagModel2);
+		imageModel.addTag(tagModel1);
+		imageModel.addTag(tagModel2);
 
-		assertEquals(2, ImageModel.get(imageModel.id).tags.size());
+		assertEquals(2, ImageModel.get(imageModel.id).get().tags.size());
 	}
 }

@@ -61,6 +61,6 @@ public class ImageRaterTest {
 		callAction(controllers.routes.ref.ImageRater.rate(id),
 				new FakeRequest().withFormUrlEncodedBody(data));
 
-		assertEquals(5, ImageModel.get(id).rating);
+		assertEquals(5, ImageModel.get(id).get().rating);
 	}
 }

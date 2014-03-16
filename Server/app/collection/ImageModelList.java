@@ -26,7 +26,7 @@ public class ImageModelList {
 		this.offset = offset;
 		this.limit = limit;
 
-		imageModels = ImageModel.getPageList(offset, limit);
+		imageModels = ImageModel.getList(offset, limit);
 	}
 
 	public JsonNode generateJSON() {

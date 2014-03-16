@@ -61,6 +61,6 @@ public class ImageDescriberTest {
 		callAction(controllers.routes.ref.ImageDescriber.describe(id),
 				new FakeRequest().withFormUrlEncodedBody(data));
 
-		assertEquals("abc", ImageModel.get(id).description);
+		assertEquals("abc", ImageModel.get(id).get().description);
 	}
 }

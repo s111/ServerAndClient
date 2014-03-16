@@ -13,8 +13,7 @@ import javax.persistence.OneToMany;
 import play.data.validation.Constraints.Required;
 import play.db.ebean.Model;
 
-import com.avaje.ebean.Page;
-import com.avaje.ebean.PagingList;
+import com.google.common.base.Optional;
 
 @Entity
 public class ImageModel extends Model {
@@ -48,65 +47,53 @@ public class ImageModel extends Model {
 		return imageModel;
 	}
 
-	public static ImageModel get(long id) {
-		return find.byId(id);
-	}
-
-	public static ImageModel getFirst() {
-		ImageModel imageModel = find.orderBy("id ASC").setMaxRows(1)
-				.findUnique();
-
-		return imageModel;
-	}
-
-	public static ImageModel getLast() {
-		ImageModel imageModel = find.orderBy("id DESC").setMaxRows(1)
-				.findUnique();
-
-		return imageModel;
-	}
-
-	public ImageModel getNext() {
-		ImageModel imageModel = find.where().gt("id", id).orderBy("id ASC")
-				.setMaxRows(1).findUnique();
-
-		return imageModel;
-	}
-
-	public ImageModel getPrevious() {
-		ImageModel imageModel = find.where().lt("id", id).orderBy("id DESC")
-				.setMaxRows(1).findUnique();
-
-		return imageModel;
-	}
-
-	public static List<ImageModel> getAll() {
-		List<ImageModel> all = find.orderBy("id ASC").findList();
-
-		return all;
-	}
-
 	public static int getRowCount() {
 		return find.all().size();
 	}
 
-	public static List<ImageModel> getPageList(int offset, int limit) {
-		if (offset < 0 || limit < 0)
-			return new ArrayList<ImageModel>();
+	public static Optional<ImageModel> get(long id) {
+		return Optional.fromNullable(find.byId(id));
+	}
 
-		PagingList<ImageModel> imageModels = find.orderBy("id ASC")
-				.findPagingList(limit);
+	public static Optional<ImageModel> getFirst() {
+		ImageModel imageModel = find.orderBy("id ASC").setMaxRows(1)
+				.findUnique();
 
-		int page = 0;
-		if (limit != 0) {
-			page = offset / limit;
-		}
+		return Optional.fromNullable(imageModel);
+	}
 
-		Page<ImageModel> imagesOnPage = imageModels.getPage(page);
+	public static Optional<ImageModel> getLast() {
+		ImageModel imageModel = find.orderBy("id DESC").setMaxRows(1)
+				.findUnique();
 
-		List<ImageModel> list = imagesOnPage.getList();
+		return Optional.fromNullable(imageModel);
+	}
 
-		return list;
+	public static List<ImageModel> getAll() {
+		List<ImageModel> imageModels = find.orderBy("id ASC").findList();
+
+		return imageModels;
+	}
+
+	public static List<ImageModel> getList(int offset, int limit) {
+		List<ImageModel> imageModels = find.orderBy("id ASC")
+				.setFirstRow(offset).setMaxRows(limit).findList();
+
+		return imageModels;
+	}
+
+	public Optional<ImageModel> getNext() {
+		ImageModel imageModel = find.where().gt("id", id).orderBy("id ASC")
+				.setMaxRows(1).findUnique();
+
+		return Optional.fromNullable(imageModel);
+	}
+
+	public Optional<ImageModel> getPrevious() {
+		ImageModel imageModel = find.where().lt("id", id).orderBy("id DESC")
+				.setMaxRows(1).findUnique();
+
+		return Optional.fromNullable(imageModel);
 	}
 
 	public void setDescription(String description) {
@@ -121,9 +108,10 @@ public class ImageModel extends Model {
 		save();
 	}
 
-	public void tag(TagModel tagModel) {
-		if (tags.contains(tagModel))
+	public void addTag(TagModel tagModel) {
+		if (tags.contains(tagModel)) {
 			return;
+		}
 
 		tags.add(tagModel);
 

@@ -7,21 +7,23 @@ import play.data.Form;
 import play.mvc.Controller;
 import play.mvc.Result;
 
+import com.google.common.base.Optional;
+
 public class ImageTagger extends Controller {
 	public static Result tag(long id) {
 		DynamicForm requestData = Form.form().bindFromRequest();
 
 		String tagData = requestData.get("value");
 
-		if (tagData == null)
+		Optional<ImageModel> imageModel = ImageModel.get(id);
+
+		if (tagData == null || !imageModel.isPresent())
 			return badRequest();
 
 		String[] tags = tagData.split(",");
 
-		ImageModel imageModel = ImageModel.get(id);
-
 		for (String tag : tags) {
-			imageModel.tag(TagModel.get(tag));
+			imageModel.get().addTag(TagModel.get(tag));
 		}
 
 		return ok();

@@ -1,4 +1,3 @@
-
 import static org.junit.Assert.assertEquals;
 import static play.test.Helpers.fakeApplication;
 
@@ -9,8 +8,8 @@ import models.ImageModel;
 import org.junit.Before;
 import org.junit.Test;
 
-import controllers.ImageUploader;
 import play.test.WithApplication;
+import controllers.ImageUploader;
 
 public class GlobalTest extends WithApplication {
 	@Before
@@ -23,16 +22,18 @@ public class GlobalTest extends WithApplication {
 		File directory = new File(ImageUploader.IMAGE_DIRECTORY);
 
 		File[] listOfFiles = directory.listFiles();
-		
-		if (listOfFiles == null) return;
-		
+
+		if (listOfFiles == null)
+			return;
+
 		int size = 0;
-		
+
 		for (File image : listOfFiles) {
 			String filename = image.getName();
-			
+
 			if (filename.matches("^(.+).png$")) {
-				if (filename.contains("thumb")) continue;
+				if (filename.contains("thumb"))
+					continue;
 				size++;
 			}
 		}

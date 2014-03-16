@@ -10,19 +10,21 @@ import play.mvc.Controller;
 import play.mvc.Result;
 
 import com.fasterxml.jackson.databind.JsonNode;
+import com.google.common.base.Optional;
 
 public class GetImage extends Controller {
 	public static Result info(long id) {
-		ImageModel imageModel = ImageModel.get(id);
+		Optional<ImageModel> imageModel = ImageModel.get(id);
 
-		if (imageModel == null)
+		if (!imageModel.isPresent()) {
 			return notFound();
+		}
 
 		AbsoluteURLGenerator absoluteURLGenerator = new AbsoluteURLGenerator(
-				imageModel, request());
+				imageModel.get(), request());
 
 		ImageModelJsonGenerator imageModelJsonGenerator = new ImageModelJsonGenerator(
-				imageModel, absoluteURLGenerator);
+				imageModel.get(), absoluteURLGenerator);
 
 		JsonNode imageInfoNode = imageModelJsonGenerator.toJson();
 
@@ -30,12 +32,13 @@ public class GetImage extends Controller {
 	}
 
 	public static Result file(long id) {
-		ImageModel imageModel = ImageModel.get(id);
+		Optional<ImageModel> imageModel = ImageModel.get(id);
 
-		if (imageModel == null)
+		if (!imageModel.isPresent()) {
 			return badRequest();
+		}
 
-		File image = new File(imageModel.filename);
+		File image = new File(imageModel.get().filename);
 
 		if (image.exists()) {
 			return ok(image, true);

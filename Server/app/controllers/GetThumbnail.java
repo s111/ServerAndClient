@@ -15,6 +15,8 @@ import org.apache.commons.io.FilenameUtils;
 import play.mvc.Controller;
 import play.mvc.Result;
 
+import com.google.common.base.Optional;
+
 public class GetThumbnail extends Controller {
 	public static Result getXSmall(long id) {
 		return getThumbnail(id, ThumbnailModel.X_SMALL);
@@ -41,15 +43,16 @@ public class GetThumbnail extends Controller {
 	}
 
 	public static Result getThumbnail(long id, int size) {
-		ImageModel imageModel = ImageModel.get(id);
+		Optional<ImageModel> imageModel = ImageModel.get(id);
 
-		if (imageModel == null)
+		if (!imageModel.isPresent()) {
 			return notFound();
+		}
 
 		File thumbnail = null;
 
 		try {
-			thumbnail = getThumbnailFile(imageModel, size);
+			thumbnail = getThumbnailFile(imageModel.get(), size);
 		} catch (IOException e) {
 			return internalServerError();
 		}

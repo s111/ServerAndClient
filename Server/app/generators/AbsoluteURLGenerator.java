@@ -2,6 +2,9 @@ package generators;
 
 import models.ImageModel;
 import play.mvc.Http.Request;
+
+import com.google.common.base.Optional;
+
 import controllers.routes;
 
 public class AbsoluteURLGenerator {
@@ -19,39 +22,45 @@ public class AbsoluteURLGenerator {
 	}
 
 	public String getNextURL() {
-		ImageModel next = imageModel.getNext();
+		Optional<ImageModel> next = imageModel.getNext();
+		Optional<ImageModel> last = ImageModel.getLast();
 
-		if (next == null) {
+		if (!next.isPresent() || !last.isPresent()
+				|| next.get().id == last.get().id) {
 			return null;
 		}
 
-		if (next.id >= ImageModel.getLast().id) {
-			return null;
-		}
-
-		return getImageInfoURL(next.id);
+		return getImageInfoURL(next.get().id);
 	}
 
 	public String getPreviousURL() {
-		ImageModel previous = imageModel.getPrevious();
+		Optional<ImageModel> previous = imageModel.getPrevious();
 
-		if (previous == null) {
+		if (!previous.isPresent()) {
 			return null;
 		}
 
-		return getImageInfoURL(previous.id);
+		return getImageInfoURL(previous.get().id);
 	}
 
 	public String getFirstURL() {
-		ImageModel first = ImageModel.getFirst();
+		Optional<ImageModel> first = ImageModel.getFirst();
 
-		return getImageInfoURL(first.id);
+		if (first.isPresent()) {
+			return getImageInfoURL(first.get().id);
+		}
+
+		return null;
 	}
 
 	public String getLastURL() {
-		ImageModel last = ImageModel.getLast();
+		Optional<ImageModel> last = ImageModel.getLast();
 
-		return getImageInfoURL(last.id);
+		if (!last.isPresent()) {
+			return null;
+		}
+
+		return getImageInfoURL(last.get().id);
 	}
 
 	private String getImageInfoURL(long id) {

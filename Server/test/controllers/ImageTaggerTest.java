@@ -30,7 +30,7 @@ public class ImageTaggerTest {
 	public static void startApp() {
 		start(fakeApplication());
 	}
-	
+
 	@AfterClass
 	public static void stopApp() {
 		stop(fakeApplication());
@@ -48,33 +48,35 @@ public class ImageTaggerTest {
 		ddl.runScript(false, ddl.generateDropDdl());
 		ddl.runScript(false, ddl.generateCreateDdl());
 	}
-	
+
 	@Test
 	public void tag_image_with_abc_expect_tag_name_abc() {
 		String filename = ImageUploader.IMAGE_DIRECTORY + "01.png";
-		
+
 		long id = ImageModel.create(filename).id;
-		
+
 		Map<String, String> data = new HashMap<>();
 		data.put("value", "abc");
-		
-		callAction(controllers.routes.ref.ImageTagger.tag(id), new FakeRequest().withFormUrlEncodedBody(data));
 
-		assertEquals("abc", ImageModel.get(id).tags.get(0).name);
+		callAction(controllers.routes.ref.ImageTagger.tag(id),
+				new FakeRequest().withFormUrlEncodedBody(data));
+
+		assertEquals("abc", ImageModel.get(id).get().tags.get(0).name);
 	}
-	
+
 	@Test
 	public void tag_image_with_abc_and_def_expect_tag_name_abc_and_def() {
 		String filename = ImageUploader.IMAGE_DIRECTORY + "01.png";
-		
+
 		long id = ImageModel.create(filename).id;
-		
+
 		Map<String, String> data = new HashMap<>();
 		data.put("value", "abc,def");
-		
-		callAction(controllers.routes.ref.ImageTagger.tag(id), new FakeRequest().withFormUrlEncodedBody(data));
 
-		assertEquals("abc", ImageModel.get(id).tags.get(0).name);
-		assertEquals("def", ImageModel.get(id).tags.get(1).name);
+		callAction(controllers.routes.ref.ImageTagger.tag(id),
+				new FakeRequest().withFormUrlEncodedBody(data));
+
+		assertEquals("abc", ImageModel.get(id).get().tags.get(0).name);
+		assertEquals("def", ImageModel.get(id).get().tags.get(1).name);
 	}
 }

@@ -30,7 +30,7 @@ public class Global extends GlobalSettings {
 					ImageModel imageModel = ImageModel
 							.create(filenameInDatabase);
 
-					imageModel.tag(TagModel.create("id:" + imageModel.id));
+					imageModel.addTag(TagModel.create("id:" + imageModel.id));
 				}
 			}
 		}
