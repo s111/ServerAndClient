@@ -3,6 +3,7 @@ package controllers;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+
 import javax.imageio.ImageIO;
 
 import models.ImageModel;
@@ -34,7 +35,7 @@ public class GetThumbnail extends Controller {
 	public static Result getXLarge(long id) {
 		return getThumbnail(id, ThumbnailModel.X_LARGE);
 	}
-	
+
 	public static Result getCompressed(long id) {
 		return getThumbnail(id, ThumbnailModel.COMPRESSED);
 	}
@@ -58,7 +59,7 @@ public class GetThumbnail extends Controller {
 
 	private static File getThumbnailFile(ImageModel imageModel, int size)
 			throws IOException {
-		ThumbnailModel thumbnailModel = imageModel.thumbnails.get(size);
+		ThumbnailModel thumbnailModel = ThumbnailModel.get(imageModel, size);
 
 		if (thumbnailModel == null) {
 			File rawImage = new File(imageModel.filename);
@@ -95,7 +96,8 @@ public class GetThumbnail extends Controller {
 			}
 
 			Thumbnails.of(rawImage).size(w, h).toFile(filename);
-			thumbnailModel = ThumbnailModel.create(filename, size);
+
+			thumbnailModel = ThumbnailModel.create(imageModel, filename, size);
 		}
 
 		File thumbnail = new File(thumbnailModel.filename);

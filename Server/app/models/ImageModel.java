@@ -11,7 +11,6 @@ import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 
-import play.Logger;
 import play.data.validation.Constraints.Required;
 import play.db.ebean.Model;
 
@@ -80,8 +79,6 @@ public class ImageModel extends Model implements Comparable<ImageModel> {
 	public static ImageModel create(String filename) {
 		ImageModel imageModel = new ImageModel(filename);
 		imageModel.save();
-
-		Logger.debug("Added Image to database. {id=" + imageModel.id + "}");
 
 		return imageModel;
 	}
@@ -168,13 +165,5 @@ public class ImageModel extends Model implements Comparable<ImageModel> {
 		Collections.sort(list);
 
 		return list;
-	}
-
-	public void addThumbnail(ThumbnailModel thumbnailModel) {
-		thumbnails.put(thumbnailModel.size, thumbnailModel);
-
-		thumbnailModel.image = this;
-
-		save();
 	}
 }

@@ -42,40 +42,39 @@ public class ThumbnailTest {
 		ddl.runScript(false, ddl.generateDropDdl());
 		ddl.runScript(false, ddl.generateCreateDdl());
 	}
-	
+
 	@Test
 	public void add_thumbnail_to_image_expect_image_to_contain_one_thumbnail() {
 		String filename = ImageUploader.IMAGE_DIRECTORY + "01.png";
 		int thumbnailSize = 1;
-		
-		ImageModel imageModel = new ImageModel(filename);
-		ThumbnailModel thumbnailModel = new ThumbnailModel(ImageUploader.IMAGE_DIRECTORY + "01s.png", thumbnailSize);
-		
-		imageModel.addThumbnail(thumbnailModel);
-		
-		assertEquals(1, imageModel.thumbnails.size());
-		assertEquals(imageModel, thumbnailModel.image);
+
+		ImageModel imageModel = ImageModel.create(filename);
+
+		ThumbnailModel.create(imageModel, ImageUploader.IMAGE_DIRECTORY
+				+ "01s.png", thumbnailSize);
+
+		assertEquals(imageModel,
+				ThumbnailModel.get(imageModel, thumbnailSize).image);
 	}
-	
+
 	@Test
 	public void add_three_thumbnails_to_image_expect_image_to_contain_three_thumbnails() {
 		String filename = ImageUploader.IMAGE_DIRECTORY + "01.png";
 		int xs = 0;
 		int s = 1;
 		int m = 2;
-		
-		ImageModel imageModel = new ImageModel(filename);
-		ThumbnailModel thumbnailModel1 = new ThumbnailModel(ImageUploader.IMAGE_DIRECTORY + "01s.png", xs);
-		ThumbnailModel thumbnailModel2 = new ThumbnailModel(ImageUploader.IMAGE_DIRECTORY + "02s.png", s);
-		ThumbnailModel thumbnailModel3 = new ThumbnailModel(ImageUploader.IMAGE_DIRECTORY + "03s.png", m);
-		
-		imageModel.addThumbnail(thumbnailModel1);
-		imageModel.addThumbnail(thumbnailModel2);
-		imageModel.addThumbnail(thumbnailModel3);
-		
-		assertEquals(3, imageModel.thumbnails.size());
-		assertEquals(imageModel, thumbnailModel1.image);
-		assertEquals(imageModel, thumbnailModel2.image);
-		assertEquals(imageModel, thumbnailModel3.image);
+
+		ImageModel imageModel = ImageModel.create(filename);
+
+		ThumbnailModel.create(imageModel, ImageUploader.IMAGE_DIRECTORY
+				+ "01s.png", xs);
+		ThumbnailModel.create(imageModel, ImageUploader.IMAGE_DIRECTORY
+				+ "02s.png", s);
+		ThumbnailModel.create(imageModel, ImageUploader.IMAGE_DIRECTORY
+				+ "03s.png", m);
+
+		assertEquals(imageModel, ThumbnailModel.get(imageModel, xs).image);
+		assertEquals(imageModel, ThumbnailModel.get(imageModel, s).image);
+		assertEquals(imageModel, ThumbnailModel.get(imageModel, m).image);
 	}
 }
