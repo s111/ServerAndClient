@@ -31,24 +31,20 @@ public class Application {
 	private MainFrame mainFrame;
 
 	private Library library;
-
-	private ImageUploader imageUploader;
 	private RESTService restService;
 
 	private EventBus eventBus;
 
 	@Inject
-	public Application(EventBus eventBus) {
+	public Application(EventBus eventBus, SingleLibrary library) {
 		this.eventBus = eventBus;
-		library = new SingleLibrary(eventBus);
-		
+		this.library = library;
+		eventBus.register(Main.injector.getInstance(ImageUploader.class));
+
 		BasicConfigurator.configure();
 
 		trySettingANativeLookAndFeel();
 		askForBaseURL();
-		imageUploader = Main.injector.getInstance(ImageUploader.class);
-		imageUploader.setLibrary(library);
-		
 		restService = Main.injector.getInstance(RESTService.class);
 
 		setUpLibrary();

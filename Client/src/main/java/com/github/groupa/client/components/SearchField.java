@@ -8,6 +8,9 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
+import com.github.groupa.client.Library;
+import com.github.groupa.client.Main;
+import com.github.groupa.client.SingleLibrary;
 import com.github.groupa.client.views.GridView;
 import com.github.groupa.client.views.ImageView;
 
@@ -17,14 +20,17 @@ public class SearchField implements ActionListener {
 	private JButton searchButton;
 	private ImageView imageView = null;
 	private GridView gridView = null;
+	private Library mainLibrary;
 	
 	public SearchField(ImageView imageView) {
 		this.imageView = imageView;
+		mainLibrary = Main.injector.getInstance(SingleLibrary.class);
 		setUpPanels();
 	}
 
 	public SearchField(GridView gridView) {
 		this.gridView = gridView;
+		mainLibrary = Main.injector.getInstance(SingleLibrary.class);
 		setUpPanels();
 	}
 	
