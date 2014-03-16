@@ -165,10 +165,14 @@ public class ImageObject {
 	}
 
 	public boolean hasTag(String tag) {
+		loadImageInfo();
+		
 		return imageFull.getTags().contains(tag);
 	}
 
 	public boolean hasTags(List<String> tags) {
+		loadImageInfo();
+		
 		return imageFull.getTags().containsAll(tags);
 	}
 }

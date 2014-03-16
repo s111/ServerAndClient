@@ -198,7 +198,7 @@ public class ImageView {
 	private JPanel createTopPanel() {
 		JPanel topPanel = new JPanel();
 		topPanel.add(previousViewButton);
-		topPanel.add(new SearchField(this).getPanel());
+		topPanel.add(new SearchField(eventBus, this).getPanel());
 
 		return topPanel;
 	}

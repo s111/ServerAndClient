@@ -13,7 +13,7 @@ import com.google.common.eventbus.EventBus;
 
 public class GridView {
 	private JPanel mainPanel;
-	private JPanel thumbPanel;
+	private ThumbPanel thumbPanel;
 	private EventBus eventBus;
 	private Library library = null;
 
@@ -30,6 +30,7 @@ public class GridView {
 	
 	public void setLibrary(Library library) {
 		this.library  = library;
+		thumbPanel.libraryChanged();
 	}
 	
 	public Library getLibrary() {
@@ -40,7 +41,7 @@ public class GridView {
 		mainPanel = new JPanel(new BorderLayout());
 		thumbPanel = new ThumbPanel(eventBus, this);
 		mainPanel.add(new JScrollPane(thumbPanel), BorderLayout.CENTER);
-		mainPanel.add(new SearchField(this).getPanel(), BorderLayout.NORTH);
+		mainPanel.add(new SearchField(eventBus, this).getPanel(), BorderLayout.NORTH);
 	}
 
 }

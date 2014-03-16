@@ -52,16 +52,20 @@ public class ThumbPanel extends JPanel implements Scrollable {
 		eventBus.register(this);
 		setLayout(layout);
 	}
+	
+	public void libraryChanged() {
+		thumbs = null;
+		generateInitialThumbs();
+	}
 
 	@Subscribe
 	public void switchViewListener(SwitchViewEvent event) {
 		if (event.hasSwitched() && View.GRID_VIEW.equals(event.getView())) {
 			Library lib = event.getLibrary();
-			if (lib != null) {
+			if (lib != null && !lib.equals(gridView.getLibrary())) {
 				gridView.setLibrary(lib);
-				thumbs = null;
 			}
-			if (thumbs == null) {
+			else if (thumbs == null) {
 				generateInitialThumbs();
 			}
 		}
@@ -115,12 +119,17 @@ public class ThumbPanel extends JPanel implements Scrollable {
 	}
 
 	private void generateInitialThumbs() {
+		removeAll();
 		Library library = gridView.getLibrary();
 		if (library == null)
 			return;
-		thumbs = new ArrayList<>();
-		for (ImageObject image : library.getImages()) {
-			addThumb(new Thumb(image));
+		if (library.imageCount() == 0) 
+			repaint();
+		else {
+			thumbs = new ArrayList<>();
+			for (ImageObject image : library.getImages()) {
+				addThumb(new Thumb(image));
+			}
 		}
 	}
 
