@@ -7,21 +7,18 @@ import com.google.common.base.Optional;
 
 import controllers.routes;
 
-public class AbsoluteURLGenerator {
-	private ImageModel imageModel;
-
+public class ImageInfoURLGenerator {
 	private Request request;
 
-	public AbsoluteURLGenerator(ImageModel imageModel, Request request) {
-		this.imageModel = imageModel;
+	public ImageInfoURLGenerator(Request request) {
 		this.request = request;
 	}
 
-	public String getURL() {
+	public String getURL(ImageModel imageModel) {
 		return getImageInfoURL(imageModel.id);
 	}
 
-	public String getNextURL() {
+	public String getNextURL(ImageModel imageModel) {
 		Optional<ImageModel> next = imageModel.getNext();
 
 		if (!next.isPresent()) {
@@ -31,7 +28,7 @@ public class AbsoluteURLGenerator {
 		return getImageInfoURL(next.get().id);
 	}
 
-	public String getPreviousURL() {
+	public String getPreviousURL(ImageModel imageModel) {
 		Optional<ImageModel> previous = imageModel.getPrevious();
 
 		if (!previous.isPresent()) {

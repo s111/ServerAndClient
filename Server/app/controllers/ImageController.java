@@ -1,9 +1,14 @@
 package controllers;
 
+import generators.ImageInfoURLGenerator;
+import generators.ImageListJsonGenerator;
+import generators.ImageListURLGenerator;
+
+import java.util.List;
+
 import models.ImageModel;
 import play.mvc.Controller;
 import play.mvc.Result;
-import collection.ImageModelList;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
@@ -16,10 +21,18 @@ public class ImageController extends Controller {
 			limit = ImageModel.getRowCount();
 		}
 
-		ImageModelList imageModelList = new ImageModelList(request(), offset,
-				limit);
+		List<ImageModel> imageModels = ImageModel.getList(offset, limit);
 
-		JsonNode imageListNode = imageModelList.generateJSON();
+		ImageListURLGenerator imageListURLGenerator = new ImageListURLGenerator(
+				offset, limit, request());
+
+		ImageInfoURLGenerator imageInfoURLGenerator = new ImageInfoURLGenerator(
+				request());
+
+		ImageListJsonGenerator imageListJsonGenerator = new ImageListJsonGenerator(
+				imageModels, imageListURLGenerator, imageInfoURLGenerator);
+
+		JsonNode imageListNode = imageListJsonGenerator.toJson();
 
 		return ok(imageListNode);
 	}

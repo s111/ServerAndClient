@@ -11,13 +11,13 @@ import models.TagModel;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-public class ImageModelJsonGenerator {
+public class ImageInfoJsonGenerator {
 	private ImageModel imageModel;
 
-	private AbsoluteURLGenerator absoluteURLGenerator;
+	private ImageInfoURLGenerator absoluteURLGenerator;
 
-	public ImageModelJsonGenerator(ImageModel imageModel,
-			AbsoluteURLGenerator absoluteURLGenerator) {
+	public ImageInfoJsonGenerator(ImageModel imageModel,
+			ImageInfoURLGenerator absoluteURLGenerator) {
 		this.imageModel = imageModel;
 		this.absoluteURLGenerator = absoluteURLGenerator;
 	}
@@ -33,9 +33,9 @@ public class ImageModelJsonGenerator {
 
 	private ImageInfo createImageInfoObject() {
 		ImageInfo imageInfo = new ImageInfo();
-		imageInfo.setHref(absoluteURLGenerator.getURL());
-		imageInfo.setNext(absoluteURLGenerator.getNextURL());
-		imageInfo.setPrevious(absoluteURLGenerator.getPreviousURL());
+		imageInfo.setHref(absoluteURLGenerator.getURL(imageModel));
+		imageInfo.setNext(absoluteURLGenerator.getNextURL(imageModel));
+		imageInfo.setPrevious(absoluteURLGenerator.getPreviousURL(imageModel));
 		imageInfo.setFirst(absoluteURLGenerator.getFirstURL());
 		imageInfo.setLast(absoluteURLGenerator.getLastURL());
 		imageInfo.setImage(imageModelToImageFull());
