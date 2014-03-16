@@ -62,54 +62,36 @@ public class GetThumbnail extends Controller {
 
 	private static File getThumbnailFile(ImageModel imageModel, int size)
 			throws IOException {
-		Optional<ThumbnailModel> thumbnailModel = ThumbnailModel.get(
+		Optional<ThumbnailModel> retrievedThumbnailModel = ThumbnailModel.get(
 				imageModel.id, size);
 
-		ThumbnailModel actualThumbnailModel;
+		ThumbnailModel thumbnailModel;
 
-		if (!thumbnailModel.isPresent()) {
+		if (!retrievedThumbnailModel.isPresent()) {
 			File rawImage = new File(imageModel.filename);
 			String filename = generateThumbnailFilename(rawImage, size);
 
-			int w = 48;
-			int h = 48;
+			BufferedImage bufferedImage = ImageIO.read(rawImage);
+			int imageWidth = bufferedImage.getWidth();
+			int imageHeight = bufferedImage.getHeight();
 
-			switch (size) {
-			case ThumbnailModel.X_SMALL:
-				break;
-			case ThumbnailModel.SMALL:
-				w = 64;
-				h = 64;
-				break;
-			case ThumbnailModel.MEDIUM:
-				w = 128;
-				h = 128;
-				break;
-			case ThumbnailModel.LARGE:
-				w = 192;
-				h = 192;
-				break;
-			case ThumbnailModel.X_LARGE:
-				w = 256;
-				h = 256;
-				break;
-			case ThumbnailModel.COMPRESSED:
-				BufferedImage bufferedImage = ImageIO.read(rawImage);
-				w = bufferedImage.getWidth();
-				h = bufferedImage.getHeight();
-			default:
-				break;
+			int[] sizes = { 48, 64, 128, 192, 256, imageWidth };
+
+			int w = sizes[size];
+			int h = sizes[size];
+
+			if (h > 256) {
+				h = imageHeight;
 			}
 
 			Thumbnails.of(rawImage).size(w, h).toFile(filename);
 
-			actualThumbnailModel = ThumbnailModel.create(imageModel, filename,
-					size);
+			thumbnailModel = ThumbnailModel.create(imageModel, filename, size);
 		} else {
-			actualThumbnailModel = thumbnailModel.get();
+			thumbnailModel = retrievedThumbnailModel.get();
 		}
 
-		File thumbnail = new File(actualThumbnailModel.filename);
+		File thumbnail = new File(thumbnailModel.filename);
 
 		return thumbnail;
 	}
