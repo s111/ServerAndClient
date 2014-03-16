@@ -2,7 +2,9 @@ package models;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
@@ -35,7 +37,7 @@ public class ImageModel extends Model implements Comparable<ImageModel> {
 	public List<TagModel> tags = new ArrayList<>();
 
 	@OneToMany(mappedBy = "image")
-	public List<ThumbnailModel> thumbnails = new ArrayList<>();
+	public Map<Integer, ThumbnailModel> thumbnails = new HashMap<>();
 
 	public ImageModel(String filename) {
 		this.filename = filename;
@@ -169,7 +171,7 @@ public class ImageModel extends Model implements Comparable<ImageModel> {
 	}
 
 	public void addThumbnail(ThumbnailModel thumbnailModel) {
-		thumbnails.add(thumbnailModel);
+		thumbnails.put(thumbnailModel.size, thumbnailModel);
 
 		thumbnailModel.image = this;
 
