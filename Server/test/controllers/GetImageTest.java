@@ -93,8 +93,6 @@ public class GetImageTest {
 	public void getImageInfo_for_image_5_expect_previous_image_4() {
 		Result result = callGetImageInfo(ids.get(5));
 
-		System.out.println(ids.toString());
-
 		isOK(result);
 		isJSON(result);
 		contains(result, "\"previous\":\"http:///api/images/" + ids.get(4)
