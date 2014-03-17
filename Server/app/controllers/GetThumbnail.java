@@ -1,19 +1,14 @@
 package controllers;
 
-import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 
-import javax.imageio.ImageIO;
-
 import models.ImageModel;
 import models.ThumbnailModel;
-import net.coobird.thumbnailator.Thumbnails;
-
-import org.apache.commons.io.FilenameUtils;
-
+import play.Logger;
 import play.mvc.Controller;
 import play.mvc.Result;
+import thumbnail.generator.ThumbnailGenerator;
 
 import com.google.common.base.Optional;
 
@@ -68,25 +63,7 @@ public class GetThumbnail extends Controller {
 		ThumbnailModel thumbnailModel;
 
 		if (!retrievedThumbnailModel.isPresent()) {
-			File rawImage = new File(imageModel.filename);
-			String filename = generateThumbnailFilename(rawImage, size);
-
-			BufferedImage bufferedImage = ImageIO.read(rawImage);
-			int imageWidth = bufferedImage.getWidth();
-			int imageHeight = bufferedImage.getHeight();
-
-			int[] sizes = { 48, 64, 128, 192, 256, imageWidth };
-
-			int w = sizes[size];
-			int h = sizes[size];
-
-			if (h > 256) {
-				h = imageHeight;
-			}
-
-			Thumbnails.of(rawImage).size(w, h).toFile(filename);
-
-			thumbnailModel = ThumbnailModel.create(imageModel, filename, size);
+			thumbnailModel = createNewThumbnail(imageModel, size);
 		} else {
 			thumbnailModel = retrievedThumbnailModel.get();
 		}
@@ -96,11 +73,29 @@ public class GetThumbnail extends Controller {
 		return thumbnail;
 	}
 
-	private static String generateThumbnailFilename(File file, int size) {
-		String baseName = FilenameUtils.getBaseName(file.getAbsolutePath());
-		String extension = FilenameUtils.getExtension(file.getAbsolutePath());
+	private static ThumbnailModel createNewThumbnail(ImageModel imageModel,
+			int size) throws IOException {
+		ThumbnailModel thumbnailModel;
 
-		return ImageUploader.IMAGE_DIRECTORY + "thumb" + baseName + "size"
-				+ size + "." + extension;
+		ThumbnailGenerator thumbnailGenerator = new ThumbnailGenerator(
+				imageModel, size);
+
+		try {
+			thumbnailGenerator.writeThumbnailToDisk();
+		} catch (IOException exception) {
+			logIOException(exception);
+		}
+
+		thumbnailModel = thumbnailGenerator.saveThumbnailToDatabase();
+
+		return thumbnailModel;
+	}
+
+	private static void logIOException(IOException exception)
+			throws IOException {
+		Logger.error("Could not write thumbnail to disk: "
+				+ exception.getMessage());
+
+		throw exception;
 	}
 }
