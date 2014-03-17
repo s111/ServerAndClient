@@ -1,6 +1,7 @@
 package com.github.groupa.client;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import com.github.groupa.client.events.LibraryAddEvent;
@@ -9,7 +10,7 @@ import com.google.inject.Inject;
 
 public class SingleLibrary implements Library {
 	private List<ImageObject> images = new ArrayList<>();
-	private EventBus eventBus;
+	private EventBus eventBus = null;
 
 	public void clear() {
 		images.clear();
@@ -19,7 +20,8 @@ public class SingleLibrary implements Library {
 	public ImageObject add(ImageObject img) {
 		if (!images.contains(img)) {
 			images.add(img);
-			eventBus.post(new LibraryAddEvent(this, img));
+			if (eventBus != null)
+				eventBus.post(new LibraryAddEvent(this, img));
 		}
 
 		return img;
@@ -28,6 +30,9 @@ public class SingleLibrary implements Library {
 	@Inject
 	public SingleLibrary(EventBus eventBus) {
 		this.eventBus = eventBus;
+	}
+
+	public SingleLibrary() {
 	}
 
 	@Override
@@ -54,5 +59,26 @@ public class SingleLibrary implements Library {
 	@Override
 	public int indexOf(ImageObject img) {
 		return images.indexOf(img);
+	}
+
+	public void addAll(Library lib) {
+		List<ImageObject> images = lib.getImages();
+		Iterator<ImageObject> itr = images.iterator();
+		while (itr.hasNext()) {
+			ImageObject image = itr.next();
+			if (hasImage(image.getId())) itr.remove();
+		}
+		if (images.size() > 0) {
+			this.images.addAll(images);
+			if (eventBus != null)
+				eventBus.post(new LibraryAddEvent(this, images));
+		}
+	}
+
+	private boolean hasImage(long id) {
+		for (ImageObject image : images) {
+			if (image.getId() == id) return true;
+		}
+		return false;
 	}
 }

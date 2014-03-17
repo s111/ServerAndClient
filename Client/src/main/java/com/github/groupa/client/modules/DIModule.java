@@ -5,6 +5,7 @@ import javax.inject.Singleton;
 import retrofit.RestAdapter;
 
 import com.github.groupa.client.Application;
+import com.github.groupa.client.ImageListFetcher;
 import com.github.groupa.client.MainFrame;
 import com.github.groupa.client.RESTErrorHandler;
 import com.github.groupa.client.SingleLibrary;
@@ -26,6 +27,7 @@ public class DIModule extends AbstractModule {
 		bind(ImageView.class).in(Singleton.class);
 		bind(GridView.class).in(Singleton.class);
 		bind(SingleLibrary.class).in(Singleton.class);
+		bind(ImageListFetcher.class).in(Singleton.class);
 
 		install(new FactoryModuleBuilder().build(ImageObjectFactory.class));
 	}

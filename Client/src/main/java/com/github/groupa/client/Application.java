@@ -1,7 +1,5 @@
 package com.github.groupa.client;
 
-import java.net.ConnectException;
-
 import javax.inject.Inject;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
@@ -13,10 +11,6 @@ import org.slf4j.LoggerFactory;
 
 import com.github.groupa.client.components.MenuBar;
 import com.github.groupa.client.events.SwitchViewEvent;
-import com.github.groupa.client.factories.ImageObjectFactory;
-import com.github.groupa.client.jsonobjects.ImageList;
-import com.github.groupa.client.jsonobjects.ImageShort;
-import com.github.groupa.client.servercommunication.RESTService;
 import com.github.groupa.client.views.GridView;
 import com.github.groupa.client.views.ImageView;
 import com.github.groupa.client.views.View;
@@ -31,7 +25,6 @@ public class Application {
 	private MainFrame mainFrame;
 
 	private Library library;
-	private RESTService restService;
 
 	private EventBus eventBus;
 
@@ -39,15 +32,14 @@ public class Application {
 	public Application(EventBus eventBus, SingleLibrary library) {
 		this.eventBus = eventBus;
 		this.library = library;
+		
 		eventBus.register(Main.injector.getInstance(ImageUploader.class));
-
+		
 		BasicConfigurator.configure();
 
 		trySettingANativeLookAndFeel();
 		askForBaseURL();
-		restService = Main.injector.getInstance(RESTService.class);
 
-		setUpLibrary();
 		setUpGUI();
 	}
 
@@ -75,30 +67,6 @@ public class Application {
 
 		if (serverAPIBaseURL == null) {
 			System.exit(0);
-		}
-	}
-
-	private void setUpLibrary() {
-		ImageList imageList = null;
-
-		try {
-			imageList = restService.getImageList(0, 0);
-		} catch (ConnectException exception) {
-			logger.error("Could not connect to the server: "
-					+ exception.getMessage());
-		}
-
-		if (imageList == null) {
-			return;
-		}
-
-		ImageObjectFactory imageObjectFactory = Main.injector
-				.getInstance(ImageObjectFactory.class);
-
-		for (ImageShort image : imageList.getImages()) {
-			ImageObject imageObject = imageObjectFactory.create(image.getId());
-
-			library.add(imageObject);
 		}
 	}
 

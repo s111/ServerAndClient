@@ -8,8 +8,13 @@ import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.SwingUtilities;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import com.github.groupa.client.ImageListFetcher;
+import com.github.groupa.client.Library;
+import com.github.groupa.client.Main;
+import com.github.groupa.client.SingleLibrary;
 import com.github.groupa.client.events.SwitchViewEvent;
 import com.github.groupa.client.events.UploadImageEvent;
 import com.github.groupa.client.views.View;
@@ -17,14 +22,15 @@ import com.google.common.eventbus.EventBus;
 
 public class MenuBar {
 	private JMenuBar menuBar;
-	private JMenuItem importItem, imageViewItem;
+	private JMenuItem importItem, imageViewItem, getAllImages;
 
 	private EventBus eventBus;
+	private ImageListFetcher imageListFetcher;
 
 	@Inject
-	public MenuBar(EventBus eventBus) {
+	public MenuBar(EventBus eventBus, ImageListFetcher imageListFetcher) {
 		this.eventBus = eventBus;
-		
+		this.imageListFetcher = imageListFetcher;
 		setUpMenuBar();
 	}
 
@@ -37,10 +43,12 @@ public class MenuBar {
 
 		importItem = new JMenuItem("Import image");
 		imageViewItem = new JMenuItem("Activate ImageView");
+		getAllImages = new JMenuItem("Fetch all images");
 
 		JMenu fileMenu = new JMenu("File");
 		fileMenu.add(importItem);
 		fileMenu.add(imageViewItem);
+		fileMenu.add(getAllImages);
 
 		menuBar.add(fileMenu);
 
@@ -71,6 +79,21 @@ public class MenuBar {
 			@Override
 			public void actionPerformed(ActionEvent event) {
 				eventBus.post(new SwitchViewEvent(View.IMAGE_VIEW));
+			}
+		});
+		
+		getAllImages.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				SwingUtilities.invokeLater(new Runnable() {
+					@Override
+					public void run() {
+						Library lib = imageListFetcher.importAllImages();
+						if (lib != null) {
+							Main.injector.getInstance(SingleLibrary.class).addAll(lib);
+						}
+					}
+				});
 			}
 		});
 	}

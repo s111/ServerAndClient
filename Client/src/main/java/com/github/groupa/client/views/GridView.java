@@ -7,6 +7,7 @@ import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 
 import com.github.groupa.client.Library;
+import com.github.groupa.client.SingleLibrary;
 import com.github.groupa.client.components.SearchField;
 import com.github.groupa.client.components.ThumbPanel;
 import com.google.common.eventbus.EventBus;
@@ -18,10 +19,11 @@ public class GridView {
 	private Library library = null;
 
 	@Inject
-	public GridView(EventBus eventBus) {
+	public GridView(EventBus eventBus, SingleLibrary library) {
 		this.eventBus = eventBus;
 		eventBus.register(this);
 		setUpImageViewer();
+		setLibrary(library);
 	}
 
 	public JPanel getPanel() {

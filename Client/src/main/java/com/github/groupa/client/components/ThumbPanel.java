@@ -32,7 +32,7 @@ import com.google.common.eventbus.Subscribe;
 
 @SuppressWarnings("serial")
 public class ThumbPanel extends JPanel implements Scrollable {
-	private List<Thumb> thumbs = null;
+	private List<Thumb> thumbs = new ArrayList<>();
 	private MigLayout layout = new MigLayout("wrap 4");
 	private EventBus eventBus;
 	private GridView gridView;
@@ -54,19 +54,28 @@ public class ThumbPanel extends JPanel implements Scrollable {
 	}
 	
 	public void libraryChanged() {
-		thumbs = null;
-		generateInitialThumbs();
+		removeAll();
+		Library library = gridView.getLibrary();
+		if (library.imageCount() == 0) 
+			repaint();
+		else {
+			thumbs = new ArrayList<>();
+			for (ImageObject image : library.getImages()) {
+				addImage(image);
+			}
+		}
+	}
+
+	private void addImage(ImageObject image) {
+		addThumb(new Thumb(image));
 	}
 
 	@Subscribe
 	public void switchViewListener(SwitchViewEvent event) {
 		if (event.hasSwitched() && View.GRID_VIEW.equals(event.getView())) {
 			Library lib = event.getLibrary();
-			if (lib != null && !lib.equals(gridView.getLibrary())) {
+			if (gridView.getLibrary().equals(lib)) {
 				gridView.setLibrary(lib);
-			}
-			else if (thumbs == null) {
-				generateInitialThumbs();
 			}
 		}
 	}
@@ -75,9 +84,13 @@ public class ThumbPanel extends JPanel implements Scrollable {
 	public void libraryAddImageListener(LibraryAddEvent event) {
 		if (event.getLibrary().equals(gridView.getLibrary())) {
 			ImageObject image = event.getImage();
-			Thumb thumb = new Thumb(image);
-			thumbs.add(thumb);
-			addThumb(thumb);
+			if (image != null) {
+				addImage(image);
+			} else {
+				for (ImageObject img : event.getImages()) {
+					addImage(img);
+				}
+			}
 		}
 	}
 
@@ -116,21 +129,6 @@ public class ThumbPanel extends JPanel implements Scrollable {
 		Component component = thumb.getSmallThumb();
 		add(component);
 		component.addMouseListener(new ThumbListener(thumb));
-	}
-
-	private void generateInitialThumbs() {
-		removeAll();
-		Library library = gridView.getLibrary();
-		if (library == null)
-			return;
-		if (library.imageCount() == 0) 
-			repaint();
-		else {
-			thumbs = new ArrayList<>();
-			for (ImageObject image : library.getImages()) {
-				addThumb(new Thumb(image));
-			}
-		}
 	}
 
 	private class Thumb {
