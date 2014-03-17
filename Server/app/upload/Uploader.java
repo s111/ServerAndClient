@@ -41,7 +41,7 @@ public class Uploader {
 
 	public boolean upload() {
 		makeSureUploadDirectoryExists();
-		boolean uploaded = tryTomoveTemporaryFileToUploadDirectory();
+		uploaded = tryTomoveTemporaryFileToUploadDirectory();
 
 		return uploaded;
 	}
