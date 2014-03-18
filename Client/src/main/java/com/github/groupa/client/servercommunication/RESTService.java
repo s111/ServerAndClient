@@ -6,6 +6,7 @@ import retrofit.client.Response;
 import retrofit.http.Field;
 import retrofit.http.FormUrlEncoded;
 import retrofit.http.GET;
+import retrofit.http.HEAD;
 import retrofit.http.Multipart;
 import retrofit.http.POST;
 import retrofit.http.Part;
@@ -64,4 +65,14 @@ public interface RESTService {
 	@FormUrlEncoded
 	@POST("/images/{id}/tag")
 	public Response tagImage(@Path("id") long id, @Field("value") String tags);
+
+	@HEAD("/images")
+	public Response hasImageListChanged(@Query("offset") int offset,
+			@Query("limit") int limit);
+
+	@HEAD("/images/{id}")
+	public Response hasImageInfoChanged(@Path("id") long id);
+
+	@HEAD("/images/{id}/raw")
+	public Response hasImageRawChanged(@Path("id") long id);
 }
