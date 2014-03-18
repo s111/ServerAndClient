@@ -1,5 +1,6 @@
 import java.io.File;
 
+import metadata.PrepareImageModel;
 import models.ImageModel;
 import models.TagModel;
 import play.Application;
@@ -28,6 +29,10 @@ public class Global extends GlobalSettings {
 						.findUnique() == null) {
 					ImageModel imageModel = ImageModel
 							.create(filenameInDatabase);
+
+					PrepareImageModel
+							.loadImageModelWithMetadataFromFile(imageModel);
+
 					imageModel.tags.add(TagModel.create("id:" + imageModel.id));
 					imageModel.save();
 				}

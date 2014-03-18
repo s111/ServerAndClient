@@ -6,11 +6,10 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 import json.generators.ImageInfoJsonGenerator;
-import metadata.ExifReader;
+import metadata.PrepareImageModel;
 import models.ImageModel;
 import models.TagModel;
 
-import org.apache.commons.imaging.ImageReadException;
 import org.apache.tika.config.TikaConfig;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.mime.MediaType;
@@ -74,43 +73,13 @@ public class Uploader {
 
 		ImageModel imageModel = ImageModel.create(IMAGE_DIRECTORY + filename);
 
-		try {
-			setMetadata(imageModel);
-		} catch (ImageReadException e) {
-			Logger.warn("Could not read exif metadata from: "
-					+ newImage.getAbsolutePath());
-		}
+		PrepareImageModel.loadImageModelWithMetadataFromFile(imageModel);
 
 		/* TODO Remove the id:{id} tag before release */
 		imageModel.tags.add(TagModel.create("id:" + imageModel.id));
 		imageModel.save();
 
 		return imageModel;
-	}
-
-	private void setMetadata(ImageModel imageModel) throws ImageReadException {
-		ExifReader exifReader = new ExifReader(newImage, null);
-		exifReader.readMetadata();
-
-		String description = exifReader.getDescription();
-		String tagList = exifReader.getTags();
-		int rating = exifReader.getRating();
-
-		if (description != null) {
-			imageModel.description = exifReader.getDescription();
-		}
-
-		if (tagList != null) {
-			String[] tags = tagList.split(",");
-
-			for (String tag : tags) {
-				imageModel.tags.add(TagModel.create(tag));
-			}
-		}
-
-		if (rating != 0) {
-			imageModel.rating = exifReader.getRating();
-		}
 	}
 
 	private JsonNode generateJson(Request request, ImageModel imageModel) {
