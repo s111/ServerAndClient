@@ -1,22 +1,17 @@
 package controllers;
 
-import java.io.File;
-
-import json.generators.ImageInfoJsonGenerator;
 import models.ImageModel;
 import play.mvc.Controller;
 import play.mvc.Result;
-import url.generators.ImageInfoURLGenerator;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.base.Optional;
 
-public class GetImage extends Controller {
+public class ResourceChanged extends Controller {
 	public static Result info(long id) {
 		Optional<ImageModel> retrievedImageModel = ImageModel.get(id);
 
 		if (!retrievedImageModel.isPresent()) {
-			return notFound();
+			return badRequest();
 		}
 
 		ImageModel imageModel = retrievedImageModel.get();
@@ -24,15 +19,14 @@ public class GetImage extends Controller {
 		response().setHeader("info-change-count",
 				imageModel.infoChangeCount.toString());
 
-		ImageInfoURLGenerator absoluteURLGenerator = new ImageInfoURLGenerator(
-				request());
+		return ok();
+	}
 
-		ImageInfoJsonGenerator imageModelJsonGenerator = new ImageInfoJsonGenerator(
-				imageModel, absoluteURLGenerator);
+	public static Result getImages(int offset, int limit) {
+		response().setHeader("list-change-count",
+				ImageModel.listChangeCount.toString());
 
-		JsonNode imageInfoNode = imageModelJsonGenerator.toJson();
-
-		return ok(imageInfoNode);
+		return ok();
 	}
 
 	public static Result file(long id) {
@@ -47,12 +41,6 @@ public class GetImage extends Controller {
 		response().setHeader("image-change-count",
 				imageModel.imageChangeCount.toString());
 
-		File image = new File(imageModel.filename);
-
-		if (image.exists()) {
-			return ok(image, true);
-		} else {
-			return notFound();
-		}
+		return ok();
 	}
 }

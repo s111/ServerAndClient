@@ -24,7 +24,7 @@ public class TagModel extends Model {
 	public static Finder<String, TagModel> find = new Finder<>(String.class,
 			TagModel.class);
 
-	public TagModel(String name) {
+	private TagModel(String name) {
 		this.name = name;
 	}
 

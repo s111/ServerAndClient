@@ -20,6 +20,9 @@ public class ImageController extends Controller {
 			limit = ImageModel.getRowCount();
 		}
 
+		response().setHeader("list-change-count",
+				ImageModel.listChangeCount.toString());
+
 		List<ImageModel> imageModels = ImageModel.getList(offset, limit);
 
 		ImageListURLGenerator imageListURLGenerator = new ImageListURLGenerator(

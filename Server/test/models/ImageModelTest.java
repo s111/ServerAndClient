@@ -53,7 +53,7 @@ public class ImageModelTest {
 	public void insert_image_expect_to_retrieve_image() {
 		String filename = ImageUploader.IMAGE_DIRECTORY + "01.png";
 
-		new ImageModel(filename).save();
+		ImageModel.create(filename);
 
 		ImageModel imageModel = ImageModel.find.where()
 				.eq("filename", filename).findUnique();
@@ -65,23 +65,11 @@ public class ImageModelTest {
 	public void insert_image_expect_database_size_1() {
 		String filename = ImageUploader.IMAGE_DIRECTORY + "01.png";
 
-		new ImageModel(filename).save();
+		ImageModel.create(filename);
 
 		int databaseSize = ImageModel.find.all().size();
 
 		assertEquals(1, databaseSize);
-	}
-
-	@Test
-	public void create_image_expect_to_retrieve_image() {
-		String filename = ImageUploader.IMAGE_DIRECTORY + "01.png";
-
-		ImageModel.create(filename);
-
-		ImageModel imageModel = ImageModel.find.where()
-				.eq("filename", filename).findUnique();
-
-		assertNotNull(imageModel);
 	}
 
 	@Test
@@ -111,7 +99,7 @@ public class ImageModelTest {
 		String filename = ImageUploader.IMAGE_DIRECTORY + "01.png";
 		String tagName = "tag";
 
-		ImageModel imageModel = new ImageModel(filename);
+		ImageModel imageModel = ImageModel.create(filename);
 		TagModel tagModel = TagModel.create(tagName);
 
 		imageModel.addTag(tagModel);
@@ -125,7 +113,7 @@ public class ImageModelTest {
 		String tag1 = "tag1";
 		String tag2 = "tag2";
 
-		ImageModel imageModel = new ImageModel(filename);
+		ImageModel imageModel = ImageModel.create(filename);
 		TagModel tagModel1 = TagModel.create(tag1);
 		TagModel tagModel2 = TagModel.create(tag2);
 

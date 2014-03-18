@@ -54,7 +54,7 @@ public class TagModelTest {
 	public void insert_tag_expect_to_retrieve_tag() {
 		String name = "tagName";
 
-		new TagModel(name).save();
+		TagModel.create(name);
 
 		assertNotNull(TagModel.get(name));
 	}
@@ -63,7 +63,7 @@ public class TagModelTest {
 	public void insert_tag_expect_database_size_1() {
 		String name = "tagName";
 
-		new TagModel(name).save();
+		TagModel.create(name);
 
 		int databaseSize = TagModel.getAll().size();
 
@@ -95,7 +95,7 @@ public class TagModelTest {
 		String filename = ImageUploader.IMAGE_DIRECTORY + "01.png";
 		String tagName = "tag";
 
-		ImageModel imageModel = new ImageModel(filename);
+		ImageModel imageModel = ImageModel.create(filename);
 		TagModel tagModel = TagModel.create(tagName);
 
 		imageModel.addTag(tagModel);
@@ -117,7 +117,7 @@ public class TagModelTest {
 		String tag1 = "tag1";
 		String tag2 = "tag2";
 
-		ImageModel imageModel = new ImageModel(filename);
+		ImageModel imageModel = ImageModel.create(filename);
 		TagModel tagModel1 = TagModel.create(tag1);
 		TagModel tagModel2 = TagModel.create(tag2);
 
@@ -149,8 +149,8 @@ public class TagModelTest {
 
 		String tagName = "tag";
 
-		ImageModel imageModel1 = new ImageModel(filename1);
-		ImageModel imageModel2 = new ImageModel(filename2);
+		ImageModel imageModel1 = ImageModel.create(filename1);
+		ImageModel imageModel2 = ImageModel.create(filename2);
 
 		TagModel tagModel = TagModel.create(tagName);
 

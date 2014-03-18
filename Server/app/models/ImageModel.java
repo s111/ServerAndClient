@@ -5,10 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
+import javax.persistence.Transient;
 
 import play.data.validation.Constraints.Required;
 import play.db.ebean.Model;
@@ -24,7 +26,27 @@ public class ImageModel extends Model {
 
 	@Id
 	public long id;
+
 	public int rating;
+
+	/**
+	 * Should be incremented each time the model info is changed (rating,
+	 * description, tags), before save() is called
+	 */
+	@Column(columnDefinition = "integer default 0")
+	public Integer infoChangeCount = 0;
+
+	/**
+	 * Should be incremented each time a model is created or deleted
+	 */
+	@Transient
+	public static Integer listChangeCount = 0;
+
+	/**
+	 * Should be incremented each time there is changes to the actual image
+	 */
+	@Column(columnDefinition = "integer default 0")
+	public Integer imageChangeCount = 0;
 
 	@Required
 	public String filename;
@@ -36,13 +58,16 @@ public class ImageModel extends Model {
 	@OneToMany(mappedBy = "image")
 	public Map<Integer, ThumbnailModel> thumbnails = new HashMap<>();
 
-	public ImageModel(String filename) {
+	private ImageModel(String filename) {
 		this.filename = filename;
 	}
 
 	public static ImageModel create(String filename) {
 		ImageModel imageModel = new ImageModel(filename);
+		imageModel.description = "";
 		imageModel.save();
+
+		ImageModel.listChangeCount++;
 
 		return imageModel;
 	}
@@ -97,13 +122,25 @@ public class ImageModel extends Model {
 	}
 
 	public void setDescription(String description) {
+		if (this.description.equals(description)) {
+			return;
+		}
+
 		this.description = description;
+
+		infoChangeCount++;
 
 		save();
 	}
 
 	public void setRating(int rating) {
+		if (this.rating == rating) {
+			return;
+		}
+
 		this.rating = rating;
+
+		infoChangeCount++;
 
 		save();
 	}
@@ -116,6 +153,8 @@ public class ImageModel extends Model {
 		tags.add(tagModel);
 
 		tagModel.images.add(this);
+
+		infoChangeCount++;
 
 		save();
 	}

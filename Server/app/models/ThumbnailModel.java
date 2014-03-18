@@ -35,7 +35,7 @@ public class ThumbnailModel extends Model {
 	@Required
 	public int size;
 
-	public ThumbnailModel(ImageModel imageModel, String filename, int size) {
+	private ThumbnailModel(ImageModel imageModel, String filename, int size) {
 		this.image = imageModel;
 		this.filename = filename;
 		this.size = size;
