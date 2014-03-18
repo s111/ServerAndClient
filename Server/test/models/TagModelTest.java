@@ -11,6 +11,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import upload.Uploader;
+
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.config.ServerConfig;
@@ -18,8 +20,6 @@ import com.avaje.ebean.config.dbplatform.H2Platform;
 import com.avaje.ebeaninternal.api.SpiEbeanServer;
 import com.avaje.ebeaninternal.server.ddl.DdlGenerator;
 import com.google.common.base.Optional;
-
-import controllers.ImageUploader;
 
 public class TagModelTest {
 	@BeforeClass
@@ -92,7 +92,7 @@ public class TagModelTest {
 
 	@Test
 	public void tag_image_expect_tag_to_contain_one_image() {
-		String filename = ImageUploader.IMAGE_DIRECTORY + "01.png";
+		String filename = Uploader.IMAGE_DIRECTORY + "01.png";
 		String tagName = "tag";
 
 		ImageModel imageModel = ImageModel.create(filename);
@@ -113,7 +113,7 @@ public class TagModelTest {
 
 	@Test
 	public void tag_image_twice_expect_tags_to_contain_one_image() {
-		String filename = ImageUploader.IMAGE_DIRECTORY + "01.png";
+		String filename = Uploader.IMAGE_DIRECTORY + "01.png";
 		String tag1 = "tag1";
 		String tag2 = "tag2";
 
@@ -144,8 +144,8 @@ public class TagModelTest {
 
 	@Test
 	public void tag_two_images_expect_tag_to_contain_two_images() {
-		String filename1 = ImageUploader.IMAGE_DIRECTORY + "01.png";
-		String filename2 = ImageUploader.IMAGE_DIRECTORY + "02.png";
+		String filename1 = Uploader.IMAGE_DIRECTORY + "01.png";
+		String filename2 = Uploader.IMAGE_DIRECTORY + "02.png";
 
 		String tagName = "tag";
 

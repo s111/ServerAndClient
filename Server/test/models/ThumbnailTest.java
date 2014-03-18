@@ -11,6 +11,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
+import upload.Uploader;
+
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.EbeanServer;
 import com.avaje.ebean.config.ServerConfig;
@@ -18,8 +20,6 @@ import com.avaje.ebean.config.dbplatform.H2Platform;
 import com.avaje.ebeaninternal.api.SpiEbeanServer;
 import com.avaje.ebeaninternal.server.ddl.DdlGenerator;
 import com.google.common.base.Optional;
-
-import controllers.ImageUploader;
 
 public class ThumbnailTest {
 	@BeforeClass
@@ -47,12 +47,12 @@ public class ThumbnailTest {
 
 	@Test
 	public void add_thumbnail_to_image_expect_image_to_contain_one_thumbnail() {
-		String filename = ImageUploader.IMAGE_DIRECTORY + "01.png";
+		String filename = Uploader.IMAGE_DIRECTORY + "01.png";
 
 		ImageModel imageModel = ImageModel.create(filename);
 
-		ThumbnailModel.create(imageModel, ImageUploader.IMAGE_DIRECTORY
-				+ "01s.png", ThumbnailModel.SMALL);
+		ThumbnailModel.create(imageModel, Uploader.IMAGE_DIRECTORY + "01s.png",
+				ThumbnailModel.SMALL);
 
 		Optional<ThumbnailModel> thumbnailSmall = ThumbnailModel.get(
 				imageModel.id, ThumbnailModel.SMALL);
@@ -63,18 +63,18 @@ public class ThumbnailTest {
 
 	@Test
 	public void add_three_thumbnails_to_image_expect_image_to_contain_three_thumbnails() {
-		String filename = ImageUploader.IMAGE_DIRECTORY + "01.png";
+		String filename = Uploader.IMAGE_DIRECTORY + "01.png";
 
 		ImageModel imageModel = ImageModel.create(filename);
 
 		long id = imageModel.id;
 
-		ThumbnailModel.create(imageModel, ImageUploader.IMAGE_DIRECTORY
-				+ "01s.png", ThumbnailModel.X_SMALL);
-		ThumbnailModel.create(imageModel, ImageUploader.IMAGE_DIRECTORY
-				+ "02s.png", ThumbnailModel.SMALL);
-		ThumbnailModel.create(imageModel, ImageUploader.IMAGE_DIRECTORY
-				+ "03s.png", ThumbnailModel.MEDIUM);
+		ThumbnailModel.create(imageModel, Uploader.IMAGE_DIRECTORY + "01s.png",
+				ThumbnailModel.X_SMALL);
+		ThumbnailModel.create(imageModel, Uploader.IMAGE_DIRECTORY + "02s.png",
+				ThumbnailModel.SMALL);
+		ThumbnailModel.create(imageModel, Uploader.IMAGE_DIRECTORY + "03s.png",
+				ThumbnailModel.MEDIUM);
 
 		Optional<ThumbnailModel> thumbnailXSmall = ThumbnailModel.get(id,
 				ThumbnailModel.X_SMALL);

@@ -9,7 +9,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import play.test.WithApplication;
-import controllers.ImageUploader;
+import upload.Uploader;
 
 public class GlobalTest extends WithApplication {
 	@Before
@@ -19,7 +19,7 @@ public class GlobalTest extends WithApplication {
 
 	@Test
 	public void check_initial_database_size_expect_to_match_files_on_disk() {
-		File directory = new File(ImageUploader.IMAGE_DIRECTORY);
+		File directory = new File(Uploader.IMAGE_DIRECTORY);
 
 		File[] listOfFiles = directory.listFiles();
 

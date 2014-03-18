@@ -22,9 +22,9 @@ import url.generators.ImageInfoURLGenerator;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.io.Files;
 
-import controllers.ImageUploader;
-
 public class Uploader {
+	public static final String IMAGE_DIRECTORY = "../../images/";
+
 	private File image;
 	private File newFile;
 	private File uploadDirectory;
@@ -40,6 +40,10 @@ public class Uploader {
 	}
 
 	public boolean upload() {
+		if (extension == null) {
+			return false;
+		}
+
 		makeSureUploadDirectoryExists();
 		uploaded = tryTomoveTemporaryFileToUploadDirectory();
 
@@ -61,8 +65,7 @@ public class Uploader {
 	private ImageModel createImageModel() {
 		String filename = newFile.getName();
 
-		ImageModel imageModel = ImageModel.create(ImageUploader.IMAGE_DIRECTORY
-				+ filename);
+		ImageModel imageModel = ImageModel.create(IMAGE_DIRECTORY + filename);
 		/* TODO Remove this before release */
 		imageModel.addTag(TagModel.create("id:" + imageModel.id));
 
@@ -126,7 +129,7 @@ public class Uploader {
 	}
 
 	private void makeSureUploadDirectoryExists() {
-		uploadDirectory = new File(ImageUploader.IMAGE_DIRECTORY);
+		uploadDirectory = new File(IMAGE_DIRECTORY);
 
 		if (!uploadDirectory.exists()) {
 			uploadDirectory.mkdir();
@@ -135,7 +138,7 @@ public class Uploader {
 
 	private void trySettingExtension() {
 		try {
-			this.extension = getExtension();
+			extension = getExtension();
 		} catch (MimeTypeException e) {
 			Logger.error("Failed to get extension from file due to IOException: "
 					+ image.getAbsolutePath());

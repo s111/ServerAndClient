@@ -11,8 +11,6 @@ import upload.Uploader;
 import com.fasterxml.jackson.databind.JsonNode;
 
 public class ImageUploader extends Controller {
-	public static final String IMAGE_DIRECTORY = "../../images/";
-
 	public static Result upload() {
 		MultipartFormData body = request().body().asMultipartFormData();
 

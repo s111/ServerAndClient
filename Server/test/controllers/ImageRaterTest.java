@@ -17,6 +17,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import play.test.FakeRequest;
+import upload.Uploader;
 
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.EbeanServer;
@@ -51,7 +52,7 @@ public class ImageRaterTest {
 
 	@Test
 	public void rate_image_with_5_expect_rating_5() {
-		String filename = ImageUploader.IMAGE_DIRECTORY + "01.png";
+		String filename = Uploader.IMAGE_DIRECTORY + "01.png";
 
 		long id = ImageModel.create(filename).id;
 

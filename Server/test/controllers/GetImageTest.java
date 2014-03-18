@@ -20,6 +20,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import play.mvc.Result;
+import upload.Uploader;
 
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.EbeanServer;
@@ -62,7 +63,7 @@ public class GetImageTest {
 		ids = new ArrayList<>();
 
 		for (int i = 1; i < 10; i++) {
-			long id = ImageModel.create(ImageUploader.IMAGE_DIRECTORY + "0" + i
+			long id = ImageModel.create(Uploader.IMAGE_DIRECTORY + "0" + i
 					+ ".png").id;
 
 			ids.add(id);

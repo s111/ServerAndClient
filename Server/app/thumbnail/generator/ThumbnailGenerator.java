@@ -14,9 +14,9 @@ import net.coobird.thumbnailator.Thumbnails;
 
 import org.apache.commons.io.FilenameUtils;
 
-import com.google.common.collect.ImmutableMap;
+import upload.Uploader;
 
-import controllers.ImageUploader;
+import com.google.common.collect.ImmutableMap;
 
 public class ThumbnailGenerator {
 	private static final Map<Integer, Dimension> THUMBNAIL_SIZES = ImmutableMap
@@ -71,7 +71,7 @@ public class ThumbnailGenerator {
 		String baseName = FilenameUtils.getBaseName(image.getAbsolutePath());
 		String extension = FilenameUtils.getExtension(image.getAbsolutePath());
 
-		return ImageUploader.IMAGE_DIRECTORY + "thumb" + baseName + "size"
-				+ size + "." + extension;
+		return Uploader.IMAGE_DIRECTORY + "thumb" + baseName + "size" + size
+				+ "." + extension;
 	}
 }

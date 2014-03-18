@@ -4,12 +4,12 @@ import models.ImageModel;
 import models.TagModel;
 import play.Application;
 import play.GlobalSettings;
-import controllers.ImageUploader;
+import upload.Uploader;
 
 public class Global extends GlobalSettings {
 	@Override
 	public void onStart(Application application) {
-		File directory = new File(ImageUploader.IMAGE_DIRECTORY);
+		File directory = new File(Uploader.IMAGE_DIRECTORY);
 
 		if (!directory.isDirectory())
 			return;
@@ -19,8 +19,7 @@ public class Global extends GlobalSettings {
 		for (File image : listOfFiles) {
 			String filename = image.getName();
 
-			String filenameInDatabase = ImageUploader.IMAGE_DIRECTORY
-					+ filename;
+			String filenameInDatabase = Uploader.IMAGE_DIRECTORY + filename;
 
 			if (filename.matches("^(.+).(png|jpg)$")) {
 				if (filename.contains("thumb"))

@@ -19,6 +19,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import play.mvc.Result;
+import upload.Uploader;
 
 import com.avaje.ebean.Ebean;
 import com.avaje.ebean.EbeanServer;
@@ -61,7 +62,7 @@ public class ImageControllerTest {
 		ids = new ArrayList<>();
 
 		for (int i = 1; i < 10; i++) {
-			ids.add(ImageModel.create(ImageUploader.IMAGE_DIRECTORY + "0" + i
+			ids.add(ImageModel.create(Uploader.IMAGE_DIRECTORY + "0" + i
 					+ ".png").id);
 		}
 	}
