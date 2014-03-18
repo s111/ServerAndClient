@@ -9,10 +9,10 @@ import org.apache.commons.imaging.formats.tiff.constants.TiffConstants;
 
 public class ExifReader {
 	private TiffImageMetadata exif;
-	
-	private int rating = -1;
-	private String tags = "";
-	private String description = "";
+
+	private int rating;
+	private String tags;
+	private String description;
 
 	/**
 	 * ExifReader constructor. Allows you to use its methods on your specified

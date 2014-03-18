@@ -29,6 +29,12 @@ public class TagModel extends Model {
 	}
 
 	public static TagModel create(String name) {
+		Optional<TagModel> retrievedTag = get(name);
+
+		if (retrievedTag.isPresent()) {
+			return retrievedTag.get();
+		}
+
 		TagModel tagModel = new TagModel(name);
 		tagModel.save();
 

@@ -6,9 +6,11 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 import json.generators.ImageInfoJsonGenerator;
+import metadata.ExifReader;
 import models.ImageModel;
 import models.TagModel;
 
+import org.apache.commons.imaging.ImageReadException;
 import org.apache.tika.config.TikaConfig;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.mime.MediaType;
@@ -26,12 +28,14 @@ public class Uploader {
 	public static final String IMAGE_DIRECTORY = "../../images/";
 
 	private File image;
-	private File newFile;
+	private File newImage;
 	private File uploadDirectory;
 
 	private String extension;
 
 	private boolean uploaded;
+
+	private ImageModel imageModel;
 
 	public Uploader(File image) {
 		this.image = image;
@@ -47,6 +51,10 @@ public class Uploader {
 		makeSureUploadDirectoryExists();
 		uploaded = tryTomoveTemporaryFileToUploadDirectory();
 
+		if (uploaded) {
+			imageModel = createImageModel();
+		}
+
 		return uploaded;
 	}
 
@@ -56,20 +64,53 @@ public class Uploader {
 					"Cannot generate json if the upload did not succeed");
 		}
 
-		ImageModel imageModel = createImageModel();
 		JsonNode imageInfoNode = generateJson(request, imageModel);
 
 		return imageInfoNode;
 	}
 
 	private ImageModel createImageModel() {
-		String filename = newFile.getName();
+		String filename = newImage.getName();
 
 		ImageModel imageModel = ImageModel.create(IMAGE_DIRECTORY + filename);
-		/* TODO Remove this before release */
-		imageModel.addTag(TagModel.create("id:" + imageModel.id));
+
+		try {
+			setMetadata(imageModel);
+		} catch (ImageReadException e) {
+			Logger.warn("Could not read exif metadata from: "
+					+ newImage.getAbsolutePath());
+		}
+
+		/* TODO Remove the id:{id} tag before release */
+		imageModel.tags.add(TagModel.create("id:" + imageModel.id));
+		imageModel.save();
 
 		return imageModel;
+	}
+
+	private void setMetadata(ImageModel imageModel) throws ImageReadException {
+		ExifReader exifReader = new ExifReader(newImage, null);
+		exifReader.readMetadata();
+
+		String description = exifReader.getDescription();
+		String tagList = exifReader.getTags();
+		int rating = exifReader.getRating();
+
+		if (description != null) {
+			imageModel.description = exifReader.getDescription();
+		}
+
+		if (tagList != null) {
+			String[] tags = tagList.split(",");
+
+			for (String tag : tags) {
+				imageModel.tags.add(TagModel.create(tag));
+			}
+		}
+
+		if (rating != 0) {
+			imageModel.rating = exifReader.getRating();
+		}
 	}
 
 	private JsonNode generateJson(Request request, ImageModel imageModel) {
@@ -90,9 +131,9 @@ public class Uploader {
 
 	private boolean tryTomoveTemporaryFileToUploadDirectory() {
 		try {
-			newFile = tryToCreateNewFile(newFile);
+			newImage = tryToCreateNewFile(newImage);
 
-			tryToCopyImageToNewFile(newFile);
+			tryToCopyImageToNewFile(newImage);
 		} catch (IOException exception) {
 			return false;
 		} finally {

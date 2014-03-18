@@ -28,8 +28,8 @@ public class Global extends GlobalSettings {
 						.findUnique() == null) {
 					ImageModel imageModel = ImageModel
 							.create(filenameInDatabase);
-
-					imageModel.addTag(TagModel.create("id:" + imageModel.id));
+					imageModel.tags.add(TagModel.create("id:" + imageModel.id));
+					imageModel.save();
 				}
 			}
 		}

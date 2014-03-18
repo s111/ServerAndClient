@@ -23,15 +23,7 @@ public class ImageTagger extends Controller {
 		String[] tags = tagData.split(",");
 
 		for (String tag : tags) {
-			Optional<TagModel> retrievedTagModel = TagModel.get(tag);
-
-			TagModel tagModel;
-
-			if (retrievedTagModel.isPresent()) {
-				tagModel = retrievedTagModel.get();
-			} else {
-				tagModel = TagModel.create(tag);
-			}
+			TagModel tagModel = TagModel.create(tag);
 
 			imageModel.get().addTag(tagModel);
 		}
