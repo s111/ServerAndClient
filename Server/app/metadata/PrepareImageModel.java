@@ -21,14 +21,14 @@ public class PrepareImageModel {
 		File image = new File(imageModel.filename);
 
 		try {
-			setMetadata(imageModel, image);
+			fillImageModelWithMetadata(imageModel, image);
 		} catch (IOException | ImageReadException exception) {
 			Logger.warn("Could not read exif metadata from: "
 					+ image.getAbsolutePath());
 		}
 	}
 
-	private static void setMetadata(ImageModel imageModel, File image)
+	private static void fillImageModelWithMetadata(ImageModel imageModel, File image)
 			throws ImageReadException, IOException {
 		Optional<TiffImageMetadata> retrievedExif = getMetadataTable(image);
 
@@ -49,7 +49,7 @@ public class PrepareImageModel {
 		int rating = exifReader.getRating();
 
 		if (description != null) {
-			imageModel.description = exifReader.getDescription();
+			imageModel.setDescription(description);
 		}
 
 		if (tagList != null) {
@@ -61,7 +61,7 @@ public class PrepareImageModel {
 		}
 
 		if (rating != 0) {
-			imageModel.rating = exifReader.getRating();
+			imageModel.setRating(rating);
 		}
 	}
 

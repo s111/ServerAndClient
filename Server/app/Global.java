@@ -34,7 +34,6 @@ public class Global extends GlobalSettings {
 							.loadImageModelWithMetadataFromFile(imageModel);
 
 					imageModel.addTag(TagModel.create("id:" + imageModel.id));
-					imageModel.save();
 				}
 			}
 		}
