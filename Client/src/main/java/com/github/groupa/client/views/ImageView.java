@@ -155,6 +155,7 @@ public class ImageView {
 
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), "keyLeft");
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), "keyRight");
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE,0),"previousView");
 
 		actionMap.put("keyLeft", new AbstractAction() {
 			@Override
@@ -169,6 +170,12 @@ public class ImageView {
 				displayNextImage();
 			}
 		});
+		actionMap.put("previousView", new AbstractAction() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+			eventBus.post(new SwitchViewEvent(View.PREVIOUS));
+		}
+	});
 	}
 
 	private void addButtonActionListeners() {
