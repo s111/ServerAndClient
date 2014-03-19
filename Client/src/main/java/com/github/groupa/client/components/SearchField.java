@@ -2,9 +2,10 @@ package com.github.groupa.client.components;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 
 import javax.swing.JButton;
-import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -16,7 +17,7 @@ import com.github.groupa.client.views.GridView;
 import com.github.groupa.client.views.ImageView;
 import com.google.common.eventbus.EventBus;
 
-public class SearchField implements ActionListener {
+public class SearchField implements ActionListener, KeyListener {
 	private JPanel panel;
 	private JTextField searchField;
 	private JButton searchButton;
@@ -48,6 +49,7 @@ public class SearchField implements ActionListener {
 		searchButton = new JButton("Search");
 
 		searchButton.addActionListener(this);
+		searchField.addKeyListener(this);
 
 		panel.add(searchField);
 		panel.add(searchButton);
@@ -73,5 +75,38 @@ public class SearchField implements ActionListener {
 			gridView.setLibrary(lib);
 		if (imageView != null)
 			imageView.setLibrary(lib);
+	}
+
+	@Override
+	public void keyPressed(KeyEvent arg0) {
+		if (arg0.getKeyCode() == KeyEvent.VK_ENTER) {
+			String text = searchField.getText();
+			Library lib;
+			if (text == null || text.equals("")) {
+				lib = mainLibrary;
+			} else {
+				lib = new ConstrainedLibrary(mainLibrary).addConstraint(
+						ConstrainedLibrary.HAS_TAG, text);
+				eventBus.register(lib);
+			}
+			
+			if (gridView != null)
+				gridView.setLibrary(lib);
+			if (imageView != null)
+				imageView.setLibrary(lib);
+		}
+		
+	}
+
+	@Override
+	public void keyReleased(KeyEvent arg0) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyTyped(KeyEvent arg0) {
+		// TODO Auto-generated method stub
+		
 	}
 }
