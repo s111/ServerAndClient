@@ -155,7 +155,8 @@ public class ImageView {
 
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), "keyLeft");
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), "keyRight");
-		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE,0),"previousView");
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE, 0),
+				"previousView");
 
 		actionMap.put("keyLeft", new AbstractAction() {
 			@Override
@@ -173,9 +174,9 @@ public class ImageView {
 		actionMap.put("previousView", new AbstractAction() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-			eventBus.post(new SwitchViewEvent(View.PREVIOUS));
-		}
-	});
+				eventBus.post(new SwitchViewEvent(View.PREVIOUS));
+			}
+		});
 	}
 
 	private void addButtonActionListeners() {
@@ -245,6 +246,8 @@ public class ImageView {
 		leftPanel.setLayout(new GridLayout(0, 1));
 		leftPanel.add(new ImageDescriptionButton(this).getButton());
 		leftPanel.add(new ImageTag(this).getTagButton());
+		// setCompoundBorder(leftPanel);
+		setRaisedBevelBorder(leftPanel);
 
 		return leftPanel;
 	}
@@ -277,6 +280,22 @@ public class ImageView {
 				title);
 
 		pane.setBorder(border);
+	}
+
+	// private void setCompoundBorder(JPanel pane) {
+	// Border raisedbevel, loweredbevel, compound;
+	// raisedbevel = BorderFactory.createRaisedBevelBorder();
+	// loweredbevel = BorderFactory.createLoweredBevelBorder();
+	// compound = BorderFactory
+	// .createCompoundBorder(raisedbevel, loweredbevel);
+	// pane.setBorder(compound);
+	//
+	// }
+
+	private void setRaisedBevelBorder(JPanel pane) {
+		Border raisedbevel;
+		raisedbevel = BorderFactory.createRaisedBevelBorder();
+		pane.setBorder(raisedbevel);
 	}
 
 	private void addPanelsToMainPanel() {
