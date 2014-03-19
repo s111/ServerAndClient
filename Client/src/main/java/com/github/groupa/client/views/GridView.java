@@ -17,6 +17,7 @@ import com.github.groupa.client.Callback;
 import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.Library;
 import com.github.groupa.client.SingleLibrary;
+import com.github.groupa.client.components.GridBottomPanel;
 import com.github.groupa.client.components.SearchField;
 import com.github.groupa.client.components.ThumbPanel;
 import com.github.groupa.client.events.LibraryAddEvent;
@@ -144,6 +145,7 @@ public class GridView {
 		mainPanel.add(new SearchField(eventBus, library, this).getPanel(),
 				BorderLayout.NORTH);
 		mainPanel.add(new GridBottomPanel(this).getPanel(), BorderLayout.SOUTH);
+
 	}
 
 	private void addImage(ImageObject image) {
