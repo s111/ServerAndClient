@@ -70,7 +70,7 @@ public class SearchField implements ActionListener, KeyListener {
 					ConstrainedLibrary.HAS_TAG, text);
 			eventBus.register(lib);
 		}
-		
+
 		if (gridView != null)
 			gridView.setLibrary(lib);
 		if (imageView != null)

@@ -5,7 +5,6 @@ import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 
-import org.apache.log4j.BasicConfigurator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,18 +31,11 @@ public class Application {
 	public Application(EventBus eventBus, SingleLibrary library) {
 		this.eventBus = eventBus;
 		this.library = library;
-		
-		eventBus.register(Main.injector.getInstance(ImageUploader.class));
-		
-		BasicConfigurator.configure();
-
-		trySettingANativeLookAndFeel();
-		askForBaseURL();
-
-		setUpGUI();
 	}
 
 	public void start() {
+		setUp();
+
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
@@ -52,12 +44,22 @@ public class Application {
 		});
 	}
 
+	private void setUp() {
+		eventBus.register(Main.injector.getInstance(ImageUploader.class));
+
+		trySettingANativeLookAndFeel();
+		askForBaseURL();
+
+		setUpGUI();
+	}
+
 	private void trySettingANativeLookAndFeel() {
 		try {
 			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
 		} catch (Exception exception) {
 			// If system look and feel can't be found, swing should just use the
 			// crossplatform one
+			logger.warn("Could not set system look and feel");
 		}
 	}
 
@@ -66,6 +68,8 @@ public class Application {
 				serverAPIBaseURL);
 
 		if (serverAPIBaseURL == null) {
+			logger.error("User did not enter base url. Can not continue");
+
 			System.exit(0);
 		}
 	}
