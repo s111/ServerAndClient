@@ -143,6 +143,7 @@ public class GridView {
 		mainPanel.add(new JScrollPane(thumbPanel), BorderLayout.CENTER);
 		mainPanel.add(new SearchField(eventBus, library, this).getPanel(),
 				BorderLayout.NORTH);
+		mainPanel.add(new GridBottomPanel(this).getPanel(), BorderLayout.SOUTH);
 	}
 
 	private void addImage(ImageObject image) {
