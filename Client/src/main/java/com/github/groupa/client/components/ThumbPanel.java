@@ -77,3 +77,11 @@ public class ThumbPanel extends JPanel implements Scrollable {
 		add(component);
 	}
 }
+
+
+/*
+m/2 : m
+l/2 : l
+xl/2 : xl
+xl : xl
+*/

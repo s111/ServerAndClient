@@ -4,7 +4,9 @@ import java.awt.Image;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.ConnectException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.imageio.ImageIO;
 import javax.inject.Inject;
@@ -39,12 +41,20 @@ public class ImageObject {
 
 	private EventBus eventBus;
 
+	private Map<String, Integer> thumbSize = new HashMap<>();
+	private Map<String, Image> thumbs = new HashMap<>();
+
 	@Inject
 	public ImageObject(EventBus eventBus, RESTService restService,
 			@Assisted long id) {
 		this.eventBus = eventBus;
 		this.restService = restService;
 		this.id = id;
+		thumbSize.put("xs", 40);
+		thumbSize.put("s", 80);
+		thumbSize.put("m", 140);
+		thumbSize.put("l", 220);
+		thumbSize.put("xl", 260);
 	}
 
 	public boolean hasImageRaw() {
@@ -72,6 +82,39 @@ public class ImageObject {
 				}
 
 				callback.success(imageRaw);
+			}
+		}).start();
+	}
+
+	private Image getThumb(String size, boolean halfSize) {
+		return thumbs.get(size + halfSize);
+	}
+	
+	private void downloadThumb(String size) {
+		if (!hasImageRaw()) {
+			loadImage();
+		}
+		if (hasImageRaw()) {
+			thumbs.put(size + false, imageRaw.getScaledInstance(thumbSize.get(size), -1,
+					Image.SCALE_FAST));
+
+			thumbs.put(size + true, imageRaw.getScaledInstance(thumbSize.get(size)/2, -1,
+					Image.SCALE_FAST));
+		}
+	}
+	
+	public void loadThumbWithCallback(final Callback<Image> callback, final String size, final boolean halfSize) {
+		new Thread(new Runnable() { // This should use actual thumbs from server later on
+			@Override
+			public void run() {
+				Image image = getThumb(size, halfSize);
+				if (image == null) {
+					downloadThumb(size);
+					image = getThumb(size, halfSize);
+					if (image == null) 
+						callback.failure();
+				}
+				callback.success(image);
 			}
 		}).start();
 	}

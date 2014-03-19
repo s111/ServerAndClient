@@ -94,11 +94,10 @@ public class GridView {
 
 		public JLabel getSmallThumb() {
 			if (small == null) {
-				img.loadImageWithCallback(new Callback<Image>() {
+				img.loadThumbWithCallback(new Callback<Image>() {
 					@Override
 					public void success(Image image) {
-						small = new ImageIcon(image.getScaledInstance(130, -1,
-								Image.SCALE_FAST));
+						small = new ImageIcon(image);
 						label.setText("");
 						label.setIcon(small);
 					}
@@ -107,7 +106,7 @@ public class GridView {
 					public void failure() {
 						label.setText("Error loading image");
 					}
-				});
+				},"l",true);
 			} else
 				label.setIcon(small);
 			return label;
@@ -115,11 +114,10 @@ public class GridView {
 
 		public JLabel getLargeThumb() {
 			if (large == null) {
-				img.loadImageWithCallback(new Callback<Image>() {
+				img.loadThumbWithCallback(new Callback<Image>() {
 					@Override
 					public void success(Image image) {
-						large = new ImageIcon(image.getScaledInstance(260, -1,
-								Image.SCALE_FAST));
+						large = new ImageIcon(image);
 						label.setText("");
 						label.setIcon(large);
 					}
@@ -128,7 +126,7 @@ public class GridView {
 					public void failure() {
 						label.setText("Error loading image");
 					}
-				});
+				}, "l",false);
 			} else
 				label.setIcon(large);
 			return label;
