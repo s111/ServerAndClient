@@ -9,6 +9,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
+import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.awt.image.BufferedImage;
 
 import javax.inject.Inject;
@@ -57,6 +59,8 @@ public class ImageView {
 	private JButton previousViewButton = new JButton("<= Previous view");
 
 	private EventBus eventBus;
+
+	private int zoomLevel = 1;
 
 	@Inject
 	public ImageView(EventBus eventBus, SingleLibrary library) {
@@ -150,14 +154,13 @@ public class ImageView {
 
 	@SuppressWarnings("serial")
 	private void addKeyBindings() {
-		InputMap inputMap = mainPanel
-				.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+		InputMap inputMap = mainPanel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
 		ActionMap actionMap = mainPanel.getActionMap();
 
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), "keyLeft");
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), "keyRight");
-		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE, 0),
-				"previousView");
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE, 0), "previousView");
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE, 0), "previousView");
 
 		actionMap.put("keyLeft", new AbstractAction() {
 			@Override
@@ -204,6 +207,44 @@ public class ImageView {
 
 	}
 
+	private void zoomImage(int zoomDirection) {
+		if (library == null || activeImageObject == null)
+			return;
+
+		Image image = activeImageObject.getImageRaw();
+
+		int width = picturePanel.getWidth();
+		int height = picturePanel.getHeight();
+
+		if (image == null) {
+			return;
+		}
+
+		if (zoomDirection < 0) {
+			zoomLevel += 1;
+		} else {
+			zoomLevel -= 1;
+		}
+
+		if (zoomLevel <= 0) {
+			zoomLevel = 0;
+			return;
+		}
+
+		if (zoomLevel > 10) {
+			zoomLevel = 10;
+			return;
+		}
+
+		width *= Math.abs(zoomLevel);
+		height *= Math.abs(zoomLevel);
+		BufferedImage zoomedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
+		Graphics2D g = zoomedImage.createGraphics();
+		g.drawImage(image, 0, 0, width, height, null);
+		g.dispose();
+		updateImage(zoomedImage);
+	}
+
 	private JPanel createTopPanel() {
 		JPanel topPanel = new JPanel();
 		topPanel.add(previousViewButton);
@@ -215,6 +256,16 @@ public class ImageView {
 	private JPanel createPicturePanel() {
 		picturePanel = new JPanel();
 		picturePanel.add(imageLabel);
+
+		picturePanel.addMouseWheelListener(new MouseWheelListener() {
+
+			@Override
+			public void mouseWheelMoved(MouseWheelEvent e) {
+				int zoomDirection = e.getWheelRotation();
+				zoomImage(zoomDirection);
+
+			}
+		});
 
 		picturePanel.addComponentListener(new ComponentAdapter() {
 			@Override
@@ -274,10 +325,8 @@ public class ImageView {
 	}
 
 	private void setTitledEtchedBorder(String title, JPanel pane) {
-		Border loweredetched = BorderFactory
-				.createEtchedBorder(EtchedBorder.LOWERED);
-		TitledBorder border = BorderFactory.createTitledBorder(loweredetched,
-				title);
+		Border loweredetched = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED);
+		TitledBorder border = BorderFactory.createTitledBorder(loweredetched, title);
 
 		pane.setBorder(border);
 	}
@@ -325,8 +374,7 @@ public class ImageView {
 	}
 
 	private BufferedImage resizeImage(Image image, int width, int height) {
-		final BufferedImage resizedImage = new BufferedImage(width, height,
-				BufferedImage.TYPE_INT_RGB);
+		final BufferedImage resizedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 		final Graphics2D g = resizedImage.createGraphics();
 		g.drawImage(image, 0, 0, width, height, null);
 		g.dispose();
