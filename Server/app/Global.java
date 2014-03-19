@@ -33,7 +33,7 @@ public class Global extends GlobalSettings {
 					PrepareImageModel
 							.loadImageModelWithMetadataFromFile(imageModel);
 
-					imageModel.tags.add(TagModel.create("id:" + imageModel.id));
+					imageModel.addTag(TagModel.create("id:" + imageModel.id));
 					imageModel.save();
 				}
 			}

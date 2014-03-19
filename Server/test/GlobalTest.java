@@ -31,7 +31,7 @@ public class GlobalTest extends WithApplication {
 		for (File image : listOfFiles) {
 			String filename = image.getName();
 
-			if (filename.matches("^(.+).png$")) {
+			if (filename.matches("^(.+).(png|jpg)$")) {
 				if (filename.contains("thumb"))
 					continue;
 				size++;

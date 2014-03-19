@@ -14,6 +14,8 @@ import org.apache.commons.imaging.formats.tiff.TiffImageMetadata;
 
 import play.Logger;
 
+import com.google.common.base.Optional;
+
 public class PrepareImageModel {
 	public static void loadImageModelWithMetadataFromFile(ImageModel imageModel) {
 		File image = new File(imageModel.filename);
@@ -28,14 +30,16 @@ public class PrepareImageModel {
 
 	private static void setMetadata(ImageModel imageModel, File image)
 			throws ImageReadException, IOException {
-		IImageMetadata metadata = Imaging.getMetadata(image);
+		Optional<TiffImageMetadata> retrievedExif = getMetadataTable(image);
 
-		if (!(metadata instanceof JpegImageMetadata)) {
+		if (!retrievedExif.isPresent()) {
+			Logger.warn("Could not read exif metadata from: "
+					+ image.getAbsolutePath());
+
 			return;
 		}
 
-		JpegImageMetadata JpegMetadata = (JpegImageMetadata) metadata;
-		TiffImageMetadata exif = JpegMetadata.getExif();
+		TiffImageMetadata exif = retrievedExif.get();
 
 		ExifReader exifReader = new ExifReader(image, exif);
 		exifReader.readMetadata();
@@ -52,12 +56,31 @@ public class PrepareImageModel {
 			String[] tags = tagList.split(",");
 
 			for (String tag : tags) {
-				imageModel.tags.add(TagModel.create(tag));
+				imageModel.addTag(TagModel.create(tag));
 			}
 		}
 
 		if (rating != 0) {
 			imageModel.rating = exifReader.getRating();
 		}
+	}
+
+	public static Optional<TiffImageMetadata> getMetadataTable(File image) {
+		IImageMetadata metadata = null;
+
+		try {
+			metadata = Imaging.getMetadata(image);
+		} catch (ImageReadException | IOException e) {
+			return Optional.absent();
+		}
+
+		if (!(metadata instanceof JpegImageMetadata)) {
+			return Optional.absent();
+		}
+
+		JpegImageMetadata JpegMetadata = (JpegImageMetadata) metadata;
+		TiffImageMetadata exif = JpegMetadata.getExif();
+
+		return Optional.fromNullable(exif);
 	}
 }

@@ -1,5 +1,7 @@
 package models;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -12,6 +14,14 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Transient;
 
+import metadata.ExifWriter;
+import metadata.PrepareImageModel;
+
+import org.apache.commons.imaging.ImageReadException;
+import org.apache.commons.imaging.ImageWriteException;
+import org.apache.commons.imaging.formats.tiff.TiffImageMetadata;
+
+import play.Logger;
 import play.data.validation.Constraints.Required;
 import play.db.ebean.Model;
 
@@ -131,6 +141,7 @@ public class ImageModel extends Model {
 		infoChangeCount++;
 
 		save();
+		writeMetadata();
 	}
 
 	public void setRating(int rating) {
@@ -143,6 +154,7 @@ public class ImageModel extends Model {
 		infoChangeCount++;
 
 		save();
+		writeMetadata();
 	}
 
 	public void addTag(TagModel tagModel) {
@@ -157,5 +169,42 @@ public class ImageModel extends Model {
 		infoChangeCount++;
 
 		save();
+		writeMetadata();
+	}
+
+	private void writeMetadata() {
+		File image = new File(filename);
+
+		Optional<TiffImageMetadata> retrievedExif = PrepareImageModel
+				.getMetadataTable(image);
+
+		if (!retrievedExif.isPresent()) {
+			Logger.warn("Could not read exif metadata from: "
+					+ image.getAbsolutePath());
+
+			return;
+		}
+
+		TiffImageMetadata exif = retrievedExif.get();
+
+		try {
+			ExifWriter exifWriter = new ExifWriter(image, exif);
+			exifWriter.setDescription(description);
+			exifWriter.setRating(rating);
+
+			String tagList = "";
+
+			for (TagModel tag : tags) {
+				tagList += tag.name + ",";
+			}
+
+			exifWriter.setTags(tagList);
+
+			exifWriter.save();
+		} catch (ImageReadException | ImageWriteException | IOException exception) {
+			Logger.warn("Could not write metadata to image: "
+					+ image.getAbsolutePath() + "\nException: "
+					+ exception.getMessage());
+		}
 	}
 }
