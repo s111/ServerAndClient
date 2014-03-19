@@ -158,7 +158,10 @@ public class ImageModel extends Model {
 	}
 
 	public void addTag(TagModel tagModel) {
-		if (tags.contains(tagModel)) {
+		Optional<TagModel> retrievedTagModel = TagModel.get(tagModel.name);
+
+		if (retrievedTagModel.isPresent()
+				&& tags.contains(retrievedTagModel.get())) {
 			return;
 		}
 
