@@ -31,6 +31,7 @@ import javax.swing.event.AncestorListener;
 import com.github.groupa.client.Callback;
 import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.Library;
+import com.github.groupa.client.SingleLibrary;
 import com.github.groupa.client.components.ImageDescriptionButton;
 import com.github.groupa.client.components.ImageRater;
 import com.github.groupa.client.components.ImageTag;
@@ -58,9 +59,9 @@ public class ImageView {
 	private EventBus eventBus;
 
 	@Inject
-	public ImageView(EventBus eventBus) {
+	public ImageView(EventBus eventBus, SingleLibrary library) {
 		this.eventBus = eventBus;
-
+		this.library = library;
 		eventBus.register(this);
 		setUpImageViewer();
 	}
@@ -206,7 +207,7 @@ public class ImageView {
 	private JPanel createTopPanel() {
 		JPanel topPanel = new JPanel();
 		topPanel.add(previousViewButton);
-		topPanel.add(new SearchField(eventBus, this).getPanel());
+		topPanel.add(new SearchField(eventBus, library, this).getPanel());
 
 		return topPanel;
 	}

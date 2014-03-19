@@ -8,8 +8,6 @@ import javax.swing.JTextField;
 
 import com.github.groupa.client.ConstrainedLibrary;
 import com.github.groupa.client.Library;
-import com.github.groupa.client.Main;
-import com.github.groupa.client.SingleLibrary;
 import com.github.groupa.client.views.GridView;
 import com.github.groupa.client.views.ImageView;
 import com.google.common.eventbus.EventBus;
@@ -23,19 +21,18 @@ public class SearchField implements ActionListener {
 	private EventBus eventBus;
 	private Library mainLibrary;
 
-	public SearchField(EventBus eventBus, ImageView imageView) {
+	public SearchField(EventBus eventBus, Library mainLibrary, ImageView imageView) {
 		this.eventBus = eventBus;
+		this.mainLibrary = mainLibrary;
 		this.imageView = imageView;
-
-		mainLibrary = Main.injector.getInstance(SingleLibrary.class);
 		setUpPanels();
 	}
 
-	public SearchField(EventBus eventBus, GridView gridView) {
+	public SearchField(EventBus eventBus, Library mainLibrary, GridView gridView) {
 		this.eventBus = eventBus;
 		this.gridView = gridView;
+		this.mainLibrary = mainLibrary;
 
-		mainLibrary = Main.injector.getInstance(SingleLibrary.class);
 		setUpPanels();
 	}
 
