@@ -89,34 +89,36 @@ public class ImageObject {
 	private Image getThumb(String size, boolean halfSize) {
 		return thumbs.get(size + halfSize);
 	}
-	
+
 	private void downloadThumb(String size) {
 		if (!hasImageRaw()) {
 			loadImage();
 		}
 		if (hasImageRaw()) {
-			thumbs.put(size + false, imageRaw.getScaledInstance(thumbSize.get(size), -1,
-					Image.SCALE_FAST));
+			thumbs.put(size + false, imageRaw.getScaledInstance(
+					thumbSize.get(size), -1, Image.SCALE_FAST));
 
-			thumbs.put(size + true, imageRaw.getScaledInstance(thumbSize.get(size)/2, -1,
-					Image.SCALE_FAST));
+			thumbs.put(size + true, imageRaw.getScaledInstance(
+					thumbSize.get(size) / 2, -1, Image.SCALE_FAST));
 		}
 	}
-	
-	public void loadThumbWithCallback(final Callback<Image> callback, final String size, final boolean halfSize) {
-		new Thread(new Runnable() { // This should use actual thumbs from server later on
-			@Override
-			public void run() {
-				Image image = getThumb(size, halfSize);
-				if (image == null) {
-					downloadThumb(size);
-					image = getThumb(size, halfSize);
-					if (image == null) 
-						callback.failure();
-				}
-				callback.success(image);
-			}
-		}).start();
+
+	public void loadThumbWithCallback(final Callback<Image> callback,
+			final String size, final boolean halfSize) {
+		new Thread(new Runnable() { // This should use actual thumbs from server
+									// later on
+					@Override
+					public void run() {
+						Image image = getThumb(size, halfSize);
+						if (image == null) {
+							downloadThumb(size);
+							image = getThumb(size, halfSize);
+							if (image == null)
+								callback.failure();
+						}
+						callback.success(image);
+					}
+				}).start();
 	}
 
 	public ImageInfo getImageInfo() {
@@ -190,32 +192,44 @@ public class ImageObject {
 	 *            0 < rating <= 5
 	 */
 	public void rate(int rating) {
-		restService.rateImage(id, rating);
+		try {
+			restService.rateImage(id, rating);
 
-		eventBus.post(new ImageInfoChangedEvent(this));
+			eventBus.post(new ImageInfoChangedEvent(this));
+		} catch (ConnectException e) {
+			logger.warn("Could not connect to server and rate image");
+		}
 	}
 
 	public void describe(String description) {
-		restService.describeImage(id, description);
+		try {
+			restService.describeImage(id, description);
 
-		eventBus.post(new ImageInfoChangedEvent(this));
+			eventBus.post(new ImageInfoChangedEvent(this));
+		} catch (ConnectException e) {
+			logger.warn("Could not connect to server and describe image");
+		}
 	}
 
 	public void addTag(String tag) {
-		restService.tagImage(id, tag);
+		try {
+			restService.tagImage(id, tag);
 
-		eventBus.post(new ImageInfoChangedEvent(this));
+			eventBus.post(new ImageInfoChangedEvent(this));
+		} catch (ConnectException e) {
+			logger.warn("Could not connect to server and tag image");
+		}
 	}
 
 	public boolean hasTag(String tag) {
 		loadImageInfo();
-		
+
 		return imageFull.getTags().contains(tag);
 	}
 
 	public boolean hasTags(List<String> tags) {
 		loadImageInfo();
-		
+
 		return imageFull.getTags().containsAll(tags);
 	}
 }

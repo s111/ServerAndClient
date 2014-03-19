@@ -29,50 +29,62 @@ public interface RESTService {
 	public Response getImageRaw(@Path("id") long id) throws ConnectException;
 
 	@GET("/images/{id}/compressed")
-	public Response getImageCompressed(@Path("id") long id);
+	public Response getImageCompressed(@Path("id") long id)
+			throws ConnectException;
 
 	@GET("/images/{id}/xs")
-	public Response getThumbnailXSmall(@Path("id") long id);
+	public Response getThumbnailXSmall(@Path("id") long id)
+			throws ConnectException;
 
 	@GET("/images/{id}/s")
-	public Response getThumbnailSmall(@Path("id") long id);
+	public Response getThumbnailSmall(@Path("id") long id)
+			throws ConnectException;
 
 	@GET("/images/{id}/m")
-	public Response getThumbnailMedium(@Path("id") long id);
+	public Response getThumbnailMedium(@Path("id") long id)
+			throws ConnectException;
 
 	@GET("/images/{id}/l")
-	public Response getThumbnailLarge(@Path("id") long id);
+	public Response getThumbnailLarge(@Path("id") long id)
+			throws ConnectException;
 
 	@GET("/images/{id}/xl")
-	public Response getThumbnailXLarge(@Path("id") long id);
+	public Response getThumbnailXLarge(@Path("id") long id)
+			throws ConnectException;
 
 	@GET("/tags/{tag}")
-	public ImageList getImageListForTag(@Path("tag") String tag);
+	public ImageList getImageListForTag(@Path("tag") String tag)
+			throws ConnectException;
 
 	@Multipart
 	@POST("/image")
-	public ImageInfo uploadImage(@Part("value") TypedFile image);
+	public ImageInfo uploadImage(@Part("value") TypedFile image)
+			throws ConnectException;
 
 	@FormUrlEncoded
 	@POST("/images/{id}/rate")
-	public Response rateImage(@Path("id") long id, @Field("value") int rating);
+	public Response rateImage(@Path("id") long id, @Field("value") int rating)
+			throws ConnectException;
 
 	@FormUrlEncoded
 	@POST("/images/{id}/describe")
 	public Response describeImage(@Path("id") long id,
-			@Field("value") String description);
+			@Field("value") String description) throws ConnectException;
 
 	@FormUrlEncoded
 	@POST("/images/{id}/tag")
-	public Response tagImage(@Path("id") long id, @Field("value") String tags);
+	public Response tagImage(@Path("id") long id, @Field("value") String tags)
+			throws ConnectException;
 
 	@HEAD("/images")
 	public Response hasImageListChanged(@Query("offset") int offset,
-			@Query("limit") int limit);
+			@Query("limit") int limit) throws ConnectException;
 
 	@HEAD("/images/{id}")
-	public Response hasImageInfoChanged(@Path("id") long id);
+	public Response hasImageInfoChanged(@Path("id") long id)
+			throws ConnectException;
 
 	@HEAD("/images/{id}/raw")
-	public Response hasImageRawChanged(@Path("id") long id);
+	public Response hasImageRawChanged(@Path("id") long id)
+			throws ConnectException;
 }
