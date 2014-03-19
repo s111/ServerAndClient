@@ -246,7 +246,6 @@ public class ImageView {
 		leftPanel.setLayout(new GridLayout(0, 1));
 		leftPanel.add(new ImageDescriptionButton(this).getButton());
 		leftPanel.add(new ImageTag(this).getTagButton());
-		// setCompoundBorder(leftPanel);
 		setRaisedBevelBorder(leftPanel);
 
 		return leftPanel;
@@ -281,16 +280,6 @@ public class ImageView {
 
 		pane.setBorder(border);
 	}
-
-	// private void setCompoundBorder(JPanel pane) {
-	// Border raisedbevel, loweredbevel, compound;
-	// raisedbevel = BorderFactory.createRaisedBevelBorder();
-	// loweredbevel = BorderFactory.createLoweredBevelBorder();
-	// compound = BorderFactory
-	// .createCompoundBorder(raisedbevel, loweredbevel);
-	// pane.setBorder(compound);
-	//
-	// }
 
 	private void setRaisedBevelBorder(JPanel pane) {
 		Border raisedbevel;
