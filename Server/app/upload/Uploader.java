@@ -129,7 +129,7 @@ public class Uploader {
 
 	private File tryToCreateNewFile(File newFile) throws IOException {
 		try {
-			newFile = File.createTempFile("tmp", extension, uploadDirectory);
+			newFile = File.createTempFile("image", extension, uploadDirectory);
 		} catch (IOException exception) {
 			Logger.error("Could not create new file");
 
