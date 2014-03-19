@@ -18,6 +18,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 
 import play.Logger;
+import upload.Uploader;
 
 public class ExifWriter {
 	private TiffImageMetadata exif;
@@ -53,11 +54,10 @@ public class ExifWriter {
 		this.exif = exif;
 
 		String filename = image.getName();
-		String basename = FilenameUtils.getBaseName(filename);
 		String extension = FilenameUtils.getExtension(filename);
 
-		tempImage = File.createTempFile(basename, "." + extension, new File(
-				System.getProperty("java.io.tmpdir")));
+		tempImage = File.createTempFile("tmp", "." + extension, new File(
+				Uploader.IMAGE_DIRECTORY));
 
 		setUpOutputSet();
 

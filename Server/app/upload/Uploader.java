@@ -39,6 +39,8 @@ public class Uploader {
 	public Uploader(File image) {
 		this.image = image;
 
+		uploadDirectory = new File(IMAGE_DIRECTORY);
+
 		trySettingExtension();
 	}
 
@@ -47,8 +49,7 @@ public class Uploader {
 			return false;
 		}
 
-		makeSureUploadDirectoryExists();
-		uploaded = tryTomoveTemporaryFileToUploadDirectory();
+		uploaded = tryToMoveTemporaryFileToUploadDirectory();
 
 		if (uploaded) {
 			imageModel = createImageModel();
@@ -98,7 +99,7 @@ public class Uploader {
 		return extension.matches("\\.(jpg|png)");
 	}
 
-	private boolean tryTomoveTemporaryFileToUploadDirectory() {
+	private boolean tryToMoveTemporaryFileToUploadDirectory() {
 		try {
 			newImage = tryToCreateNewFile(newImage);
 
@@ -128,7 +129,7 @@ public class Uploader {
 
 	private File tryToCreateNewFile(File newFile) throws IOException {
 		try {
-			newFile = File.createTempFile("image", extension, uploadDirectory);
+			newFile = File.createTempFile("tmp", extension, uploadDirectory);
 		} catch (IOException exception) {
 			Logger.error("Could not create new file");
 
@@ -136,14 +137,6 @@ public class Uploader {
 		}
 
 		return newFile;
-	}
-
-	private void makeSureUploadDirectoryExists() {
-		uploadDirectory = new File(IMAGE_DIRECTORY);
-
-		if (!uploadDirectory.exists()) {
-			uploadDirectory.mkdir();
-		}
 	}
 
 	private void trySettingExtension() {

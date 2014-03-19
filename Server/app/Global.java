@@ -5,6 +5,7 @@ import models.ImageModel;
 import models.TagModel;
 import play.Application;
 import play.GlobalSettings;
+import play.Logger;
 import upload.Uploader;
 
 public class Global extends GlobalSettings {
@@ -12,8 +13,12 @@ public class Global extends GlobalSettings {
 	public void onStart(Application application) {
 		File directory = new File(Uploader.IMAGE_DIRECTORY);
 
-		if (!directory.isDirectory())
-			return;
+		if (!directory.exists()) {
+			if (!directory.mkdirs()) {
+				Logger.error("Could not create upload directory");
+				return;
+			}
+		}
 
 		File[] listOfFiles = directory.listFiles();
 
