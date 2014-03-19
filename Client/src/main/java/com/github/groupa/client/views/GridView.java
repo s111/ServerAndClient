@@ -31,6 +31,7 @@ public class GridView {
 	private Library library = null;
 	private List<Thumb> thumbs = new ArrayList<>();
 	private Thumb selectedThumb = null;
+	private String thumbSize = "l";
 
 	@Inject
 	public GridView(EventBus eventBus, SingleLibrary library) {
@@ -40,9 +41,13 @@ public class GridView {
 		setUpImageViewer();
 		setLibrary(library);
 	}
-	
+
 	public JPanel getPanel() {
 		return mainPanel;
+	}
+
+	public void setThumbSize(String size) {
+		thumbSize = size;
 	}
 
 	public void setLibrary(Library library) {
@@ -73,7 +78,6 @@ public class GridView {
 			}
 		}
 	}
-	
 
 	public class Thumb {
 		protected ImageObject img;
@@ -106,7 +110,7 @@ public class GridView {
 					public void failure() {
 						label.setText("Error loading image");
 					}
-				},"l",true);
+				}, thumbSize, true);
 			} else
 				label.setIcon(small);
 			return label;
@@ -126,7 +130,7 @@ public class GridView {
 					public void failure() {
 						label.setText("Error loading image");
 					}
-				}, "l",false);
+				}, thumbSize, false);
 			} else
 				label.setIcon(large);
 			return label;
@@ -160,6 +164,7 @@ public class GridView {
 	}
 
 	private void deselectThumb(Thumb thumb) {
+		selectedThumb = null;
 		thumbPanel.deselectThumb(thumb);
 	}
 
@@ -167,7 +172,7 @@ public class GridView {
 		selectedThumb = thumb;
 		thumbPanel.selectThumb(thumb);
 	}
-	
+
 	private void imageClicked(Thumb thumb) {
 		if (selectedThumb == thumb) {
 			deselectThumb(thumb);
@@ -180,8 +185,7 @@ public class GridView {
 	}
 
 	private void imageDoubleClicked(Thumb thumb) {
-		eventBus.post(new SwitchViewEvent(View.IMAGE_VIEW, thumb.img,
-				library));
+		eventBus.post(new SwitchViewEvent(View.IMAGE_VIEW, thumb.img, library));
 	}
 
 	private class ThumbListener extends MouseAdapter {
