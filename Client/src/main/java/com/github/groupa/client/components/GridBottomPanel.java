@@ -1,5 +1,6 @@
 package com.github.groupa.client.components;
 
+import java.awt.BorderLayout;
 import java.awt.Component;
 
 import javax.swing.JPanel;
@@ -7,33 +8,31 @@ import javax.swing.JPanel;
 import com.github.groupa.client.views.GridView;
 
 public class GridBottomPanel {
-	private JPanel panel;
 
-	// static final int FPS_MIN = 0;
-	// static final int FPS_MAX = 3;
-	// static final int FPS_INIT = 0;
-	//
-	// JLabel sliderLabel = new JLabel("Thumbnail Size", JLabel.CENTER);
-	//
-	// JSlider zoomSlider = new JSlider(JSlider.HORIZONTAL, FPS_MIN, FPS_MAX,
-	// FPS_INIT);
+	JPanel gridBottomPanel = new JPanel(new BorderLayout());
+	JPanel rightPanel = new JPanel();
+	JPanel leftPanel = new JPanel();
 
 	public GridBottomPanel(GridView gridView) {
-
-		panel = new JPanel();
-		new ZoomSlider().setUpZoomSlider(panel);
-
+		setupRightPanel();
+		setupLeftPanel();
+		addPanels();
 	}
 
-	// public void addComponents() {
-	// sliderLabel.setAlignmentX(Component.RIGHT_ALIGNMENT);
-	//
-	// panel.add(sliderLabel);
-	// panel.add(zoomSlider);
-	// }
+	public void setupRightPanel() {
+		new ZoomSlider().setUpZoomSlider(rightPanel);
+	}
+
+	public void setupLeftPanel() {
+	}
+
+	public void addPanels() {
+		gridBottomPanel.add(rightPanel, BorderLayout.EAST);
+		gridBottomPanel.add(leftPanel, BorderLayout.WEST);
+	}
 
 	public Component getPanel() {
-		return panel;
+		return gridBottomPanel;
 	}
 
 }
