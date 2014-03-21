@@ -85,7 +85,6 @@ public class ThumbPanel extends JPanel implements Scrollable {
 			return;
 		selectedThumbs.add(thumb);
 		setBorder(thumb);
-		System.out.println("+ " + thumb);
 	}
 
 	public void deselectThumb(Thumb thumb) {
@@ -94,11 +93,9 @@ public class ThumbPanel extends JPanel implements Scrollable {
 			return;
 		selectedThumbs.remove(thumb);
 		setBorder(thumb);
-		System.out.println("- " + thumb);
 	}
 
 	public void addThumb(Thumb thumb) {
-		if (thumb == null) throw new NullPointerException();
 		thumbs.add(thumb);
 		JLabel label = thumb.getSmallThumb();
 		setBorder(thumb);
@@ -117,7 +114,6 @@ public class ThumbPanel extends JPanel implements Scrollable {
 			setBorder(oldCurrentThumb);
 			setSize(oldCurrentThumb);
 		}
-		System.out.println("= " + thumb);
 	}
 	
 	private void setSize(Thumb thumb) {
@@ -129,7 +125,6 @@ public class ThumbPanel extends JPanel implements Scrollable {
 	}
 	
 	private void setBorder(Thumb thumb) {
-		System.out.println(thumb.getLabel());
 		if (currentThumb != null && currentThumb.equals(thumb)) {
 			thumb.getLabel().setBorder(currentThumbBorder);
 		} else if (selectedThumbs.contains(thumb)) {
