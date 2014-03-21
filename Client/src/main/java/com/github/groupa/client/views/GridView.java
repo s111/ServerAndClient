@@ -31,7 +31,7 @@ public class GridView {
 	private EventBus eventBus = null;
 	private Library library = null;
 	private List<Thumb> thumbs = new ArrayList<>();
-	private Thumb selectedThumb = null;
+	private List<Thumb> selectedThumbs = new ArrayList<>();
 	private String thumbSize = "l";
 
 	@Inject
@@ -89,7 +89,7 @@ public class GridView {
 		public Thumb(ImageObject img) {
 			this.img = img;
 			label = new JLabel();
-			label.setText("Image not loaded");
+			label.setText("Not loaded");
 			label.addMouseListener(new ThumbListener(this));
 		}
 
@@ -155,36 +155,46 @@ public class GridView {
 	}
 
 	private void libraryChanged() {
+		thumbs.clear();
+		selectedThumbs.clear();
 		thumbPanel.libraryChanged();
-		if (library.imageCount() == 0) {
-			thumbPanel.repaint();
-		} else {
-			thumbs = new ArrayList<>();
-			for (ImageObject image : library.getImages()) {
-				addImage(image);
-			}
+		for (ImageObject image : library.getImages()) {
+			addImage(image);
 		}
 	}
 
 	private void deselectThumb(Thumb thumb) {
-		selectedThumb = null;
 		thumbPanel.deselectThumb(thumb);
 	}
 
 	private void selectThumb(Thumb thumb) {
-		selectedThumb = thumb;
+		selectedThumbs.add(thumb);
 		thumbPanel.selectThumb(thumb);
 	}
 
-	private void imageClicked(Thumb thumb) {
-		if (selectedThumb == thumb) {
-			deselectThumb(thumb);
-		} else {
-			if (selectedThumb != null) {
-				deselectThumb(selectedThumb);
+	private void setCurrentThumb(Thumb thumb) {
+		thumbPanel.setCurrentThumb(thumb);
+	}
+
+	private void imageClicked(Thumb thumb, boolean multiSelect) {
+		if (!multiSelect) {
+			if (!selectedThumbs.isEmpty()) {
+				// Multiple selection disabled : Deselect all
+				for (Thumb t : selectedThumbs) {
+					deselectThumb(t);
+				}
+				selectedThumbs.clear();
 			}
-			selectThumb(thumb);
+		} else {
+			if (selectedThumbs.contains(thumb)) {
+				// Selected already selected image : Deselect it
+				deselectThumb(thumb);
+				selectedThumbs.remove(thumb);
+			} else { // Not selected : Select it
+				selectThumb(thumb);
+			}
 		}
+		setCurrentThumb(thumb);
 	}
 
 	private void imageDoubleClicked(Thumb thumb) {
@@ -204,7 +214,7 @@ public class GridView {
 				if (arg0.getClickCount() == 1) {
 					// arg0.isControlDown() will be used later for multiple
 					// selections
-					imageClicked(thumb);
+					imageClicked(thumb, arg0.isControlDown());
 				} else if (arg0.getClickCount() == 2) {
 					imageDoubleClicked(thumb);
 				}
