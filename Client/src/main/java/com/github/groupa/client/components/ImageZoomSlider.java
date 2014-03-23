@@ -14,14 +14,14 @@ import com.google.common.eventbus.EventBus;
 
 public class ImageZoomSlider {
 
-	private static final int THUMBSIZE_MIN = 0;
-	private static final int THUMBSIZE_MAX = 9;
-	private static final int THUMBSIZE_INIT = 0;
+	private static final int ZOOM_MIN = 0;
+	private static final int ZOOM_MAX = 9;
+	private static final int ZOOM_INIT = 0;
 
 	private JLabel sliderLabel = new JLabel("Zoom", JLabel.CENTER);
 
-	private JSlider zoomSlider = new JSlider(JSlider.HORIZONTAL, THUMBSIZE_MIN,
-			THUMBSIZE_MAX, THUMBSIZE_INIT);
+	private JSlider zoomSlider = new JSlider(JSlider.HORIZONTAL, ZOOM_MIN,
+			ZOOM_MAX, ZOOM_INIT);
 
 	private EventBus eventBus;
 
