@@ -28,6 +28,7 @@ import com.github.groupa.client.components.ImageDescriptionButton;
 import com.github.groupa.client.components.ImagePanel;
 import com.github.groupa.client.components.ImageRater;
 import com.github.groupa.client.components.ImageTag;
+import com.github.groupa.client.components.ImageZoomSlider;
 import com.github.groupa.client.components.MetadataField;
 import com.github.groupa.client.events.DisplayedImageChangedEvent;
 import com.github.groupa.client.events.SwitchViewEvent;
@@ -200,8 +201,14 @@ public class ImageView {
 	}
 
 	private JPanel createTopPanel() {
-		JPanel topPanel = new JPanel();
-		topPanel.add(previousViewButton);
+		JPanel topPanel = new JPanel(new BorderLayout());
+		JPanel topRightPanel = new JPanel();
+		JPanel topLeftPanel = new JPanel();
+		topPanel.add(topRightPanel, BorderLayout.EAST);
+		topPanel.add(topLeftPanel, BorderLayout.WEST);
+
+		new ImageZoomSlider().setUpZoomSlider(topRightPanel);
+		topLeftPanel.add(previousViewButton);
 
 		return topPanel;
 	}
