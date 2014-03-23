@@ -3,6 +3,7 @@ package com.github.groupa.client.components;
 import java.awt.Dimension;
 import java.awt.Font;
 
+import javax.inject.Inject;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JLabel;
@@ -12,7 +13,6 @@ import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.events.DisplayedImageChangedEvent;
 import com.github.groupa.client.events.ImageInfoChangedEvent;
 import com.github.groupa.client.jsonobjects.ImageFull;
-import com.github.groupa.client.views.GridView;
 import com.github.groupa.client.views.ImageView;
 import com.google.common.eventbus.Subscribe;
 
@@ -26,17 +26,10 @@ public class MetadataField {
 	private JLabel tagsLabel = new JLabel();
 	private JLabel ratingLabel = new JLabel();
 	private ImageView imageView;
-	private GridView gridView;
 
+	@Inject
 	public MetadataField(ImageView imageView) {
 		this.imageView = imageView;
-		panel = new JPanel();
-
-		setUpPanels();
-	}
-	
-	public MetadataField(GridView gridView) {
-		this.gridView = gridView;
 		panel = new JPanel();
 
 		setUpPanels();

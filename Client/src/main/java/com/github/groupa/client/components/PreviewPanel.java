@@ -1,17 +1,19 @@
 package com.github.groupa.client.components;
 
+import javax.inject.Inject;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 
-import com.github.groupa.client.views.GridView;
-
-public class previewPanel {
-
-	private GridView gridView;
+public class PreviewPanel {
 	private JPanel picturePreviewPanel;
 	private JPanel panel;
 	
-	public previewPanel() {
+	private MetadataField metadataField;
+	
+	@Inject
+	public PreviewPanel(MetadataField metadataField) {
+		this.metadataField = metadataField;
+		
 		panel = new JPanel();
 		picturePreviewPanel = new JPanel();
 		
@@ -25,7 +27,7 @@ public class previewPanel {
 	private void setUpPanels() {
 		panel.setLayout(new BoxLayout(panel, BoxLayout.LINE_AXIS));
 		panel.add(picturePreviewPanel);
-		panel.add(new MetadataField(gridView).getPanel());
+		panel.add(metadataField.getPanel());
 		
 	}
 }
