@@ -8,13 +8,13 @@ import javax.swing.JSlider;
 
 public class ZoomSlider {
 
-	static final int THUMBSIZE_MIN = 0;
-	static final int THUMBSIZE_MAX = 2;
-	static final int THUMBSIZE_INIT = 0;
+	private static final int THUMBSIZE_MIN = 0;
+	private static final int THUMBSIZE_MAX = 2;
+	private static final int THUMBSIZE_INIT = 0;
 
-	JLabel sliderLabel = new JLabel("Thumbnail Size", JLabel.CENTER);
+	private JLabel sliderLabel = new JLabel("Thumbnail Size", JLabel.CENTER);
 
-	JSlider zoomSlider = new JSlider(JSlider.HORIZONTAL, THUMBSIZE_MIN,
+	private JSlider zoomSlider = new JSlider(JSlider.HORIZONTAL, THUMBSIZE_MIN,
 			THUMBSIZE_MAX, THUMBSIZE_INIT);
 
 	public void setUpZoomSlider(JPanel panel) {

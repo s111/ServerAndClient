@@ -23,6 +23,7 @@ import javax.swing.border.TitledBorder;
 import com.github.groupa.client.Callback;
 import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.Library;
+import com.github.groupa.client.Main;
 import com.github.groupa.client.SingleLibrary;
 import com.github.groupa.client.components.ImageDescriptionButton;
 import com.github.groupa.client.components.ImagePanel;
@@ -207,7 +208,8 @@ public class ImageView {
 		topPanel.add(topRightPanel, BorderLayout.EAST);
 		topPanel.add(topLeftPanel, BorderLayout.WEST);
 
-		new ImageZoomSlider().setUpZoomSlider(topRightPanel);
+		Main.injector.getInstance(ImageZoomSlider.class).setUpZoomSlider(
+				topRightPanel);
 		topLeftPanel.add(previousViewButton);
 
 		return topPanel;
@@ -215,6 +217,8 @@ public class ImageView {
 
 	private JPanel createPicturePanel() {
 		imagePanel = new ImagePanel();
+
+		eventBus.register(imagePanel);
 
 		return imagePanel.getPanel();
 	}

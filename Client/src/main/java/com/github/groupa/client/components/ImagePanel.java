@@ -10,7 +10,9 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 
+import com.github.groupa.client.events.ImageZoomEvent;
 import com.github.groupa.client.utils.ImageUtils;
+import com.google.common.eventbus.Subscribe;
 
 public class ImagePanel {
 	private static final String IMAGE_NOT_LOADED = "image not loaded";
@@ -25,6 +27,11 @@ public class ImagePanel {
 		imageLabel = new JLabel(IMAGE_NOT_LOADED);
 
 		setUpPanel();
+	}
+
+	@Subscribe
+	public void imageZoomEvent(ImageZoomEvent imageZoomEvent) {
+		zoom(imageZoomEvent.getZoom());
 	}
 
 	public JPanel getPanel() {
