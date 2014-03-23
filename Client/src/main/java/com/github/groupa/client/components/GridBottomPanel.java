@@ -24,6 +24,7 @@ public class GridBottomPanel {
 	}
 
 	public void setupLeftPanel() {
+		leftPanel.add(new previewPanel().getPanel());
 	}
 
 	public void addPanels() {
