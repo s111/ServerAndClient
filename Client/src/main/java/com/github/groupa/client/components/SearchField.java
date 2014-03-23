@@ -16,7 +16,6 @@ public class SearchField implements ActionListener {
 	private JPanel panel;
 	private JTextField searchField;
 	private JButton searchButton;
-	private ImageView imageView = null;
 	private GridView gridView = null;
 	private EventBus eventBus;
 	private Library mainLibrary;
@@ -24,7 +23,6 @@ public class SearchField implements ActionListener {
 	public SearchField(EventBus eventBus, Library mainLibrary, ImageView imageView) {
 		this.eventBus = eventBus;
 		this.mainLibrary = mainLibrary;
-		this.imageView = imageView;
 		setUpPanels();
 	}
 
@@ -67,8 +65,6 @@ public class SearchField implements ActionListener {
 
 		if (gridView != null)
 			gridView.setLibrary(lib);
-		if (imageView != null)
-			imageView.setLibrary(lib);
 	}
 
 }

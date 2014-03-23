@@ -38,7 +38,6 @@ import com.github.groupa.client.components.ImageDescriptionButton;
 import com.github.groupa.client.components.ImageRater;
 import com.github.groupa.client.components.ImageTag;
 import com.github.groupa.client.components.MetadataField;
-import com.github.groupa.client.components.SearchField;
 import com.github.groupa.client.events.DisplayedImageChangedEvent;
 import com.github.groupa.client.events.SwitchViewEvent;
 import com.google.common.eventbus.EventBus;
@@ -248,7 +247,6 @@ public class ImageView {
 	private JPanel createTopPanel() {
 		JPanel topPanel = new JPanel();
 		topPanel.add(previousViewButton);
-		topPanel.add(new SearchField(eventBus, library, this).getPanel());
 
 		return topPanel;
 	}
