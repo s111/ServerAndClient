@@ -2,6 +2,7 @@ package com.github.groupa.client.components;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+
 import javax.swing.JButton;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
@@ -9,7 +10,6 @@ import javax.swing.JTextField;
 import com.github.groupa.client.ConstrainedLibrary;
 import com.github.groupa.client.Library;
 import com.github.groupa.client.views.GridView;
-import com.github.groupa.client.views.ImageView;
 import com.google.common.eventbus.EventBus;
 
 public class SearchField implements ActionListener {
@@ -19,12 +19,6 @@ public class SearchField implements ActionListener {
 	private GridView gridView = null;
 	private EventBus eventBus;
 	private Library mainLibrary;
-
-	public SearchField(EventBus eventBus, Library mainLibrary, ImageView imageView) {
-		this.eventBus = eventBus;
-		this.mainLibrary = mainLibrary;
-		setUpPanels();
-	}
 
 	public SearchField(EventBus eventBus, Library mainLibrary, GridView gridView) {
 		this.eventBus = eventBus;
