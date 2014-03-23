@@ -28,7 +28,7 @@ public class Global extends GlobalSettings {
 			String filenameInDatabase = Uploader.IMAGE_DIRECTORY + filename;
 
 			if (filename.matches("^(.+).(png|jpg)$")) {
-				if (filename.contains("thumb"))
+				if (filename.contains("thumb") || filename.contains("tmp"))
 					continue;
 				if (ImageModel.find.where().eq("filename", filenameInDatabase)
 						.findUnique() == null) {
