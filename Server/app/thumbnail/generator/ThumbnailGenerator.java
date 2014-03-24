@@ -8,13 +8,14 @@ import java.util.Map;
 
 import javax.imageio.ImageIO;
 
-import models.ImageModel;
-import models.ThumbnailModel;
+import models.Image;
 import net.coobird.thumbnailator.Thumbnails;
 
 import org.apache.commons.io.FilenameUtils;
 
+import queryDB.QueryThumbnail;
 import upload.Uploader;
+import utils.HibernateUtil;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -24,9 +25,9 @@ public class ThumbnailGenerator {
 					new Dimension(128, 128), 3, new Dimension(192, 192), 4,
 					new Dimension(256, 256));
 
-	private ImageModel imageModel;
+	private Image image;
 
-	private File image;
+	private File file;
 
 	private int size;
 
@@ -34,16 +35,16 @@ public class ThumbnailGenerator {
 
 	private Dimension dimension;
 
-	public ThumbnailGenerator(ImageModel imageModel, int size) {
-		this.imageModel = imageModel;
-		this.image = new File(imageModel.filename);
+	public ThumbnailGenerator(Image image, int size) {
+		this.image = image;
+		this.file = new File(image.getFilename());
 		this.size = size;
 
 		this.filename = generateFilename();
 	}
 
 	private Dimension getImageSize() throws IOException {
-		BufferedImage bufferedImage = ImageIO.read(image);
+		BufferedImage bufferedImage = ImageIO.read(file);
 
 		return new Dimension(bufferedImage.getWidth(),
 				bufferedImage.getHeight());
@@ -56,20 +57,19 @@ public class ThumbnailGenerator {
 			this.dimension = getImageSize();
 		}
 
-		Thumbnails.of(image).size(dimension.width, dimension.height)
+		Thumbnails.of(file).size(dimension.width, dimension.height)
 				.toFile(filename);
 	}
 
-	public ThumbnailModel saveThumbnailToDatabase() {
-		ThumbnailModel thumbnailModel = ThumbnailModel.create(imageModel,
-				filename, size);
-
-		return thumbnailModel;
+	public void saveThumbnailToDatabase() {
+		QueryThumbnail queryThumbnail = new QueryThumbnail(
+				HibernateUtil.getSessionFactory());
+		queryThumbnail.addThumbnail(image.getId(), size, filename);
 	}
 
 	private String generateFilename() {
-		String baseName = FilenameUtils.getBaseName(image.getAbsolutePath());
-		String extension = FilenameUtils.getExtension(image.getAbsolutePath());
+		String baseName = FilenameUtils.getBaseName(file.getAbsolutePath());
+		String extension = FilenameUtils.getExtension(file.getAbsolutePath());
 
 		return Uploader.IMAGE_DIRECTORY + "thumb" + baseName + "size" + size
 				+ "." + extension;

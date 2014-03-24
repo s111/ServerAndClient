@@ -1,12 +1,14 @@
 import java.io.File;
 
-import metadata.PrepareImageModel;
-import models.ImageModel;
-import models.TagModel;
+import metadata.PrepareImage;
+import models.Image;
 import play.Application;
 import play.GlobalSettings;
 import play.Logger;
+import queryDB.QueryImage;
+import queryDB.QueryTag;
 import upload.Uploader;
+import utils.HibernateUtil;
 
 public class Global extends GlobalSettings {
 	@Override
@@ -22,23 +24,32 @@ public class Global extends GlobalSettings {
 
 		File[] listOfFiles = directory.listFiles();
 
-		for (File image : listOfFiles) {
-			String filename = image.getName();
+		for (File file : listOfFiles) {
+			String filename = file.getName();
 
 			String filenameInDatabase = Uploader.IMAGE_DIRECTORY + filename;
 
 			if (filename.matches("^(.+).(png|jpg)$")) {
-				if (filename.contains("thumb") || filename.contains("tmp"))
+				if (filename.contains("thumb") || filename.contains("tmp")) {
 					continue;
-				if (ImageModel.find.where().eq("filename", filenameInDatabase)
-						.findUnique() == null) {
-					ImageModel imageModel = ImageModel
-							.create(filenameInDatabase);
+				}
 
-					PrepareImageModel
-							.loadImageModelWithMetadataFromFile(imageModel);
+				QueryImage queryImage = new QueryImage(
+						HibernateUtil.getSessionFactory());
 
-					imageModel.addTag(TagModel.create("id:" + imageModel.id));
+				if (queryImage.getImage(filenameInDatabase) == null) {
+					Image image = new Image();
+					image.setFilename(filenameInDatabase);
+
+					queryImage.addImage(image);
+
+					PrepareImage.loadImageWithMetadataFromFile(image);
+
+					long id = image.getId();
+
+					QueryTag queryTag = new QueryTag(
+							HibernateUtil.getSessionFactory());
+					queryTag.tagImage(id, "id:" + id);
 				}
 			}
 		}

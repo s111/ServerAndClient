@@ -6,9 +6,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 import json.generators.ImageInfoJsonGenerator;
-import metadata.PrepareImageModel;
-import models.ImageModel;
-import models.TagModel;
+import metadata.PrepareImage;
+import models.Image;
 
 import org.apache.tika.config.TikaConfig;
 import org.apache.tika.metadata.Metadata;
@@ -18,7 +17,10 @@ import org.apache.tika.mime.MimeTypeException;
 
 import play.Logger;
 import play.mvc.Http.Request;
+import queryDB.QueryImage;
+import queryDB.QueryTag;
 import url.generators.ImageInfoURLGenerator;
+import utils.HibernateUtil;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.io.Files;
@@ -26,18 +28,18 @@ import com.google.common.io.Files;
 public class Uploader {
 	public static final String IMAGE_DIRECTORY = "../../images/";
 
-	private File image;
-	private File newImage;
+	private File file;
+	private File newFile;
 	private File uploadDirectory;
 
 	private String extension;
 
 	private boolean uploaded;
 
-	private ImageModel imageModel;
+	private Image image;
 
-	public Uploader(File image) {
-		this.image = image;
+	public Uploader(File file) {
+		this.file = file;
 
 		uploadDirectory = new File(IMAGE_DIRECTORY);
 
@@ -52,7 +54,7 @@ public class Uploader {
 		uploaded = tryToMoveTemporaryFileToUploadDirectory();
 
 		if (uploaded) {
-			imageModel = createImageModel();
+			image = createImage();
 		}
 
 		return uploaded;
@@ -64,33 +66,38 @@ public class Uploader {
 					"Cannot generate json if the upload did not succeed");
 		}
 
-		JsonNode imageInfoNode = generateJson(request, imageModel);
+		JsonNode imageInfoNode = generateJson(request, image);
 
 		return imageInfoNode;
 	}
 
-	private ImageModel createImageModel() {
-		String filename = newImage.getName();
+	private Image createImage() {
+		String filename = newFile.getName();
 
-		ImageModel imageModel = ImageModel.create(IMAGE_DIRECTORY + filename);
+		Image image = new Image();
+		image.setFilename(IMAGE_DIRECTORY + filename);
 
-		PrepareImageModel.loadImageModelWithMetadataFromFile(imageModel);
+		PrepareImage.loadImageWithMetadataFromFile(image);
 
+		QueryImage queryImage = new QueryImage(
+				HibernateUtil.getSessionFactory());
+		queryImage.addImage(image);
+
+		QueryTag queryTag = new QueryTag(HibernateUtil.getSessionFactory());
 		/* TODO Remove the id:{id} tag before release */
-		imageModel.tags.add(TagModel.create("id:" + imageModel.id));
-		imageModel.save();
+		queryTag.tagImage(image.getId(), "id:" + image.getId());
 
-		return imageModel;
+		return image;
 	}
 
-	private JsonNode generateJson(Request request, ImageModel imageModel) {
+	private JsonNode generateJson(Request request, Image image) {
 		ImageInfoURLGenerator absoluteURLGenerator = new ImageInfoURLGenerator(
 				request);
 
-		ImageInfoJsonGenerator imageModelJsonGenerator = new ImageInfoJsonGenerator(
-				imageModel, absoluteURLGenerator);
+		ImageInfoJsonGenerator imageInfoJsonGenerator = new ImageInfoJsonGenerator(
+				image, absoluteURLGenerator);
 
-		JsonNode imageInfoNode = imageModelJsonGenerator.toJson();
+		JsonNode imageInfoNode = imageInfoJsonGenerator.toJson();
 
 		return imageInfoNode;
 	}
@@ -101,16 +108,17 @@ public class Uploader {
 
 	private boolean tryToMoveTemporaryFileToUploadDirectory() {
 		try {
-			newImage = tryToCreateNewFile(newImage);
+			newFile = tryToCreateNewFile(newFile);
 
-			tryToCopyImageToNewFile(newImage);
+			tryToCopyImageToNewFile(newFile);
 		} catch (IOException exception) {
 			return false;
 		} finally {
-			boolean imageIsDeleted = image.delete();
+			boolean imageIsDeleted = file.delete();
 
 			if (!imageIsDeleted) {
-				Logger.warn("Failed to delete temporary uploaded file");
+				Logger.of("logger").warn(
+						"Failed to delete temporary uploaded file");
 			}
 		}
 
@@ -119,7 +127,7 @@ public class Uploader {
 
 	private void tryToCopyImageToNewFile(File newFile) throws IOException {
 		try {
-			Files.copy(image, newFile);
+			Files.copy(file, newFile);
 		} catch (IOException exception) {
 			Logger.error("Could not copy temporary image to upload directory");
 
@@ -144,10 +152,11 @@ public class Uploader {
 			extension = getExtension();
 		} catch (MimeTypeException e) {
 			Logger.error("Failed to get extension from file due to IOException: "
-					+ image.getAbsolutePath());
+					+ file.getAbsolutePath());
 		} catch (IOException e) {
-			Logger.warn("Failed to get extension from file due to MimeTypeException: "
-					+ image.getAbsolutePath());
+			Logger.of("logger").warn(
+					"Failed to get extension from file due to MimeTypeException: "
+							+ file.getAbsolutePath());
 		}
 	}
 
@@ -155,7 +164,7 @@ public class Uploader {
 		TikaConfig config = TikaConfig.getDefaultConfig();
 
 		BufferedInputStream stream = new BufferedInputStream(
-				new FileInputStream(image));
+				new FileInputStream(file));
 		MediaType mediaType = config.getMimeRepository().detect(stream,
 				new Metadata());
 		MimeType mimeType = config.getMimeRepository().forName(

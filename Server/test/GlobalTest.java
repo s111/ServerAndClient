@@ -1,20 +1,34 @@
 import static org.junit.Assert.assertEquals;
 import static play.test.Helpers.fakeApplication;
+import static play.test.Helpers.stop;
 
 import java.io.File;
 
-import models.ImageModel;
-
+import org.hibernate.SessionFactory;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import play.test.WithApplication;
+import queryDB.QueryImage;
 import upload.Uploader;
+import utils.HibernateUtil;
 
 public class GlobalTest extends WithApplication {
+	private SessionFactory sessionFactory;
+
 	@Before
-	public void startApp() {
+	public void setUp() {
+		sessionFactory = HibernateUtil.getNewSessionFactory();
+
 		start(fakeApplication());
+	}
+
+	@After
+	public void tearDown() {
+		sessionFactory.close();
+
+		stop(fakeApplication());
 	}
 
 	@Test
@@ -32,13 +46,17 @@ public class GlobalTest extends WithApplication {
 			String filename = image.getName();
 
 			if (filename.matches("^(.+).(png|jpg)$")) {
-				if (filename.contains("thumb"))
+				if (filename.contains("thumb") || filename.contains("tmp")) {
 					continue;
+				}
+
 				size++;
 			}
 		}
 
-		assertEquals("images in database does not match images on disk",
-				ImageModel.getAll().size(), size);
+		QueryImage queryImage = new QueryImage(sessionFactory);
+
+		assertEquals("images in database does not match images on disk", size,
+				queryImage.getImages().size());
 	}
 }
