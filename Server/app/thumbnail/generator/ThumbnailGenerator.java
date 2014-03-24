@@ -71,7 +71,7 @@ public class ThumbnailGenerator {
 		String baseName = FilenameUtils.getBaseName(file.getAbsolutePath());
 		String extension = FilenameUtils.getExtension(file.getAbsolutePath());
 
-		return Uploader.IMAGE_DIRECTORY + "thumb" + baseName + "size" + size
+		return Uploader.IMAGE_DIRECTORY + "thumb" + image.getId() + "size" + size
 				+ "." + extension;
 	}
 }
