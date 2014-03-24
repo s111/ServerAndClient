@@ -6,7 +6,6 @@ import retrofit.client.Response;
 import retrofit.http.Field;
 import retrofit.http.FormUrlEncoded;
 import retrofit.http.GET;
-import retrofit.http.HEAD;
 import retrofit.http.Multipart;
 import retrofit.http.POST;
 import retrofit.http.Part;
@@ -74,17 +73,5 @@ public interface RESTService {
 	@FormUrlEncoded
 	@POST("/images/{id}/tag")
 	public Response tagImage(@Path("id") long id, @Field("value") String tags)
-			throws ConnectException;
-
-	@HEAD("/images")
-	public Response hasImageListChanged(@Query("offset") int offset,
-			@Query("limit") int limit) throws ConnectException;
-
-	@HEAD("/images/{id}")
-	public Response hasImageInfoChanged(@Path("id") long id)
-			throws ConnectException;
-
-	@HEAD("/images/{id}/raw")
-	public Response hasImageRawChanged(@Path("id") long id)
 			throws ConnectException;
 }
