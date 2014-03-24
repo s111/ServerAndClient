@@ -17,9 +17,13 @@ resolvers += "apache.snapshots" at "http://repository.apache.org/snapshots"
 
 resolvers += "jboss-public-repository-group" at "https://repository.jboss.org/nexus/content/groups/public-jboss/"
 
-unmanagedResourceDirectories in Test += baseDirectory.value / "test/resources"
+unmanagedResourceDirectories in Test += baseDirectory.value / "testResources"
 
-unmanagedResourceDirectories in Compile += baseDirectory.value / "app/resources"
+unmanagedResourceDirectories in Compile += baseDirectory.value / "appResources"
+
+unmanagedSourceDirectories in Test += baseDirectory.value / "testResources"
+
+unmanagedSourceDirectories in Compile += baseDirectory.value / "appResources"
 
 play.Project.playJavaSettings
 
