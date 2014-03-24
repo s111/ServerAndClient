@@ -1,7 +1,8 @@
 package url.generators;
 
-import models.ImageModel;
 import play.mvc.Http.Request;
+import queryDB.QueryImage;
+import utils.HibernateUtil;
 import controllers.routes;
 
 public class ImageListURLGenerator {
@@ -9,8 +10,8 @@ public class ImageListURLGenerator {
 	private int nextOffset;
 	private int previousOffset;
 	private int lastOffset;
-
 	private int limit;
+	private int rowCount;
 
 	private Request request;
 
@@ -18,6 +19,11 @@ public class ImageListURLGenerator {
 		this.offset = offset;
 		this.limit = limit;
 		this.request = request;
+
+		QueryImage queryImage = new QueryImage(
+				HibernateUtil.getSessionFactory());
+
+		rowCount = queryImage.getImages().size();
 
 		calculateOffsets();
 	}
@@ -65,11 +71,10 @@ public class ImageListURLGenerator {
 	}
 
 	private void calculateLastOffset() {
-		int numRows = ImageModel.getRowCount();
 		int pages = 0;
 
 		if (limit != 0) {
-			pages = numRows / limit;
+			pages = rowCount / limit;
 		}
 
 		int lastOffset = pages * limit;
@@ -78,11 +83,9 @@ public class ImageListURLGenerator {
 	}
 
 	private void calculateNextOffset() {
-		int numRows = ImageModel.getRowCount();
-
 		int nextOffset = offset + limit;
 
-		if (nextOffset > numRows - 1) {
+		if (nextOffset > rowCount - 1) {
 			nextOffset = lastOffset;
 		}
 

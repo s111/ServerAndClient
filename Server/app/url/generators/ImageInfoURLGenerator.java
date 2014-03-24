@@ -1,10 +1,9 @@
 package url.generators;
 
-import models.ImageModel;
+import models.Image;
 import play.mvc.Http.Request;
-
-import com.google.common.base.Optional;
-
+import queryDB.QueryImage;
+import utils.HibernateUtil;
 import controllers.routes;
 
 public class ImageInfoURLGenerator {
@@ -14,48 +13,58 @@ public class ImageInfoURLGenerator {
 		this.request = request;
 	}
 
-	public String getURL(ImageModel imageModel) {
-		return getImageInfoURL(imageModel.id);
+	public String getURL(long id) {
+		return getImageInfoURL(id);
 	}
 
-	public String getNextURL(ImageModel imageModel) {
-		Optional<ImageModel> next = imageModel.getNext();
+	public String getNextURL(long id) {
+		QueryImage queryImage = new QueryImage(
+				HibernateUtil.getSessionFactory());
+		Image next = queryImage.getNextImage(id);
 
-		if (!next.isPresent()) {
+		if (next == null) {
 			return null;
 		}
 
-		return getImageInfoURL(next.get().id);
+		return getImageInfoURL(next.getId());
 	}
 
-	public String getPreviousURL(ImageModel imageModel) {
-		Optional<ImageModel> previous = imageModel.getPrevious();
+	public String getPreviousURL(long id) {
+		QueryImage queryImage = new QueryImage(
+				HibernateUtil.getSessionFactory());
+		Image previous = queryImage.getPreviousImage(id);
 
-		if (!previous.isPresent()) {
+		if (previous == null) {
 			return null;
 		}
 
-		return getImageInfoURL(previous.get().id);
+		return getImageInfoURL(previous.getId());
 	}
 
 	public String getFirstURL() {
-		Optional<ImageModel> first = ImageModel.getFirst();
+		QueryImage queryImage = new QueryImage(
+				HibernateUtil.getSessionFactory());
 
-		if (first.isPresent()) {
-			return getImageInfoURL(first.get().id);
+		Image first = queryImage.getFirstImage();
+
+		if (first != null) {
+			return getImageInfoURL(first.getId());
 		}
 
 		return null;
 	}
 
 	public String getLastURL() {
-		Optional<ImageModel> last = ImageModel.getLast();
+		QueryImage queryImage = new QueryImage(
+				HibernateUtil.getSessionFactory());
 
-		if (!last.isPresent()) {
-			return null;
+		Image last = queryImage.getLastImage();
+
+		if (last != null) {
+			return getImageInfoURL(last.getId());
 		}
 
-		return getImageInfoURL(last.get().id);
+		return null;
 	}
 
 	private String getImageInfoURL(long id) {
