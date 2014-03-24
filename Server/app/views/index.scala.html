@@ -1,5 +1,15 @@
-@(message: String)
+@(images: List[Image])
 
-@main("Welcome to Play") {
-    @play20.welcome(message, style = "Java")
+@main("App") {
+    <div class="grid grid-pad">
+	@for(image <- images) {
+		<div class="col-1-4">
+    		<div class="content">
+    			<a href="@routes.GetThumbnail.getCompressed(image.getId())">
+    				<img src="@routes.GetThumbnail.getXLarge(image.getId())" alt="image not loaded" />
+    			</a>
+    		</div>
+    	</div>
+	}
+	</div>
 }
