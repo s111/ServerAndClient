@@ -6,6 +6,7 @@ import java.util.Set;
 public class Image {
 	private Long id;
 
+	private Integer imageChangeCount;
 	private Integer rating;
 
 	private String filename;
@@ -62,5 +63,13 @@ public class Image {
 
 	public void setThumbnails(Set<Thumbnail> thumbnails) {
 		this.thumbnails = thumbnails;
+	}
+
+	public Integer getImageChangeCount() {
+		return imageChangeCount;
+	}
+
+	public void setImageChangeCount(Integer imageChangeCount) {
+		this.imageChangeCount = imageChangeCount;
 	}
 }
