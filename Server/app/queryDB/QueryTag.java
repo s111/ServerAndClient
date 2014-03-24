@@ -70,7 +70,9 @@ public class QueryTag {
 
 		Tag tag = (Tag) session.byId(Tag.class).load(name);
 
-		Hibernate.initialize(tag.getImages());
+		if (tag != null) {
+			Hibernate.initialize(tag.getImages());
+		}
 
 		session.getTransaction().commit();
 

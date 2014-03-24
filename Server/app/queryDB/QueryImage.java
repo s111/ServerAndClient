@@ -23,8 +23,10 @@ public class QueryImage {
 
 		Image image = (Image) session.byId(Image.class).load(id);
 
-		Hibernate.initialize(image.getTags());
-		Hibernate.initialize(image.getThumbnails());
+		if (image != null) {
+			Hibernate.initialize(image.getTags());
+			Hibernate.initialize(image.getThumbnails());
+		}
 
 		session.getTransaction().commit();
 
@@ -137,7 +139,9 @@ public class QueryImage {
 
 		Image image = (Image) session.byId(Image.class).load(id);
 
-		image.setDescription(description);
+		if (image != null) {
+			image.setDescription(description);
+		}
 
 		session.getTransaction().commit();
 	}
@@ -148,7 +152,9 @@ public class QueryImage {
 
 		Image image = (Image) session.byId(Image.class).load(id);
 
-		image.setRating(rating);
+		if (image != null) {
+			image.setRating(rating);
+		}
 
 		session.getTransaction().commit();
 	}
