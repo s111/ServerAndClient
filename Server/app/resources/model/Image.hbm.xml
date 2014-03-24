@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping PUBLIC
+        "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+        "http://www.hibernate.org/dtd/hibernate-mapping-3.0.dtd">
+
+<hibernate-mapping package="models">
+
+	<class name="Image" table="IMAGE">
+		<id name="id" column="IMAGE_ID">
+			<generator class="native" />
+		</id>
+
+		<property name="filename" not-null="true" />
+		<property name="description" />
+		<property name="rating" />
+
+		<set name="tags" table="IMAGE_TAG" inverse="false">
+			<key column="IMAGE_ID" />
+			<many-to-many column="TAG_ID" class="Tag" />
+		</set>
+
+		<set name="thumbnails" table="THUMBNAIL">
+			<key>
+				<column name="IMAGE_ID" />
+			</key>
+			<one-to-many class="Thumbnail" />
+		</set>
+	</class>
+
+</hibernate-mapping>
