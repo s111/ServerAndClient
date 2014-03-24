@@ -31,6 +31,18 @@ public class QueryImage {
 		return image;
 	}
 
+	public Image getImage(String filename) {
+		Session session = sessionFactory.getCurrentSession();
+		session.beginTransaction();
+
+		Image image = (Image) session.createQuery(
+				"FROM Image WHERE filename=" + filename).uniqueResult();
+
+		session.getTransaction().commit();
+
+		return image;
+	}
+
 	public Image getNextImage(long id) {
 		Session session = sessionFactory.getCurrentSession();
 		session.beginTransaction();
@@ -89,6 +101,25 @@ public class QueryImage {
 
 		@SuppressWarnings("unchecked")
 		List<Image> images = session.createQuery("FROM Image").list();
+		List<Image> copy = ImmutableList.copyOf(images);
+
+		session.getTransaction().commit();
+
+		return copy;
+	}
+
+	public List<Image> getImages(int offset, int limit) {
+		Session session = sessionFactory.getCurrentSession();
+		session.beginTransaction();
+
+		/*
+		 * List<ImageModel> imageModels = find.orderBy("id ASC")
+		 * .setFirstRow(offset).setMaxRows(limit).findList();
+		 */
+
+		@SuppressWarnings("unchecked")
+		List<Image> images = session.createQuery("FROM Image ORDER BY id ASC")
+				.setFirstResult(offset).setMaxResults(limit).list();
 		List<Image> copy = ImmutableList.copyOf(images);
 
 		session.getTransaction().commit();

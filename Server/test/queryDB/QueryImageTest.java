@@ -20,6 +20,8 @@ public class QueryImageTest {
 	private static final String FILENAME = "filename";
 	private static final String FILENAME1 = "filename1";
 	private static final String FILENAME2 = "filename2";
+	private static final String FILENAME3 = "filename3";
+	private static final String FILENAME4 = "filename4";
 	private static final String DESCRIPTION = "description";
 
 	private static final int RATING = 5;
@@ -86,6 +88,34 @@ public class QueryImageTest {
 		assertEquals(2, images.size());
 		assertEquals(FILENAME1, images.get(0).getFilename());
 		assertEquals(FILENAME2, images.get(1).getFilename());
+	}
+
+	@Test
+	public void getImages_add_4_images_with_offset_2_limit_2_expect_2_images() {
+		Image image1 = new Image();
+		image1.setFilename(FILENAME1);
+
+		Image image2 = new Image();
+		image2.setFilename(FILENAME2);
+
+		Image image3 = new Image();
+		image3.setFilename(FILENAME3);
+
+		Image image4 = new Image();
+		image4.setFilename(FILENAME4);
+
+		QueryImage imageQueries = new QueryImage(sessionFactory);
+		imageQueries.addImage(image1);
+		imageQueries.addImage(image2);
+		imageQueries.addImage(image3);
+		imageQueries.addImage(image4);
+
+		List<Image> images = imageQueries.getImages(2, 2);
+
+		assertNotNull(images);
+		assertEquals(2, images.size());
+		assertEquals(FILENAME3, images.get(0).getFilename());
+		assertEquals(FILENAME4, images.get(1).getFilename());
 	}
 
 	@Test
