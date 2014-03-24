@@ -4,7 +4,6 @@ version := "1.0-SNAPSHOT"
 
 libraryDependencies ++= Seq(
   javaJdbc,
-  javaEbean,
   "org.hibernate" % "hibernate-core" % "4.3.4.Final",
   cache,
   "org.apache.commons" % "commons-imaging" % "1.0-SNAPSHOT",
