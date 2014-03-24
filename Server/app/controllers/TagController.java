@@ -1,33 +1,27 @@
 package controllers;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import json.generators.ImageListJsonGenerator;
-import models.ImageModel;
-import models.TagModel;
+import models.Image;
+import models.Tag;
 import play.mvc.Controller;
 import play.mvc.Result;
+import queryDB.QueryTag;
 import url.generators.ImageInfoURLGenerator;
 import url.generators.ImageListURLGenerator;
+import utils.HibernateUtil;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.google.common.base.Optional;
 
 public class TagController extends Controller {
 	public static Result getImages(String tag, int offset, int limit) {
 		if (isNotWithinBoundaries(tag, offset, limit))
 			return badRequest();
 
-		Optional<TagModel> retrievedTagModel = TagModel.get(tag);
+		QueryTag queryTag = new QueryTag(HibernateUtil.getSessionFactory());
 
-		List<ImageModel> imageModels;
-
-		if (retrievedTagModel.isPresent()) {
-			imageModels = retrievedTagModel.get().images;
-		} else {
-			imageModels = new ArrayList<>();
-		}
+		List<Image> images = queryTag.getImages(tag);
 
 		ImageListURLGenerator imageListURLGenerator = new ImageListURLGenerator(
 				offset, limit, request());
@@ -36,7 +30,7 @@ public class TagController extends Controller {
 				request());
 
 		ImageListJsonGenerator imageListJsonGenerator = new ImageListJsonGenerator(
-				imageModels, imageListURLGenerator, imageInfoURLGenerator);
+				images, imageListURLGenerator, imageInfoURLGenerator);
 
 		JsonNode imageListNode = imageListJsonGenerator.toJson();
 
@@ -45,12 +39,13 @@ public class TagController extends Controller {
 
 	private static boolean isNotWithinBoundaries(String tag, int offset,
 			int limit) {
-		Optional<TagModel> retrievedTagModel = TagModel.get(tag);
+		QueryTag queryTag = new QueryTag(HibernateUtil.getSessionFactory());
+		Tag retrievedTag = queryTag.getTag(tag);
 
 		int numRows = 0;
 
-		if (retrievedTagModel.isPresent()) {
-			numRows = retrievedTagModel.get().images.size();
+		if (tag != null) {
+			numRows = retrievedTag.getImages().size();
 		}
 
 		return (offset < 0 || limit < 0 || offset > numRows);

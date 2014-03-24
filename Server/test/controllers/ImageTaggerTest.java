@@ -1,60 +1,48 @@
 package controllers;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static play.test.Helpers.callAction;
-import static play.test.Helpers.fakeApplication;
-import static play.test.Helpers.start;
-import static play.test.Helpers.stop;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import models.ImageModel;
+import models.Image;
 
-import org.junit.AfterClass;
+import org.hibernate.SessionFactory;
+import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import play.test.FakeRequest;
+import queryDB.QueryImage;
+import queryDB.QueryTag;
 import upload.Uploader;
-
-import com.avaje.ebean.Ebean;
-import com.avaje.ebean.EbeanServer;
-import com.avaje.ebean.config.ServerConfig;
-import com.avaje.ebean.config.dbplatform.H2Platform;
-import com.avaje.ebeaninternal.api.SpiEbeanServer;
-import com.avaje.ebeaninternal.server.ddl.DdlGenerator;
+import utils.HibernateUtil;
 
 public class ImageTaggerTest {
-	@BeforeClass
-	public static void startApp() {
-		start(fakeApplication());
-	}
-
-	@AfterClass
-	public static void stopApp() {
-		stop(fakeApplication());
-	}
+	private SessionFactory sessionFactory;
 
 	@Before
-	public void resetDB() {
-		String serverName = "default";
+	public void setUp() {
+		sessionFactory = HibernateUtil.getNewSessionFactory();
+	}
 
-		EbeanServer server = Ebean.getServer(serverName);
-		ServerConfig config = new ServerConfig();
-
-		DdlGenerator ddl = new DdlGenerator();
-		ddl.setup((SpiEbeanServer) server, new H2Platform(), config);
-		ddl.runScript(false, ddl.generateDropDdl());
-		ddl.runScript(false, ddl.generateCreateDdl());
+	@After
+	public void tearDown() {
+		sessionFactory.close();
 	}
 
 	@Test
 	public void tag_image_with_abc_expect_tag_name_abc() {
 		String filename = Uploader.IMAGE_DIRECTORY + "01.png";
 
-		long id = ImageModel.create(filename).id;
+		Image image = new Image();
+		image.setFilename(filename);
+
+		QueryImage queryImage = new QueryImage(sessionFactory);
+		queryImage.addImage(image);
+
+		long id = image.getId();
 
 		Map<String, String> data = new HashMap<>();
 		data.put("value", "abc");
@@ -62,14 +50,22 @@ public class ImageTaggerTest {
 		callAction(controllers.routes.ref.ImageTagger.tag(id),
 				new FakeRequest().withFormUrlEncodedBody(data));
 
-		assertEquals("abc", ImageModel.get(id).get().tags.get(0).name);
+		QueryTag queryTag = new QueryTag(HibernateUtil.getSessionFactory());
+
+		assertNotNull(queryTag.getTag("abc"));
 	}
 
 	@Test
 	public void tag_image_with_abc_and_def_expect_tag_name_abc_and_def() {
 		String filename = Uploader.IMAGE_DIRECTORY + "01.png";
 
-		long id = ImageModel.create(filename).id;
+		Image image = new Image();
+		image.setFilename(filename);
+
+		QueryImage queryImage = new QueryImage(sessionFactory);
+		queryImage.addImage(image);
+
+		long id = image.getId();
 
 		Map<String, String> data = new HashMap<>();
 		data.put("value", "abc,def");
@@ -77,7 +73,9 @@ public class ImageTaggerTest {
 		callAction(controllers.routes.ref.ImageTagger.tag(id),
 				new FakeRequest().withFormUrlEncodedBody(data));
 
-		assertEquals("abc", ImageModel.get(id).get().tags.get(0).name);
-		assertEquals("def", ImageModel.get(id).get().tags.get(1).name);
+		QueryTag queryTag = new QueryTag(HibernateUtil.getSessionFactory());
+
+		assertNotNull(queryTag.getTag("abc"));
+		assertNotNull(queryTag.getTag("def"));
 	}
 }

@@ -1,12 +1,12 @@
 package controllers;
 
-import models.ImageModel;
+import models.Image;
 import play.data.DynamicForm;
 import play.data.Form;
 import play.mvc.Controller;
 import play.mvc.Result;
-
-import com.google.common.base.Optional;
+import queryDB.QueryImage;
+import utils.HibernateUtil;
 
 public class ImageRater extends Controller {
 	public static Result rate(long id) {
@@ -20,12 +20,15 @@ public class ImageRater extends Controller {
 			return badRequest();
 		}
 
-		Optional<ImageModel> imageModel = ImageModel.get(id);
+		QueryImage queryImage = new QueryImage(
+				HibernateUtil.getSessionFactory());
 
-		if (rating < 1 || rating > 5 || !imageModel.isPresent())
+		Image image = queryImage.getImage(id);
+
+		if (rating < 1 || rating > 5 || image == null)
 			return badRequest();
 
-		imageModel.get().setRating(rating);
+		queryImage.rateImage(id, rating);
 
 		return ok();
 	}

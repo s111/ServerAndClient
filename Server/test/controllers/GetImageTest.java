@@ -4,72 +4,49 @@ import static helpers.ResultHelper.contains;
 import static helpers.ResultHelper.isJSON;
 import static helpers.ResultHelper.isOK;
 import static play.test.Helpers.callAction;
-import static play.test.Helpers.fakeApplication;
-import static play.test.Helpers.start;
-import static play.test.Helpers.stop;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import models.ImageModel;
+import models.Image;
 
-import org.junit.AfterClass;
+import org.hibernate.SessionFactory;
+import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 
 import play.mvc.Result;
+import queryDB.QueryImage;
 import upload.Uploader;
-
-import com.avaje.ebean.Ebean;
-import com.avaje.ebean.EbeanServer;
-import com.avaje.ebean.config.ServerConfig;
-import com.avaje.ebean.config.dbplatform.H2Platform;
-import com.avaje.ebeaninternal.api.SpiEbeanServer;
-import com.avaje.ebeaninternal.server.ddl.DdlGenerator;
+import utils.HibernateUtil;
 
 public class GetImageTest {
-	private List<Long> ids;
+	List<Long> ids = new ArrayList<>();
 
-	@BeforeClass
-	public static void startApp() {
-		start(fakeApplication());
-	}
-
-	@AfterClass
-	public static void stopApp() {
-		stop(fakeApplication());
-	}
+	private SessionFactory sessionFactory;
 
 	@Before
-	public void resetDB() {
-		String serverName = "default";
+	public void setUp() {
+		sessionFactory = HibernateUtil.getNewSessionFactory();
 
-		EbeanServer server = Ebean.getServer(serverName);
-		ServerConfig config = new ServerConfig();
-
-		DdlGenerator ddl = new DdlGenerator();
-		ddl.setup((SpiEbeanServer) server, new H2Platform(), config);
-		ddl.runScript(false, ddl.generateDropDdl());
-		ddl.runScript(false, ddl.generateCreateDdl());
-
-		addImagesToDB();
-	}
-
-	private void addImagesToDB() {
-		// Since I can't find a way to reset the database id auto increment, I'm
-		// saving the ids
-		ids = new ArrayList<>();
+		QueryImage queryImage = new QueryImage(sessionFactory);
 
 		for (int i = 1; i < 10; i++) {
-			long id = ImageModel.create(Uploader.IMAGE_DIRECTORY + "0" + i
-					+ ".png").id;
+			Image image = new Image();
+			image.setFilename(Uploader.IMAGE_DIRECTORY + "0" + i + ".png");
 
-			ids.add(id);
+			queryImage.addImage(image);
+
+			ids.add(image.getId());
 		}
 
 		Collections.sort(ids);
+	}
+
+	@After
+	public void tearDown() {
+		sessionFactory.close();
 	}
 
 	@Test

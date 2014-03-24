@@ -3,27 +3,32 @@ package controllers;
 import java.util.List;
 
 import json.generators.ImageListJsonGenerator;
-import models.ImageModel;
+import models.Image;
 import play.mvc.Controller;
 import play.mvc.Result;
+import queryDB.QueryImage;
 import url.generators.ImageInfoURLGenerator;
 import url.generators.ImageListURLGenerator;
+import utils.HibernateUtil;
 
 import com.fasterxml.jackson.databind.JsonNode;
 
 public class ImageController extends Controller {
 	public static Result getImages(int offset, int limit) {
-		if (isNotWithinBoundaries(offset, limit))
-			return badRequest();
+		QueryImage queryImage = new QueryImage(
+				HibernateUtil.getSessionFactory());
 
-		if (limit == 0) {
-			limit = ImageModel.getRowCount();
+		int numRows = queryImage.getImages().size();
+
+		if (offset < 0 || limit < 0 || offset > numRows) {
+			return badRequest();
 		}
 
-		response().setHeader("list-change-count",
-				ImageModel.listChangeCount.toString());
+		if (limit == 0) {
+			limit = numRows;
+		}
 
-		List<ImageModel> imageModels = ImageModel.getList(offset, limit);
+		List<Image> images = queryImage.getImages(offset, limit);
 
 		ImageListURLGenerator imageListURLGenerator = new ImageListURLGenerator(
 				offset, limit, request());
@@ -32,16 +37,10 @@ public class ImageController extends Controller {
 				request());
 
 		ImageListJsonGenerator imageListJsonGenerator = new ImageListJsonGenerator(
-				imageModels, imageListURLGenerator, imageInfoURLGenerator);
+				images, imageListURLGenerator, imageInfoURLGenerator);
 
 		JsonNode imageListNode = imageListJsonGenerator.toJson();
 
 		return ok(imageListNode);
-	}
-
-	private static boolean isNotWithinBoundaries(int offset, int limit) {
-		int numRows = ImageModel.getRowCount();
-
-		return (offset < 0 || limit < 0 || offset > numRows);
 	}
 }

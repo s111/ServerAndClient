@@ -1,13 +1,13 @@
 package controllers;
 
-import models.ImageModel;
-import models.TagModel;
+import models.Image;
 import play.data.DynamicForm;
 import play.data.Form;
 import play.mvc.Controller;
 import play.mvc.Result;
-
-import com.google.common.base.Optional;
+import queryDB.QueryImage;
+import queryDB.QueryTag;
+import utils.HibernateUtil;
 
 public class ImageTagger extends Controller {
 	public static Result tag(long id) {
@@ -15,17 +15,20 @@ public class ImageTagger extends Controller {
 
 		String tagData = requestData.get("value");
 
-		Optional<ImageModel> imageModel = ImageModel.get(id);
+		QueryImage queryImage = new QueryImage(
+				HibernateUtil.getSessionFactory());
 
-		if (tagData == null || !imageModel.isPresent())
+		Image image = queryImage.getImage(id);
+
+		if (tagData == null || image == null)
 			return badRequest();
 
 		String[] tags = tagData.split(",");
 
-		for (String tag : tags) {
-			TagModel tagModel = TagModel.create(tag);
+		QueryTag queryTag = new QueryTag(HibernateUtil.getSessionFactory());
 
-			imageModel.get().addTag(tagModel);
+		for (String tag : tags) {
+			queryTag.tagImage(id, tag);
 		}
 
 		return ok();

@@ -1,12 +1,12 @@
 package controllers;
 
-import models.ImageModel;
+import models.Image;
 import play.data.DynamicForm;
 import play.data.Form;
 import play.mvc.Controller;
 import play.mvc.Result;
-
-import com.google.common.base.Optional;
+import queryDB.QueryImage;
+import utils.HibernateUtil;
 
 public class ImageDescriber extends Controller {
 	public static Result describe(long id) {
@@ -14,14 +14,16 @@ public class ImageDescriber extends Controller {
 
 		String description = requestData.get("value");
 
-		Optional<ImageModel> imageModel = ImageModel.get(id);
+		QueryImage queryImage = new QueryImage(
+				HibernateUtil.getSessionFactory());
 
-		if (description == null || description.length() > 255
-				|| !imageModel.isPresent()) {
+		Image image = queryImage.getImage(id);
+
+		if (description == null || description.length() > 255 || image == null) {
 			return badRequest();
 		}
 
-		imageModel.get().setDescription(description);
+		queryImage.describeImage(id, description);
 
 		return ok();
 	}

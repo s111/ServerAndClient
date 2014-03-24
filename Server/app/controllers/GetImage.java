@@ -3,54 +3,50 @@ package controllers;
 import java.io.File;
 
 import json.generators.ImageInfoJsonGenerator;
-import models.ImageModel;
+import models.Image;
 import play.mvc.Controller;
 import play.mvc.Result;
+import queryDB.QueryImage;
 import url.generators.ImageInfoURLGenerator;
+import utils.HibernateUtil;
 
 import com.fasterxml.jackson.databind.JsonNode;
-import com.google.common.base.Optional;
 
 public class GetImage extends Controller {
 	public static Result info(long id) {
-		Optional<ImageModel> retrievedImageModel = ImageModel.get(id);
+		QueryImage queryImage = new QueryImage(
+				HibernateUtil.getSessionFactory());
 
-		if (!retrievedImageModel.isPresent()) {
+		Image image = queryImage.getImage(id);
+
+		if (image == null) {
 			return notFound();
 		}
-
-		ImageModel imageModel = retrievedImageModel.get();
-
-		response().setHeader("info-change-count",
-				imageModel.infoChangeCount.toString());
 
 		ImageInfoURLGenerator absoluteURLGenerator = new ImageInfoURLGenerator(
 				request());
 
-		ImageInfoJsonGenerator imageModelJsonGenerator = new ImageInfoJsonGenerator(
-				imageModel, absoluteURLGenerator);
+		ImageInfoJsonGenerator imageInfoJsonGenerator = new ImageInfoJsonGenerator(
+				image, absoluteURLGenerator);
 
-		JsonNode imageInfoNode = imageModelJsonGenerator.toJson();
+		JsonNode imageInfoNode = imageInfoJsonGenerator.toJson();
 
 		return ok(imageInfoNode);
 	}
 
 	public static Result file(long id) {
-		Optional<ImageModel> retrievedImageModel = ImageModel.get(id);
+		QueryImage queryImage = new QueryImage(
+				HibernateUtil.getSessionFactory());
+		Image image = queryImage.getImage(id);
 
-		if (!retrievedImageModel.isPresent()) {
+		if (image == null) {
 			return badRequest();
 		}
 
-		ImageModel imageModel = retrievedImageModel.get();
+		File file = new File(image.getFilename());
 
-		response().setHeader("image-change-count",
-				imageModel.imageChangeCount.toString());
-
-		File image = new File(imageModel.filename);
-
-		if (image.exists()) {
-			return ok(image, true);
+		if (file.exists()) {
+			return ok(file, true);
 		} else {
 			return notFound();
 		}

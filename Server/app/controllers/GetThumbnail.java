@@ -3,51 +3,55 @@ package controllers;
 import java.io.File;
 import java.io.IOException;
 
-import models.ImageModel;
-import models.ThumbnailModel;
+import models.Image;
+import models.Thumbnail;
 import play.Logger;
 import play.mvc.Controller;
 import play.mvc.Result;
+import queryDB.QueryImage;
+import queryDB.QueryThumbnail;
 import thumbnail.generator.ThumbnailGenerator;
-
-import com.google.common.base.Optional;
+import utils.HibernateUtil;
 
 public class GetThumbnail extends Controller {
 	public static Result getXSmall(long id) {
-		return getThumbnail(id, ThumbnailModel.X_SMALL);
+		return getThumbnail(id, 0);
 	}
 
 	public static Result getSmall(long id) {
-		return getThumbnail(id, ThumbnailModel.SMALL);
+		return getThumbnail(id, 1);
 	}
 
 	public static Result getMedium(long id) {
-		return getThumbnail(id, ThumbnailModel.MEDIUM);
+		return getThumbnail(id, 2);
 	}
 
 	public static Result getLarge(long id) {
-		return getThumbnail(id, ThumbnailModel.LARGE);
+		return getThumbnail(id, 3);
 	}
 
 	public static Result getXLarge(long id) {
-		return getThumbnail(id, ThumbnailModel.X_LARGE);
+		return getThumbnail(id, 4);
 	}
 
 	public static Result getCompressed(long id) {
-		return getThumbnail(id, ThumbnailModel.COMPRESSED);
+		return getThumbnail(id, 5);
 	}
 
 	public static Result getThumbnail(long id, int size) {
-		Optional<ImageModel> imageModel = ImageModel.get(id);
+		QueryImage queryImage = new QueryImage(
+				HibernateUtil.getSessionFactory());
 
-		if (!imageModel.isPresent()) {
+		Image image = queryImage.getImage(id);
+
+		if (image == null) {
 			return notFound();
 		}
 
 		File thumbnail = null;
 
 		try {
-			thumbnail = getThumbnailFile(imageModel.get(), size);
+			thumbnail = getThumbnailFile(image, size);
 		} catch (IOException e) {
 			return internalServerError();
 		}
@@ -55,40 +59,34 @@ public class GetThumbnail extends Controller {
 		return ok(thumbnail, true);
 	}
 
-	private static File getThumbnailFile(ImageModel imageModel, int size)
+	private static File getThumbnailFile(Image image, int size)
 			throws IOException {
-		Optional<ThumbnailModel> retrievedThumbnailModel = ThumbnailModel.get(
-				imageModel.id, size);
+		QueryThumbnail queryThumbnail = new QueryThumbnail(
+				HibernateUtil.getSessionFactory());
 
-		ThumbnailModel thumbnailModel;
+		Thumbnail thumbnail = queryThumbnail.getThumbnail(image.getId(), size);
 
-		if (!retrievedThumbnailModel.isPresent()) {
-			thumbnailModel = createNewThumbnail(imageModel, size);
-		} else {
-			thumbnailModel = retrievedThumbnailModel.get();
+		if (thumbnail == null) {
+			createNewThumbnail(image, size);
+
+			thumbnail = queryThumbnail.getThumbnail(image.getId(), size);
 		}
 
-		File thumbnail = new File(thumbnailModel.filename);
+		File file = new File(thumbnail.getFilename());
 
-		return thumbnail;
+		return file;
 	}
 
-	private static ThumbnailModel createNewThumbnail(ImageModel imageModel,
-			int size) throws IOException {
-		ThumbnailModel thumbnailModel;
-
-		ThumbnailGenerator thumbnailGenerator = new ThumbnailGenerator(
-				imageModel, size);
+	private static void createNewThumbnail(Image image, int size)
+			throws IOException {
+		ThumbnailGenerator thumbnailGenerator = new ThumbnailGenerator(image,
+				size);
 
 		try {
 			thumbnailGenerator.writeThumbnailToDisk();
 		} catch (IOException exception) {
 			logIOException(exception);
 		}
-
-		thumbnailModel = thumbnailGenerator.saveThumbnailToDatabase();
-
-		return thumbnailModel;
 	}
 
 	private static void logIOException(IOException exception)
