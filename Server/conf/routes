@@ -22,15 +22,6 @@ GET    /api/images/:id/compressed   controllers.GetThumbnail.getCompressed(id: L
 # Get list of images
 GET    /api/images                  controllers.ImageController.getImages(offset: Int ?= 0, limit: Int ?= 25)
 
-# Get image info by id without body
-HEAD   /api/images/:id              controllers.ResourceChanged.info(id: Long)
-
-# Get raw image by id without body
-HEAD    /api/images/:id/raw          controllers.ResourceChanged.file(id: Long)
-
-# Get list of images without body
-HEAD   /api/images                  controllers.ResourceChanged.getImages(offset: Int ?= 0, limit: Int ?= 25)
-
 # Rate image
 POST   /api/images/:id/rate         controllers.ImageRater.rate(id: Long)
 
