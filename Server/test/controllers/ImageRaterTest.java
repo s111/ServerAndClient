@@ -2,35 +2,20 @@ package controllers;
 
 import static org.junit.Assert.assertEquals;
 import static play.test.Helpers.callAction;
+import helpers.WithDatabase;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import models.Image;
 
-import org.hibernate.SessionFactory;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import play.test.FakeRequest;
 import queryDB.QueryImage;
 import upload.Uploader;
-import utils.HibernateUtil;
 
-public class ImageRaterTest {
-	private SessionFactory sessionFactory;
-
-	@Before
-	public void setUp() {
-		sessionFactory = HibernateUtil.getNewSessionFactory();
-	}
-
-	@After
-	public void tearDown() {
-		sessionFactory.close();
-	}
-
+public class ImageRaterTest extends WithDatabase {
 	@Test
 	public void rate_image_with_5_expect_rating_5() {
 		String filename = Uploader.IMAGE_DIRECTORY + "01.png";

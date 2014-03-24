@@ -1,6 +1,5 @@
 import static org.junit.Assert.assertEquals;
 import static play.test.Helpers.fakeApplication;
-import static play.test.Helpers.stop;
 
 import java.io.File;
 
@@ -9,26 +8,26 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import play.test.WithApplication;
+import play.test.Helpers;
 import queryDB.QueryImage;
 import upload.Uploader;
 import utils.HibernateUtil;
 
-public class GlobalTest extends WithApplication {
+public class GlobalTest {
 	private SessionFactory sessionFactory;
 
 	@Before
 	public void setUp() {
 		sessionFactory = HibernateUtil.getNewSessionFactory();
 
-		start(fakeApplication());
+		Helpers.start(fakeApplication());
 	}
 
 	@After
 	public void tearDown() {
 		sessionFactory.close();
 
-		stop(fakeApplication());
+		Helpers.stop(fakeApplication());
 	}
 
 	@Test

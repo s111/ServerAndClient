@@ -1,6 +1,7 @@
 package queryDB;
 
 import static org.junit.Assert.assertEquals;
+import helpers.WithDatabase;
 
 import java.util.List;
 
@@ -8,29 +9,12 @@ import models.Image;
 import models.Tag;
 
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
-import utils.HibernateUtil;
-
-public class QueryTagTest {
+public class QueryTagTest extends WithDatabase {
 	private static final String FILENAME = "filename";
 	private static final String FILENAME1 = "filename1";
 	private static final String FILENAME2 = "filename2";
-
-	private SessionFactory sessionFactory;
-
-	@Before
-	public void setUp() {
-		sessionFactory = HibernateUtil.getNewSessionFactory();
-	}
-
-	@After
-	public void tearDown() {
-		sessionFactory.close();
-	}
 
 	@Test
 	public void getTags_create_two_tags_expect_two_tags() {

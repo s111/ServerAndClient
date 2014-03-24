@@ -1,37 +1,19 @@
 package queryDB;
 
 import static org.junit.Assert.assertEquals;
+import helpers.WithDatabase;
 
 import java.util.Set;
 
 import models.Image;
 import models.Thumbnail;
 
-import org.hibernate.SessionFactory;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
-import queryDB.QueryImage;
-import queryDB.QueryThumbnail;
-import utils.HibernateUtil;
-
-public class QueryThumbnailTest {
+public class QueryThumbnailTest extends WithDatabase {
 	private static final String FILENAME = "filename";
 	private static final String FILENAME1 = "filename1";
 	private static final String FILENAME2 = "filename2";
-
-	private SessionFactory sessionFactory;
-
-	@Before
-	public void setUp() {
-		sessionFactory = HibernateUtil.getNewSessionFactory();
-	}
-
-	@After
-	public void tearDown() {
-		sessionFactory.close();
-	}
 
 	@Test
 	public void addThumbnail_expect_image_to_have_one_thumbnail() {

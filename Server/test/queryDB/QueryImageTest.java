@@ -3,20 +3,16 @@ package queryDB;
 import static org.fest.assertions.Assertions.assertThat;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import helpers.WithDatabase;
 
 import java.util.List;
 
 import models.Image;
 
 import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
-import utils.HibernateUtil;
-
-public class QueryImageTest {
+public class QueryImageTest extends WithDatabase {
 	private static final String FILENAME = "filename";
 	private static final String FILENAME1 = "filename1";
 	private static final String FILENAME2 = "filename2";
@@ -25,18 +21,6 @@ public class QueryImageTest {
 	private static final String DESCRIPTION = "description";
 
 	private static final int RATING = 5;
-
-	private SessionFactory sessionFactory;
-
-	@Before
-	public void setUp() {
-		sessionFactory = HibernateUtil.getNewSessionFactory();
-	}
-
-	@After
-	public void tearDown() {
-		sessionFactory.close();
-	}
 
 	@Test
 	public void getImage_add_one_image_expect_one_image() {

@@ -2,15 +2,13 @@ package controllers;
 
 import static org.junit.Assert.assertNotNull;
 import static play.test.Helpers.callAction;
+import helpers.WithDatabase;
 
 import java.util.HashMap;
 import java.util.Map;
 
 import models.Image;
 
-import org.hibernate.SessionFactory;
-import org.junit.After;
-import org.junit.Before;
 import org.junit.Test;
 
 import play.test.FakeRequest;
@@ -19,18 +17,7 @@ import queryDB.QueryTag;
 import upload.Uploader;
 import utils.HibernateUtil;
 
-public class ImageTaggerTest {
-	private SessionFactory sessionFactory;
-
-	@Before
-	public void setUp() {
-		sessionFactory = HibernateUtil.getNewSessionFactory();
-	}
-
-	@After
-	public void tearDown() {
-		sessionFactory.close();
-	}
+public class ImageTaggerTest extends WithDatabase {
 
 	@Test
 	public void tag_image_with_abc_expect_tag_name_abc() {
