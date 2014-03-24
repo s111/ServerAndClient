@@ -9,6 +9,7 @@ import json.generators.ImageInfoJsonGenerator;
 import metadata.PrepareImage;
 import models.Image;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.tika.config.TikaConfig;
 import org.apache.tika.metadata.Metadata;
 import org.apache.tika.mime.MediaType;
@@ -114,7 +115,7 @@ public class Uploader {
 		} catch (IOException exception) {
 			return false;
 		} finally {
-			boolean imageIsDeleted = file.delete();
+			boolean imageIsDeleted = FileUtils.deleteQuietly(file);
 
 			if (!imageIsDeleted) {
 				Logger.of("logger").warn(

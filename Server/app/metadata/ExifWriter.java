@@ -97,14 +97,18 @@ public class ExifWriter {
 
 			FileUtils.copyFile(tempImage, image);
 
-			boolean deleted = FileUtils.deleteQuietly(tempImage);
-
-			if (!deleted) {
-				Logger.of("logger").warn("Failed to delete tempImage file: "
-						+ tempImage.getAbsolutePath());
-			}
+			cleanUp();
 		} finally {
 			IOUtils.closeQuietly(outputStream);
+		}
+	}
+
+	public void cleanUp() {
+		boolean deleted = FileUtils.deleteQuietly(tempImage);
+
+		if (!deleted) {
+			Logger.warn("Failed to delete tempImage file: "
+					+ tempImage.getAbsolutePath());
 		}
 	}
 

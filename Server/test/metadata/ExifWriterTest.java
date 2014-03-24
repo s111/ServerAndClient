@@ -1,6 +1,8 @@
 package metadata;
 
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,7 +21,7 @@ public class ExifWriterTest {
 		File fileMock = mock(File.class);
 		when(fileMock.getName()).thenReturn("image.jpg");
 
-		new ExifWriter(fileMock, exifMock);
+		new ExifWriter(fileMock, exifMock).cleanUp();
 
 		verify(exifMock).getOutputSet();
 	}
