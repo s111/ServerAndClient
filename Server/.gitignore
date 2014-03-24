@@ -17,4 +17,6 @@ dist
 /.cache
 conf/evolutions
 /*.log
-bin
+/bin
+/bin_app
+/bin_test
