@@ -5,6 +5,7 @@ import java.util.List;
 import models.Image;
 import models.Tag;
 
+import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 
@@ -35,8 +36,8 @@ public class QueryTag {
 		session.beginTransaction();
 
 		@SuppressWarnings("unchecked")
-		List<Image> images = session.createQuery("SELECT images FROM Tag")
-				.list();
+		List<Image> images = session.createQuery(
+				"SELECT images FROM Tag WHERE name='" + name + "'").list();
 		List<Image> copy = ImmutableList.copyOf(images);
 
 		session.getTransaction().commit();
@@ -68,6 +69,8 @@ public class QueryTag {
 		session.beginTransaction();
 
 		Tag tag = (Tag) session.byId(Tag.class).load(name);
+
+		Hibernate.initialize(tag.getImages());
 
 		session.getTransaction().commit();
 
