@@ -3,17 +3,17 @@ package json.generators;
 import java.util.ArrayList;
 import java.util.List;
 
-import url.generators.ImageInfoURLGenerator;
-import url.generators.ImageListURLGenerator;
 import json.objects.ImageList;
 import json.objects.ImageShort;
-import models.ImageModel;
+import models.Image;
+import url.generators.ImageInfoURLGenerator;
+import url.generators.ImageListURLGenerator;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ImageListJsonGenerator {
-	private List<ImageModel> imageModels;
+	private List<Image> images;
 
 	private ImageListURLGenerator imageListURLGenerator;
 	private ImageInfoURLGenerator imageInfoURLGenerator;
@@ -21,10 +21,10 @@ public class ImageListJsonGenerator {
 	private int offset;
 	private int limit;
 
-	public ImageListJsonGenerator(List<ImageModel> imageModels,
+	public ImageListJsonGenerator(List<Image> images,
 			ImageListURLGenerator imageListURLGenerator,
 			ImageInfoURLGenerator imageInfoURLGenerator) {
-		this.imageModels = imageModels;
+		this.images = images;
 		this.imageListURLGenerator = imageListURLGenerator;
 		this.imageInfoURLGenerator = imageInfoURLGenerator;
 
@@ -51,24 +51,27 @@ public class ImageListJsonGenerator {
 		imageList.setFirst(imageListURLGenerator.getFirstURL());
 		imageList.setLast(imageListURLGenerator.getLastURL());
 
-		List<ImageShort> images = imageModelsToImageShort();
+		List<ImageShort> images = imageToImageShort();
 
 		imageList.setImages(images);
 
 		return imageList;
 	}
 
-	private List<ImageShort> imageModelsToImageShort() {
-		List<ImageShort> images = new ArrayList<>();
+	private List<ImageShort> imageToImageShort() {
+		List<ImageShort> shortImages = new ArrayList<>();
 
-		for (ImageModel imageModel : imageModels) {
+		for (Image image : images) {
 			ImageShort imageShort = new ImageShort();
-			imageShort.setHref(imageInfoURLGenerator.getURL(imageModel));
-			imageShort.setId(imageModel.id);
 
-			images.add(imageShort);
+			long id = image.getId();
+
+			imageShort.setHref(imageInfoURLGenerator.getURL(id));
+			imageShort.setId(id);
+
+			shortImages.add(imageShort);
 		}
 
-		return images;
+		return shortImages;
 	}
 }

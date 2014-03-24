@@ -3,23 +3,23 @@ package json.generators;
 import java.util.ArrayList;
 import java.util.List;
 
-import url.generators.ImageInfoURLGenerator;
 import json.objects.ImageFull;
 import json.objects.ImageInfo;
-import models.ImageModel;
-import models.TagModel;
+import models.Image;
+import models.Tag;
+import url.generators.ImageInfoURLGenerator;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ImageInfoJsonGenerator {
-	private ImageModel imageModel;
+	private Image image;
 
 	private ImageInfoURLGenerator absoluteURLGenerator;
 
-	public ImageInfoJsonGenerator(ImageModel imageModel,
+	public ImageInfoJsonGenerator(Image image,
 			ImageInfoURLGenerator absoluteURLGenerator) {
-		this.imageModel = imageModel;
+		this.image = image;
 		this.absoluteURLGenerator = absoluteURLGenerator;
 	}
 
@@ -34,26 +34,30 @@ public class ImageInfoJsonGenerator {
 
 	private ImageInfo createImageInfoObject() {
 		ImageInfo imageInfo = new ImageInfo();
-		imageInfo.setHref(absoluteURLGenerator.getURL(imageModel));
-		imageInfo.setNext(absoluteURLGenerator.getNextURL(imageModel));
-		imageInfo.setPrevious(absoluteURLGenerator.getPreviousURL(imageModel));
+		imageInfo.setHref(absoluteURLGenerator.getURL(image.getId()));
+		imageInfo.setNext(absoluteURLGenerator.getNextURL(image.getId()));
+		imageInfo
+				.setPrevious(absoluteURLGenerator.getPreviousURL(image.getId()));
 		imageInfo.setFirst(absoluteURLGenerator.getFirstURL());
 		imageInfo.setLast(absoluteURLGenerator.getLastURL());
-		imageInfo.setImage(imageModelToImageFull());
+		imageInfo.setImage(imageToImageFull());
 
 		return imageInfo;
 	}
 
-	private ImageFull imageModelToImageFull() {
+	private ImageFull imageToImageFull() {
 		ImageFull imageFull = new ImageFull();
-		imageFull.setId(imageModel.id);
-		imageFull.setRating(imageModel.rating);
-		imageFull.setDescription(imageModel.description);
+		imageFull.setId(image.getId());
+
+		Integer rating = image.getRating();
+
+		imageFull.setRating(rating == null ? 0 : rating);
+		imageFull.setDescription(image.getDescription());
 
 		List<String> tagsAsString = new ArrayList<>();
 
-		for (TagModel tag : imageModel.tags) {
-			tagsAsString.add(tag.name);
+		for (Tag tag : image.getTags()) {
+			tagsAsString.add(tag.getName());
 		}
 
 		imageFull.setTags(tagsAsString);
