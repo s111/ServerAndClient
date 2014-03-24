@@ -100,7 +100,7 @@ public class ExifWriter {
 			boolean deleted = FileUtils.deleteQuietly(tempImage);
 
 			if (!deleted) {
-				Logger.warn("Failed to delete tempImage file: "
+				Logger.of("logger").warn("Failed to delete tempImage file: "
 						+ tempImage.getAbsolutePath());
 			}
 		} finally {
