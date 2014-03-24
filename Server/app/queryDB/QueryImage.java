@@ -36,7 +36,7 @@ public class QueryImage {
 		session.beginTransaction();
 
 		Image image = (Image) session.createQuery(
-				"FROM Image WHERE filename=" + filename).uniqueResult();
+				"FROM Image WHERE filename='" + filename + "'").uniqueResult();
 
 		session.getTransaction().commit();
 
@@ -111,11 +111,6 @@ public class QueryImage {
 	public List<Image> getImages(int offset, int limit) {
 		Session session = sessionFactory.getCurrentSession();
 		session.beginTransaction();
-
-		/*
-		 * List<ImageModel> imageModels = find.orderBy("id ASC")
-		 * .setFirstRow(offset).setMaxRows(limit).findList();
-		 */
 
 		@SuppressWarnings("unchecked")
 		List<Image> images = session.createQuery("FROM Image ORDER BY id ASC")

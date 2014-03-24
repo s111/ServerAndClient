@@ -62,4 +62,15 @@ public class QueryTag {
 
 		session.getTransaction().commit();
 	}
+
+	public Tag getTag(String name) {
+		Session session = sessionFactory.getCurrentSession();
+		session.beginTransaction();
+
+		Tag tag = (Tag) session.byId(Tag.class).load(name);
+
+		session.getTransaction().commit();
+
+		return tag;
+	}
 }
