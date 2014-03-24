@@ -87,6 +87,8 @@ public class GetThumbnail extends Controller {
 		} catch (IOException exception) {
 			logIOException(exception);
 		}
+
+		thumbnailGenerator.saveThumbnailToDatabase();
 	}
 
 	private static void logIOException(IOException exception)
