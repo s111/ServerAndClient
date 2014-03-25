@@ -7,8 +7,8 @@
         </encoder>
     </appender>
 
-    <logger name="play" level="OFF" />
-    <logger name="logger" level="OFF" />
+    <!-- <logger name="play" level="OFF" /> -->
+    <!-- <logger name="logger" level="OFF" /> -->
 
     <root level="ERROR">
         <appender-ref ref="STDOUT" />

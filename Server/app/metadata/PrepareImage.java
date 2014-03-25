@@ -36,13 +36,16 @@ public class PrepareImage {
 			try {
 				ExifWriter exifWriter = new ExifWriter(file, exif.get());
 				exifWriter.setDescription(image.getDescription());
-				exifWriter.setRating(image.getRating());
+
+				Integer rating = image.getRating();
+
+				exifWriter.setRating(rating == null ? 0 : rating);
 
 				Set<Tag> tags = image.getTags();
 				String tagList = "";
 
 				for (Tag tag : tags) {
-					tagList += tag + ",";
+					tagList += tag.getName() + ",";
 				}
 
 				tagList.substring(0, tagList.length() - 1);
@@ -90,10 +93,6 @@ public class PrepareImage {
 		String tagList = exifReader.getTags();
 		int rating = exifReader.getRating();
 
-		if (description != null) {
-			image.setDescription(description);
-		}
-
 		long id = image.getId();
 
 		if (tagList != null) {
@@ -106,9 +105,14 @@ public class PrepareImage {
 			}
 		}
 
+		QueryImage queryImage = new QueryImage(
+				HibernateUtil.getSessionFactory());
+
+		if (description != null) {
+			queryImage.describeImage(id, description);
+		}
+
 		if (rating != 0) {
-			QueryImage queryImage = new QueryImage(
-					HibernateUtil.getSessionFactory());
 			queryImage.rateImage(id, rating);
 		}
 	}

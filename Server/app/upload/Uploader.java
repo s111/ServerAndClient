@@ -78,11 +78,12 @@ public class Uploader {
 		Image image = new Image();
 		image.setFilename(IMAGE_DIRECTORY + filename);
 
-		PrepareImage.loadImageWithMetadataFromFile(image);
-
 		QueryImage queryImage = new QueryImage(
 				HibernateUtil.getSessionFactory());
+
 		queryImage.addImage(image);
+
+		PrepareImage.loadImageWithMetadataFromFile(image);
 
 		QueryTag queryTag = new QueryTag(HibernateUtil.getSessionFactory());
 		/* TODO Remove the id:{id} tag before release */

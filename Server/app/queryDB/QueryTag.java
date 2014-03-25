@@ -2,6 +2,7 @@ package queryDB;
 
 import java.util.List;
 
+import metadata.PrepareImage;
 import models.Image;
 import models.Tag;
 
@@ -62,6 +63,8 @@ public class QueryTag {
 		image.getTags().add(tag);
 
 		session.getTransaction().commit();
+
+		PrepareImage.writeImageMetadataToFile(id);
 	}
 
 	public Tag getTag(String name) {
