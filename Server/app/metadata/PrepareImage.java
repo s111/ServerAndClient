@@ -2,10 +2,13 @@ package metadata;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Set;
 
 import models.Image;
+import models.Tag;
 
 import org.apache.commons.imaging.ImageReadException;
+import org.apache.commons.imaging.ImageWriteException;
 import org.apache.commons.imaging.Imaging;
 import org.apache.commons.imaging.common.IImageMetadata;
 import org.apache.commons.imaging.formats.jpeg.JpegImageMetadata;
@@ -19,6 +22,41 @@ import utils.HibernateUtil;
 import com.google.common.base.Optional;
 
 public class PrepareImage {
+	public static void writeImageMetadataToFile(long id) {
+		QueryImage queryImage = new QueryImage(
+				HibernateUtil.getSessionFactory());
+
+		Image image = queryImage.getImage(id);
+
+		File file = new File(image.getFilename());
+
+		Optional<TiffImageMetadata> exif = getExif(file);
+
+		if (exif.isPresent()) {
+			try {
+				ExifWriter exifWriter = new ExifWriter(file, exif.get());
+				exifWriter.setDescription(image.getDescription());
+				exifWriter.setRating(image.getRating());
+
+				Set<Tag> tags = image.getTags();
+				String tagList = "";
+
+				for (Tag tag : tags) {
+					tagList += tag + ",";
+				}
+
+				tagList.substring(0, tagList.length() - 1);
+
+				exifWriter.setTags(tagList);
+				exifWriter.save();
+			} catch (IOException | ImageReadException | ImageWriteException exception) {
+				Logger.of("logger").warn(
+						"Could not write metadata to: "
+								+ file.getAbsolutePath());
+			}
+		}
+	}
+
 	public static void loadImageWithMetadataFromFile(Image image) {
 		File file = new File(image.getFilename());
 
@@ -33,7 +71,7 @@ public class PrepareImage {
 
 	private static void fillImageWithMetadata(Image image, File file)
 			throws ImageReadException, IOException {
-		Optional<TiffImageMetadata> retrievedExif = getMetadataTable(file);
+		Optional<TiffImageMetadata> retrievedExif = getExif(file);
 
 		if (!retrievedExif.isPresent()) {
 			Logger.of("logger").warn(
@@ -75,7 +113,7 @@ public class PrepareImage {
 		}
 	}
 
-	public static Optional<TiffImageMetadata> getMetadataTable(File image) {
+	private static Optional<TiffImageMetadata> getExif(File image) {
 		IImageMetadata metadata = null;
 
 		try {
