@@ -13,6 +13,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.plaf.basic.BasicToolBarUI.DockingListener;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -22,6 +23,7 @@ import com.github.groupa.client.Library;
 import com.github.groupa.client.SingleLibrary;
 import com.github.groupa.client.components.GridBottomPanel;
 import com.github.groupa.client.components.SearchField;
+import com.github.groupa.client.components.SortOptionList;
 import com.github.groupa.client.components.ThumbPanel;
 import com.github.groupa.client.events.LibraryAddEvent;
 import com.github.groupa.client.events.SwitchViewEvent;
@@ -147,6 +149,7 @@ public class GridView {
 		mainPanel.add(thumbScroll, "grow");
 		mainPanel.add(new SearchField(eventBus, library, this).getPanel(),
 				"north");
+		mainPanel.add(new SortOptionList().getPanel(), "north");
 		mainPanel.add(new GridBottomPanel(this).getPanel(), "south");
 
 	}
