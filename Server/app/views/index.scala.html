@@ -4,7 +4,7 @@
     <div class="grid grid-pad">
 	@for(image <- images) {
 		<div class="col-1-4">
-    		<div class="content">
+    		<div class="content" style="height: 256px; width: 256px; overflow: hidden; display: table-cell; vertical-align: middle;">
     			<a href="@routes.GetThumbnail.getCompressed(image.getId())">
     				<img src="@routes.GetThumbnail.getXLarge(image.getId())" alt="image not loaded" />
     			</a>
