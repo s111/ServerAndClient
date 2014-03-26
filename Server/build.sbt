@@ -7,6 +7,7 @@ libraryDependencies ++= Seq(
   "org.hibernate" % "hibernate-core" % "4.3.4.Final",
   cache,
   "org.apache.commons" % "commons-imaging" % "1.0-SNAPSHOT",
+  "com.drewnoakes" % "metadata-extractor" % "2.6.2",
   "net.coobird" % "thumbnailator" % "0.4.7",
   "commons-io" % "commons-io" % "2.4",
   "org.mockito" % "mockito-all" % "1.9.5",

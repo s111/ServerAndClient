@@ -2,6 +2,7 @@ package metadata;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -20,12 +21,32 @@ import queryDB.QueryImage;
 import queryDB.QueryTag;
 import utils.HibernateUtil;
 
+import com.drew.imaging.ImageMetadataReader;
+import com.drew.imaging.ImageProcessingException;
+import com.drew.metadata.Metadata;
+import com.drew.metadata.exif.ExifSubIFDDirectory;
 import com.google.common.base.Optional;
 
-public class Metadata {
+public class MetadataUtil {
 	private static final int DESCRIPTION = 0;
 	private static final int RATING = 1;
 	private static final int TAG = 2;
+
+	public static Date getDate(File file) {
+		Date date = null;
+
+		try {
+			Metadata metadata = ImageMetadataReader.readMetadata(file);
+
+			ExifSubIFDDirectory directory = metadata
+					.getDirectory(ExifSubIFDDirectory.class);
+
+			date = directory.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL);
+		} catch (ImageProcessingException | IOException e) {
+		}
+
+		return date;
+	}
 
 	private static void saveMetadataToFile(File file, Object metadata, int type) {
 		Optional<TiffImageMetadata> retrievedExif = getExif(file);

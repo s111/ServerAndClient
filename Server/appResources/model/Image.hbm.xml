@@ -13,6 +13,7 @@
 		<property name="filename" not-null="true" unique="true" />
 		<property name="description" />
 		<property name="rating" />
+		<property name="date" />
 
 		<set name="tags" table="IMAGE_TAG" inverse="false">
 			<key column="IMAGE_ID" />

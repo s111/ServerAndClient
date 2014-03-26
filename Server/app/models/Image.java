@@ -1,5 +1,6 @@
 package models;
 
+import java.sql.Timestamp;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -11,6 +12,8 @@ public class Image {
 
 	private String filename;
 	private String description;
+
+	private Timestamp date;
 
 	private Set<Tag> tags = new HashSet<>();
 
@@ -71,5 +74,13 @@ public class Image {
 
 	public void setImageChangeCount(Integer imageChangeCount) {
 		this.imageChangeCount = imageChangeCount;
+	}
+
+	public Timestamp getDate() {
+		return date;
+	}
+
+	public void setDate(Timestamp date) {
+		this.date = date;
 	}
 }
