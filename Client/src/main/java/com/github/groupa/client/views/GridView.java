@@ -13,7 +13,6 @@ import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.plaf.basic.BasicToolBarUI.DockingListener;
 
 import net.miginfocom.swing.MigLayout;
 
