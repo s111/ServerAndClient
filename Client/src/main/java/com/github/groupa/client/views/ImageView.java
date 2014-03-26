@@ -25,6 +25,7 @@ import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.Library;
 import com.github.groupa.client.Main;
 import com.github.groupa.client.SingleLibrary;
+import com.github.groupa.client.components.ImageCropButton;
 import com.github.groupa.client.components.ImageDescriptionButton;
 import com.github.groupa.client.components.ImagePanel;
 import com.github.groupa.client.components.ImageRater;
@@ -229,6 +230,7 @@ public class ImageView {
 		leftPanel.setLayout(new GridLayout(0, 1));
 		leftPanel.add(new ImageDescriptionButton(this).getButton());
 		leftPanel.add(new ImageTag(this).getTagButton());
+		leftPanel.add(new ImageCropButton(this).getButton());
 		setRaisedBevelBorder(leftPanel);
 
 		return leftPanel;
@@ -238,7 +240,7 @@ public class ImageView {
 		JPanel bottomPanel = new JPanel();
 		ImageRater imageRate = new ImageRater(this);
 		RotateButtons rotateButtons = new RotateButtons();
-		
+
 		bottomPanel.add(previousButton);
 		bottomPanel.add(rotateButtons.getRotateCCWButton());
 		bottomPanel.add(imageRate.getPanel());
