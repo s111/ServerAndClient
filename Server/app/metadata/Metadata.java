@@ -41,11 +41,11 @@ public class Metadata {
 		try {
 			exifWriter = new ExifWriter(file, exif);
 
-			if (type == 0) {
+			if (type == DESCRIPTION) {
 				exifWriter.setDescription((String) metadata);
-			} else if (type == 1) {
+			} else if (type == RATING) {
 				exifWriter.setRating((Integer) metadata);
-			} else {
+			} else if (type == TAG) {
 				Tag tag = new Tag();
 				tag.setName((String) metadata);
 
