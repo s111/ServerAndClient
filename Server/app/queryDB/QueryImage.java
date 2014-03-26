@@ -1,6 +1,8 @@
 package queryDB;
 
 import java.io.File;
+import java.sql.Timestamp;
+import java.util.Date;
 import java.util.List;
 
 import metadata.MetadataUtil;
@@ -166,5 +168,21 @@ public class QueryImage {
 		session.getTransaction().commit();
 
 		MetadataUtil.saveRatingToFile(new File(image.getFilename()), rating);
+	}
+
+	public void setDate(long id, Date date) {
+		long time = date.getTime();
+		Timestamp timestamp = new Timestamp(time);
+
+		Session session = sessionFactory.getCurrentSession();
+		session.beginTransaction();
+
+		Image image = (Image) session.byId(Image.class).load(id);
+
+		if (image != null) {
+			image.setDate(timestamp);
+		}
+
+		session.getTransaction().commit();
 	}
 }

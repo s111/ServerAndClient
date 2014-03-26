@@ -120,6 +120,22 @@ public class MetadataUtil {
 		for (Tag tag : tags) {
 			queryTag.tagImage(id, tag.getName());
 		}
+
+		Date date = null;
+
+		try {
+			Metadata metadata = ImageMetadataReader.readMetadata(file);
+
+			ExifSubIFDDirectory directory = metadata
+					.getDirectory(ExifSubIFDDirectory.class);
+
+			date = directory.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL);
+		} catch (IOException | ImageProcessingException exception) {
+		}
+
+		if (date != null) {
+			queryImage.setDate(id, date);
+		}
 	}
 
 	private static ExifReader getExifReader(File file) {
