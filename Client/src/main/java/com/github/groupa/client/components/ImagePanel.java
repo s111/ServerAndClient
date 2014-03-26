@@ -23,6 +23,8 @@ public class ImagePanel extends JPanel {
 
 	public void setImage(Image image) {
 		this.image = image;
+
+		repaint();
 	}
 
 	@Override
@@ -35,7 +37,7 @@ public class ImagePanel extends JPanel {
 		if (image != null) {
 			BufferedImage bImage = (BufferedImage) image;
 			g.drawImage(bImage, null, 0, 0);
-			System.out.println(bImage);
 		}
 	}
+
 }

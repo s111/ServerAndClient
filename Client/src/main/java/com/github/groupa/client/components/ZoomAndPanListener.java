@@ -63,12 +63,10 @@ public class ZoomAndPanListener implements MouseListener, MouseMotionListener, M
 	}
 
 	public void mouseWheelMoved(MouseWheelEvent e) {
-		System.out.println("============= Zoom camera ============");
 		zoomCamera(e);
 	}
 
 	private void moveCamera(MouseEvent e) {
-		System.out.println("============= Move camera ============");
 		try {
 			dragEndScreen = e.getPoint();
 			Point2D.Float dragStart = transformPoint(dragStartScreen);
