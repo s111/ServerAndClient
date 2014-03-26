@@ -31,6 +31,7 @@ import com.github.groupa.client.components.ImageRater;
 import com.github.groupa.client.components.ImageTag;
 import com.github.groupa.client.components.ImageZoomSlider;
 import com.github.groupa.client.components.MetadataField;
+import com.github.groupa.client.components.RotateButtons;
 import com.github.groupa.client.events.DisplayedImageChangedEvent;
 import com.github.groupa.client.events.SwitchViewEvent;
 import com.google.common.eventbus.EventBus;
@@ -236,8 +237,12 @@ public class ImageView {
 	private JPanel createBottomPanel() {
 		JPanel bottomPanel = new JPanel();
 		ImageRater imageRate = new ImageRater(this);
+		RotateButtons rotateButtons = new RotateButtons();
+		
 		bottomPanel.add(previousButton);
+		bottomPanel.add(rotateButtons.getRotateCCWButton());
 		bottomPanel.add(imageRate.getPanel());
+		bottomPanel.add(rotateButtons.getRotateCWButton());
 		bottomPanel.add(nextButton);
 
 		eventBus.register(imageRate);
