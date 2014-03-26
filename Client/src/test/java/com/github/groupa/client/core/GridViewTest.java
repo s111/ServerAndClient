@@ -24,7 +24,7 @@ public class GridViewTest {
 		GridView gridView = injector.getInstance(GridView.class);
 		
 		ImageObject mockImageObject = mock(ImageObject.class);
-		when(mockImageObject.addTag(anyString()));
+		//when(mockImageObject.addTag(anyString()));
 		
 		library.add(mockImageObject);
 	}
