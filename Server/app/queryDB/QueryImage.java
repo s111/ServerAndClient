@@ -1,8 +1,9 @@
 package queryDB;
 
+import java.io.File;
 import java.util.List;
 
-import metadata.PrepareImage;
+import metadata.Metadata;
 import models.Image;
 
 import org.hibernate.Hibernate;
@@ -132,6 +133,8 @@ public class QueryImage {
 		session.save(image);
 
 		session.getTransaction().commit();
+
+		Metadata.loadMetadataFromFile(image.getId());
 	}
 
 	public void describeImage(long id, String description) {
@@ -146,7 +149,8 @@ public class QueryImage {
 
 		session.getTransaction().commit();
 
-		PrepareImage.writeImageMetadataToFile(id);
+		Metadata.saveDescriptionToFile(new File(image.getFilename()),
+				description);
 	}
 
 	public void rateImage(long id, int rating) {
@@ -161,6 +165,6 @@ public class QueryImage {
 
 		session.getTransaction().commit();
 
-		PrepareImage.writeImageMetadataToFile(id);
+		Metadata.saveRatingToFile(new File(image.getFilename()), rating);
 	}
 }

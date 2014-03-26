@@ -29,7 +29,7 @@ public class ExifReaderTest {
 	}
 
 	@Test
-	public void read_metadata_with_tags_magic_sorcery_wizardry_expect_tags_magic_sorcery_wizardry()
+	public void read_metadata_with_tags_magic_sorcery_wizardry_expect_tags_size_3()
 			throws ImageReadException {
 		TiffImageMetadata exifMock = mock(TiffImageMetadata.class);
 		ExifReader exifReader = new ExifReader(mock(File.class), exifMock);
@@ -39,7 +39,7 @@ public class ExifReaderTest {
 
 		exifReader.readMetadata();
 
-		assertEquals("magic,sorcery,wizardry", exifReader.getTags());
+		assertEquals(3, exifReader.getTags().size());
 	}
 
 	@Test

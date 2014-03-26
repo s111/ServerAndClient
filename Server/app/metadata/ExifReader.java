@@ -2,6 +2,10 @@ package metadata;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashSet;
+import java.util.Set;
+
+import models.Tag;
 
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.formats.tiff.TiffImageMetadata;
@@ -11,8 +15,9 @@ public class ExifReader {
 	private TiffImageMetadata exif;
 
 	private int rating;
-	private String tags;
 	private String description;
+
+	private Set<Tag> tags = new HashSet<>();
 
 	/**
 	 * ExifReader constructor. Allows you to use its methods on your specified
@@ -33,8 +38,8 @@ public class ExifReader {
 	public void readMetadata() throws ImageReadException {
 		if (exif != null) {
 			readRating();
+			extractTags();
 
-			tags = exif.getFieldValue(TiffConstants.EXIF_TAG_XPKEYWORDS);
 			description = exif.getFieldValue(TiffConstants.EXIF_TAG_XPCOMMENT);
 		}
 	}
@@ -47,11 +52,29 @@ public class ExifReader {
 		}
 	}
 
+	private void extractTags() throws ImageReadException {
+		String tagString = exif
+				.getFieldValue(TiffConstants.EXIF_TAG_XPKEYWORDS);
+
+		if (tagString == null) {
+			return;
+		}
+
+		String[] tagList = tagString.split(",");
+
+		for (String tagName : tagList) {
+			Tag tag = new Tag();
+			tag.setName(tagName);
+
+			tags.add(tag);
+		}
+	}
+
 	public int getRating() {
 		return rating;
 	}
 
-	public String getTags() {
+	public Set<Tag> getTags() {
 		return tags;
 	}
 

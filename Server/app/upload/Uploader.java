@@ -6,7 +6,6 @@ import java.io.FileInputStream;
 import java.io.IOException;
 
 import json.generators.ImageInfoJsonGenerator;
-import metadata.PrepareImage;
 import models.Image;
 
 import org.apache.commons.io.FileUtils;
@@ -82,8 +81,6 @@ public class Uploader {
 				HibernateUtil.getSessionFactory());
 
 		queryImage.addImage(image);
-
-		PrepareImage.loadImageWithMetadataFromFile(image);
 
 		QueryTag queryTag = new QueryTag(HibernateUtil.getSessionFactory());
 		/* TODO Remove the id:{id} tag before release */

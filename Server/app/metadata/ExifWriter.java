@@ -5,6 +5,10 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.HashSet;
+import java.util.Set;
+
+import models.Tag;
 
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.ImageWriteException;
@@ -32,7 +36,7 @@ public class ExifWriter {
 	private TiffOutputDirectory exifDirectory;
 
 	private int rating = -1;
-	private String tags;
+	private Set<Tag> tags = new HashSet<>();
 	private String description;
 
 	/**
@@ -118,6 +122,9 @@ public class ExifWriter {
 		}
 
 		if (tags != null) {
+			ExifReader exifReader = new ExifReader(image, exif);
+			tags.addAll(exifReader.getTags());
+
 			setTagsMetadata();
 		}
 
@@ -132,8 +139,25 @@ public class ExifWriter {
 	}
 
 	private void setTagsMetadata() throws ImageWriteException {
+		String tagString = tagsToCommaDelimitedString();
+
 		exifDirectory.removeField(TiffConstants.EXIF_TAG_XPKEYWORDS);
-		exifDirectory.add(TiffConstants.EXIF_TAG_XPKEYWORDS, tags);
+		exifDirectory.add(TiffConstants.EXIF_TAG_XPKEYWORDS, tagString);
+	}
+
+	private String tagsToCommaDelimitedString() {
+		String tagString = "";
+
+		if (tags.size() == 0)
+			return tagString;
+
+		for (Tag tag : tags) {
+			tagString += tag.getName() + ",";
+		}
+
+		tagString = tagString.substring(0, tagString.length() - 1);
+
+		return tagString;
 	}
 
 	private void setRatingMetadata() throws ImageWriteException {
@@ -147,13 +171,7 @@ public class ExifWriter {
 		this.rating = rating;
 	}
 
-	/**
-	 * Set tags in image metadata
-	 * 
-	 * @param tags
-	 *            Seperate tags by commas (e.g. "tag1, tag2, tag3")
-	 */
-	public void setTags(String tags) {
+	public void setTags(Set<Tag> tags) {
 		this.tags = tags;
 	}
 

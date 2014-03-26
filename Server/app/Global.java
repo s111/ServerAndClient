@@ -1,6 +1,5 @@
 import java.io.File;
 
-import metadata.PrepareImage;
 import models.Image;
 import play.Application;
 import play.GlobalSettings;
@@ -43,13 +42,10 @@ public class Global extends GlobalSettings {
 
 					queryImage.addImage(image);
 
-					PrepareImage.loadImageWithMetadataFromFile(image);
-
-					long id = image.getId();
-
 					QueryTag queryTag = new QueryTag(
 							HibernateUtil.getSessionFactory());
-					queryTag.tagImage(id, "id:" + id);
+					/* TODO Remove the id:{id} tag before release */
+					queryTag.tagImage(image.getId(), "id:" + image.getId());
 				}
 			}
 		}

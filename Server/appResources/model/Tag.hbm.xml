@@ -10,7 +10,7 @@
         </id>
         
         <set name="images" table="IMAGE_TAG" inverse="true">
-            <key column="TAG_ID"/>
+            <key column="TAG_NAME"/>
             <many-to-many column="IMAGE_ID" class="Image" />
         </set>
     </class>

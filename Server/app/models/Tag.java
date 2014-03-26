@@ -3,21 +3,10 @@ package models;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Tag {
-	private Long id;
-
+public class Tag implements Comparable<Tag> {
 	private String name;
 
 	private Set<Image> images = new HashSet<>();
-
-	@SuppressWarnings("unused")
-	private void setId(Long id) {
-		this.id = id;
-	}
-
-	public Long getId() {
-		return id;
-	}
 
 	public String getName() {
 		return name;
@@ -33,5 +22,10 @@ public class Tag {
 
 	public void setImages(Set<Image> images) {
 		this.images = images;
+	}
+
+	@Override
+	public int compareTo(Tag otherTag) {
+		return name.compareTo(otherTag.getName());
 	}
 }

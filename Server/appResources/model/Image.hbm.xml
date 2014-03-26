@@ -16,7 +16,7 @@
 
 		<set name="tags" table="IMAGE_TAG" inverse="false">
 			<key column="IMAGE_ID" />
-			<many-to-many column="TAG_ID" class="Tag" />
+			<many-to-many column="TAG_NAME" class="Tag" />
 		</set>
 
 		<set name="thumbnails" table="THUMBNAIL">
