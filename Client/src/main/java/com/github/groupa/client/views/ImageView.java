@@ -220,7 +220,7 @@ public class ImageView {
 
 		eventBus.register(imagePanel);
 
-		return imagePanel.getPanel();
+		return imagePanel;
 	}
 
 	private JPanel createLeftPanel() {

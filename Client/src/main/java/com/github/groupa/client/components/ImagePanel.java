@@ -1,30 +1,41 @@
 package com.github.groupa.client.components;
 
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
 
-public class ImagePanel {
-	private JPanel panel;
+@SuppressWarnings("serial")
+public class ImagePanel extends JPanel {
 
-	private ZoomAndPanCanvas imageCanvas;
+	private ZoomAndPanListener zoomAndPanListener;
+
+	private Image image;
 
 	public ImagePanel() {
-		imageCanvas = new ZoomAndPanCanvas();
-		setUpPanel();
-	}
-
-	public JPanel getPanel() {
-		return panel;
+		zoomAndPanListener = new ZoomAndPanListener(this);
+		addMouseListener(zoomAndPanListener);
+		addMouseMotionListener(zoomAndPanListener);
+		addMouseWheelListener(zoomAndPanListener);
 	}
 
 	public void setImage(Image image) {
-		imageCanvas.setImage(image);
+		this.image = image;
 	}
 
-	private void setUpPanel() {
-		panel = new JPanel();
+	@Override
+	public void paintComponent(Graphics g1) {
+		super.paintComponent(g1);
 
-		panel.add(imageCanvas);
+		Graphics2D g = (Graphics2D) g1;
+		g.setTransform(zoomAndPanListener.getCoordTransform());
+
+		if (image != null) {
+			BufferedImage bImage = (BufferedImage) image;
+			g.drawImage(bImage, null, 0, 0);
+			System.out.println(bImage);
+		}
 	}
 }
