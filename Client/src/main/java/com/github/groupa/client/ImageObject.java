@@ -86,35 +86,30 @@ public class ImageObject {
 		}).start();
 	}
 
-	private Image getThumb(String size, boolean halfSize) {
-		return thumbs.get(size + halfSize);
-	}
-
 	private void downloadThumb(String size) {
 		if (!hasImageRaw()) {
 			loadImage();
 		}
 		if (hasImageRaw()) {
-			thumbs.put(size + false, imageRaw.getScaledInstance(
+			thumbs.put(size, imageRaw.getScaledInstance(
 					thumbSize.get(size), -1, Image.SCALE_FAST));
-
-			thumbs.put(size + true, imageRaw.getScaledInstance(
-					thumbSize.get(size) / 2, -1, Image.SCALE_FAST));
 		}
 	}
 
 	public void loadThumbWithCallback(final Callback<Image> callback,
-			final String size, final boolean halfSize) {
+			final String size) {
 		new Thread(new Runnable() { // This should use actual thumbs from server
 									// later on
 					@Override
 					public void run() {
-						Image image = getThumb(size, halfSize);
+						Image image = thumbs.get(size);
 						if (image == null) {
 							downloadThumb(size);
-							image = getThumb(size, halfSize);
-							if (image == null)
+							image = thumbs.get(size);
+							if (image == null) {
 								callback.failure();
+								return;
+							}
 						}
 						callback.success(image);
 					}

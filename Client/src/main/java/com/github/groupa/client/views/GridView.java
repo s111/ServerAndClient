@@ -2,16 +2,20 @@ package com.github.groupa.client.views;
 
 import java.awt.BorderLayout;
 import java.awt.Image;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.inject.Inject;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+
+import net.miginfocom.swing.MigLayout;
 
 import com.github.groupa.client.Callback;
 import com.github.groupa.client.ImageObject;
@@ -32,7 +36,8 @@ public class GridView {
 	private Library library = null;
 	private List<Thumb> thumbs = new ArrayList<>();
 	private List<Thumb> selectedThumbs = new ArrayList<>();
-	private String thumbSize = "l";
+	private String panelThumbSize = "m";
+	private String previewThumbSize = "xl";
 
 	@Inject
 	public GridView(EventBus eventBus, SingleLibrary library) {
@@ -47,8 +52,20 @@ public class GridView {
 		return mainPanel;
 	}
 
-	public void setThumbSize(String size) {
-		thumbSize = size;
+	public void setPanelThumbSize(String size) {
+		panelThumbSize = size;
+	}
+
+	public void setPreviewThumbSize(String size) {
+		previewThumbSize = size;
+	}
+
+	public String getPreviewThumbSize() {
+		return previewThumbSize;
+	}
+
+	public String getPanelThumbSize() {
+		return panelThumbSize;
 	}
 
 	public void setLibrary(Library library) {
@@ -81,70 +98,57 @@ public class GridView {
 	}
 
 	public class Thumb {
-		protected ImageObject img;
-		private JLabel label;
-		private ImageIcon small = null;
-		private ImageIcon large = null;
+		private ImageObject imageObject;
+		private Map<String, JLabel> labels;
 
 		public Thumb(ImageObject img) {
-			this.img = img;
-			label = new JLabel();
-			label.setText("Not loaded");
-			label.addMouseListener(new ThumbListener(this));
+			this.imageObject = img;
+			labels = new HashMap<String, JLabel>();
 		}
 
-		public JLabel getLabel() {
-			return label;
+		public ImageObject getImageObject() {
+			return imageObject;
 		}
 
-		public JLabel getSmallThumb() {
-			if (small == null) {
-				img.loadThumbWithCallback(new Callback<Image>() {
+		public JLabel getThumb(String size) {
+			JLabel label = labels.get(size);
+			if (label == null) {
+				final JLabel newLabel = new JLabel();
+				newLabel.setText("Not loaded");
+				label = newLabel;
+				labels.put(size, label);
+				imageObject.loadThumbWithCallback(new Callback<Image>() {
 					@Override
 					public void success(Image image) {
-						small = new ImageIcon(image);
-						label.setText("");
-						label.setIcon(small);
+						newLabel.setText("");
+						newLabel.setIcon(new ImageIcon(image));
 					}
 
 					@Override
 					public void failure() {
-						label.setText("Error loading image");
+						newLabel.setText("Error loading image");
 					}
-				}, thumbSize, true);
-			} else
-				label.setIcon(small);
-			return label;
-		}
-
-		public JLabel getLargeThumb() {
-			if (large == null) {
-				img.loadThumbWithCallback(new Callback<Image>() {
-					@Override
-					public void success(Image image) {
-						large = new ImageIcon(image);
-						label.setText("");
-						label.setIcon(large);
-					}
-
-					@Override
-					public void failure() {
-						label.setText("Error loading image");
-					}
-				}, thumbSize, false);
-			} else
-				label.setIcon(large);
+				}, size);
+			}
 			return label;
 		}
 	}
 
 	private void setUpImageViewer() {
-		mainPanel = new JPanel(new BorderLayout());
-		thumbPanel = new ThumbPanel();
-		mainPanel.add(new JScrollPane(thumbPanel), BorderLayout.CENTER);
+		MigLayout layout = new MigLayout("fill");
+		mainPanel = new JPanel(layout);
+		thumbPanel = new ThumbPanel(eventBus, panelThumbSize);
+		final JScrollPane thumbScroll = new JScrollPane(thumbPanel);
+		thumbScroll.addComponentListener(new ComponentAdapter() {
+			@Override
+			public void componentResized(ComponentEvent arg0) {
+				thumbPanel.widthChanged(thumbScroll.getWidth());
+			}
+		});
+		mainPanel.add(thumbScroll, "grow");
 		mainPanel.add(new SearchField(eventBus, library, this).getPanel(),
-				BorderLayout.NORTH);
-		mainPanel.add(new GridBottomPanel(this).getPanel(), BorderLayout.SOUTH);
+				"north");
+		mainPanel.add(new GridBottomPanel(this).getPanel(), "south");
 
 	}
 
@@ -157,68 +161,9 @@ public class GridView {
 	private void libraryChanged() {
 		thumbs.clear();
 		selectedThumbs.clear();
-		thumbPanel.libraryChanged();
+		thumbPanel.libraryChanged(library);
 		for (ImageObject image : library.getImages()) {
 			addImage(image);
-		}
-	}
-
-	private void deselectThumb(Thumb thumb) {
-		thumbPanel.deselectThumb(thumb);
-	}
-
-	private void selectThumb(Thumb thumb) {
-		selectedThumbs.add(thumb);
-		thumbPanel.selectThumb(thumb);
-	}
-
-	private void setCurrentThumb(Thumb thumb) {
-		thumbPanel.setCurrentThumb(thumb);
-	}
-
-	private void imageClicked(Thumb thumb, boolean multiSelect) {
-		if (!multiSelect) {
-			if (!selectedThumbs.isEmpty()) {
-				// Multiple selection disabled : Deselect all
-				for (Thumb t : selectedThumbs) {
-					deselectThumb(t);
-				}
-				selectedThumbs.clear();
-			}
-		} else {
-			if (selectedThumbs.contains(thumb)) {
-				// Selected already selected image : Deselect it
-				deselectThumb(thumb);
-				selectedThumbs.remove(thumb);
-			} else { // Not selected : Select it
-				selectThumb(thumb);
-			}
-		}
-		setCurrentThumb(thumb);
-	}
-
-	private void imageDoubleClicked(Thumb thumb) {
-		eventBus.post(new SwitchViewEvent(View.IMAGE_VIEW, thumb.img, library));
-	}
-
-	private class ThumbListener extends MouseAdapter {
-		private Thumb thumb;
-
-		public ThumbListener(Thumb thumb) {
-			this.thumb = thumb;
-		}
-
-		@Override
-		public void mouseClicked(MouseEvent arg0) {
-			if (arg0.getButton() == MouseEvent.BUTTON1) {
-				if (arg0.getClickCount() == 1) {
-					// arg0.isControlDown() will be used later for multiple
-					// selections
-					imageClicked(thumb, arg0.isControlDown());
-				} else if (arg0.getClickCount() == 2) {
-					imageDoubleClicked(thumb);
-				}
-			}
 		}
 	}
 }
