@@ -40,7 +40,9 @@ import com.google.common.eventbus.Subscribe;
 
 public class ImageView {
 	private Library library = null;
+
 	private ImageObject activeImageObject = null;
+
 	private int displayedImageIndex = 0;
 
 	private JPanel mainPanel;
@@ -147,16 +149,13 @@ public class ImageView {
 
 	@SuppressWarnings("serial")
 	private void addKeyBindings() {
-		InputMap inputMap = mainPanel
-				.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+		InputMap inputMap = mainPanel.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
 		ActionMap actionMap = mainPanel.getActionMap();
 
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), "keyLeft");
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), "keyRight");
-		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE, 0),
-				"previousView");
-		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE, 0),
-				"previousView");
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE, 0), "previousView");
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE, 0), "previousView");
 
 		actionMap.put("keyLeft", new AbstractAction() {
 			@Override
@@ -210,14 +209,13 @@ public class ImageView {
 		topPanel.add(topRightPanel, BorderLayout.EAST);
 		topPanel.add(topLeftPanel, BorderLayout.WEST);
 
-		Main.injector.getInstance(ImageZoomSlider.class).setUpZoomSlider(
-				topRightPanel);
+		Main.injector.getInstance(ImageZoomSlider.class).setUpZoomSlider(topRightPanel);
 		topLeftPanel.add(previousViewButton);
 
 		return topPanel;
 	}
 
-	private JPanel createPicturePanel() {
+	private JPanel createImagePanel() {
 		imagePanel = new ImagePanel();
 
 		eventBus.register(imagePanel);
@@ -262,10 +260,8 @@ public class ImageView {
 	}
 
 	private void setTitledEtchedBorder(String title, JPanel pane) {
-		Border loweredetched = BorderFactory
-				.createEtchedBorder(EtchedBorder.LOWERED);
-		TitledBorder border = BorderFactory.createTitledBorder(loweredetched,
-				title);
+		Border loweredetched = BorderFactory.createEtchedBorder(EtchedBorder.LOWERED);
+		TitledBorder border = BorderFactory.createTitledBorder(loweredetched, title);
 
 		pane.setBorder(border);
 	}
@@ -278,13 +274,13 @@ public class ImageView {
 
 	private void addPanelsToMainPanel() {
 		JPanel topPanel = createTopPanel();
-		JPanel picturePanel = createPicturePanel();
+		JPanel imagePanel = createImagePanel();
 		JPanel leftPanel = createLeftPanel();
 		JPanel bottomPanel = createBottomPanel();
 		JPanel rightPanel = createRightPanel();
 
 		mainPanel.add(topPanel, BorderLayout.NORTH);
-		mainPanel.add(picturePanel, BorderLayout.CENTER);
+		mainPanel.add(imagePanel, BorderLayout.CENTER);
 		mainPanel.add(leftPanel, BorderLayout.WEST);
 		mainPanel.add(bottomPanel, BorderLayout.SOUTH);
 		mainPanel.add(rightPanel, BorderLayout.EAST);
