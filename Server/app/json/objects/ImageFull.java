@@ -1,14 +1,17 @@
 package json.objects;
 
+import java.sql.Timestamp;
 import java.util.List;
 
 public class ImageFull {
 	private long id;
-	
+
 	private int rating;
-	
+
 	private String description;
-	
+
+	private Timestamp date;
+
 	private List<String> tags;
 
 	public long getId() {
@@ -41,5 +44,13 @@ public class ImageFull {
 
 	public void setTags(List<String> tags) {
 		this.tags = tags;
+	}
+
+	public Timestamp getDate() {
+		return date;
+	}
+
+	public void setDate(Timestamp date) {
+		this.date = date;
 	}
 }
