@@ -7,7 +7,7 @@ import com.github.groupa.client.Library;
 import com.github.groupa.client.gui.MainFrame;
 
 public class Application {
-	private static final String BASEURL = "http://localhost:9000/api";
+	public static final String BASEURL = "http://localhost:9000/api";
 
 	private Library library;
 

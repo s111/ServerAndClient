@@ -38,7 +38,7 @@ public class ImageListFetcher {
 			return null;
 		}
 
-		ImageObjectFactory imageObjectFactory = Main.injector
+		ImageObjectFactory imageObjectFactory = com.github.groupa.client.main.Main.injector
 				.getInstance(ImageObjectFactory.class);
 
 		for (ImageShort image : imageList.getImages()) {
