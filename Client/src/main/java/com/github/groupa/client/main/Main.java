@@ -6,7 +6,7 @@ import com.github.groupa.client.gui.GUIThread;
 import com.github.groupa.client.gui.MainFrame;
 import com.github.groupa.client.gui.panels.RootPanel;
 
-public class NewMain {
+public class Main {
 	private static final String APPLICATION_TITLE = "Photo Manager";
 
 	private static final int APPLICATION_MINIMUM_WIDTH = 640;
@@ -20,7 +20,7 @@ public class NewMain {
 
 		GUIThread guiThread = new GUIThread(mainFrame);
 
-		NewApplication application = new NewApplication(guiThread);
+		Application application = new Application(guiThread);
 		application.run();
 	}
 }

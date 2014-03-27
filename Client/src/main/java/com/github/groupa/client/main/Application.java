@@ -2,10 +2,10 @@ package com.github.groupa.client.main;
 
 import javax.swing.SwingUtilities;
 
-public class NewApplication {
+public class Application {
 	private Runnable guiThread;
 
-	public NewApplication(Runnable guiThread) {
+	public Application(Runnable guiThread) {
 		this.guiThread = guiThread;
 	}
 
