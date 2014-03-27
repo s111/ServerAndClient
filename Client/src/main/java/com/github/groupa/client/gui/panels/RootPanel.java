@@ -32,8 +32,8 @@ public class RootPanel implements Panel {
 		sidebarPanelContainer.setLayout(sidebarPanelLayout);
 		contentPanelContainer.setLayout(contentPanelLayout);
 
-		panel.add(sidebarPanelContainer, "grow, wmin 20%");
-		panel.add(contentPanelContainer, "grow, push, wmin 60%");
+		panel.add(sidebarPanelContainer, "growy");
+		panel.add(contentPanelContainer, "grow, push");
 	}
 
 	public void addSidebarPanel(String identifier, SidebarPanel sidebarPanel) {

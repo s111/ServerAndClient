@@ -6,7 +6,11 @@ import javax.inject.Inject;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 
+import com.github.groupa.client.gui.panels.ContentPanel;
+import com.github.groupa.client.gui.panels.GridContentPanel;
+import com.github.groupa.client.gui.panels.GridSidebarPanel;
 import com.github.groupa.client.gui.panels.RootPanel;
+import com.github.groupa.client.gui.panels.SidebarPanel;
 
 public class MainFrame implements Frame {
 	private static final String TITLE = "Photo Manager";
@@ -23,12 +27,13 @@ public class MainFrame implements Frame {
 		frame.setTitle(TITLE);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setJMenuBar(menuBar);
-		frame.setMinimumSize(new Dimension(MINIMUM_WIDTH,
-				MINIMUM_HEIGHT));
+		frame.setMinimumSize(new Dimension(MINIMUM_WIDTH, MINIMUM_HEIGHT));
 		frame.setLocationRelativeTo(null);
 		frame.getContentPane().add(rootPanel.getPanel());
 
 		this.rootPanel = rootPanel;
+
+		setUpRootPanel();
 	}
 
 	@Override
@@ -46,5 +51,13 @@ public class MainFrame implements Frame {
 
 	public void setMinimumSize(Dimension minimumSize) {
 		frame.setMinimumSize(minimumSize);
+	}
+
+	private void setUpRootPanel() {
+		SidebarPanel gridSidebarPanel = new GridSidebarPanel();
+		ContentPanel gridContentPanel = new GridContentPanel();
+
+		rootPanel.addSidebarPanel("gridSidebarPanel", gridSidebarPanel);
+		rootPanel.addContentPanel("gridContentPanel", gridContentPanel);
 	}
 }
