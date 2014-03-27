@@ -6,6 +6,7 @@ import static org.mockito.Mockito.when;
 
 import java.awt.Dimension;
 
+import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 
 import org.junit.Before;
@@ -28,7 +29,7 @@ public class MainFrameTest {
 	public void setTitle() {
 		String title = "title";
 
-		MainFrame mainFrame = new MainFrame(mockRootPanel);
+		MainFrame mainFrame = new MainFrame(mockRootPanel, new JMenuBar());
 		mainFrame.setTitle(title);
 
 		assertEquals(title, mainFrame.getFrame().getTitle());
@@ -38,7 +39,7 @@ public class MainFrameTest {
 	public void setMinimumSize() {
 		Dimension minimumSize = new Dimension(640, 480);
 
-		MainFrame mainFrame = new MainFrame(mockRootPanel);
+		MainFrame mainFrame = new MainFrame(mockRootPanel, new JMenuBar());
 		mainFrame.setMinimumSize(minimumSize);
 
 		assertEquals(minimumSize, mainFrame.getFrame().getMinimumSize());
