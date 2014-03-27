@@ -29,7 +29,7 @@ public class MainFrameTest {
 	public void setTitle() {
 		String title = "title";
 
-		MainFrame mainFrame = new MainFrame(mockRootPanel, new JMenuBar());
+		MainFrame mainFrame = new MainFrame(new JMenuBar(), mockRootPanel);
 		mainFrame.setTitle(title);
 
 		assertEquals(title, mainFrame.getFrame().getTitle());
@@ -39,7 +39,7 @@ public class MainFrameTest {
 	public void setMinimumSize() {
 		Dimension minimumSize = new Dimension(640, 480);
 
-		MainFrame mainFrame = new MainFrame(mockRootPanel, new JMenuBar());
+		MainFrame mainFrame = new MainFrame(new JMenuBar(), mockRootPanel);
 		mainFrame.setMinimumSize(minimumSize);
 
 		assertEquals(minimumSize, mainFrame.getFrame().getMinimumSize());
