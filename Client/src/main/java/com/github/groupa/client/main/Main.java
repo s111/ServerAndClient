@@ -2,7 +2,6 @@ package com.github.groupa.client.main;
 
 import java.awt.Dimension;
 
-import com.github.groupa.client.gui.GUIThread;
 import com.github.groupa.client.gui.MainFrame;
 import com.github.groupa.client.gui.panels.RootPanel;
 
@@ -18,9 +17,7 @@ public class Main {
 		mainFrame.setMinimumSize(new Dimension(APPLICATION_MINIMUM_WIDTH,
 				APPLICATION_MINIMUM_HEIGHT));
 
-		GUIThread guiThread = new GUIThread(mainFrame);
-
-		Application application = new Application(guiThread);
+		Application application = new Application(mainFrame);
 		application.run();
 	}
 }

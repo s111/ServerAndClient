@@ -2,14 +2,21 @@ package com.github.groupa.client.main;
 
 import javax.swing.SwingUtilities;
 
-public class Application {
-	private Runnable guiThread;
+import com.github.groupa.client.gui.MainFrame;
 
-	public Application(Runnable guiThread) {
-		this.guiThread = guiThread;
+public class Application {
+	private MainFrame mainFrame;
+
+	public Application(MainFrame mainFrame) {
+		this.mainFrame = mainFrame;
 	}
 
 	public void run() {
-		SwingUtilities.invokeLater(guiThread);
+		SwingUtilities.invokeLater(new Runnable() {
+			@Override
+			public void run() {
+				mainFrame.display();
+			}
+		});
 	}
 }

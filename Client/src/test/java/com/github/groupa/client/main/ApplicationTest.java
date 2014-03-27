@@ -5,14 +5,16 @@ import static org.mockito.Mockito.verify;
 
 import org.junit.Test;
 
+import com.github.groupa.client.gui.MainFrame;
+
 public class ApplicationTest {
 	@Test
-	public void run_expect_guiThread_to_be_run() {
-		Runnable guiThreadMock = mock(Runnable.class);
+	public void run_application_expect_mainFrame_to_be_displayed() {
+		MainFrame mockMainFrame = mock(MainFrame.class);
 
-		Application application = new Application(guiThreadMock);
+		Application application = new Application(mockMainFrame);
 		application.run();
 
-		verify(guiThreadMock).run();
+		verify(mockMainFrame).display();
 	}
 }
