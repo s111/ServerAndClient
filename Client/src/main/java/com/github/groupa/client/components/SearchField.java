@@ -52,7 +52,7 @@ public class SearchField implements ActionListener {
 		if (text == null || text.equals("")) {
 			lib = mainLibrary;
 		} else {
-			lib = new ConstrainedLibrary(mainLibrary).addConstraint(
+			lib = new ConstrainedLibrary(eventBus, mainLibrary).addConstraint(
 					ConstrainedLibrary.HAS_TAG, text);
 			eventBus.register(lib);
 		}
