@@ -197,4 +197,22 @@ public class QueryImageTest extends WithDatabase {
 
 		assertEquals(image1.getId(), previousImage.getId());
 	}
+
+	@Test
+	public void getImage_by_filename_expect_one_image() {
+		Image image = new Image();
+		image.setFilename(FILENAME);
+
+		Session session = sessionFactory.getCurrentSession();
+		session.beginTransaction();
+		session.save(image);
+		session.getTransaction().commit();
+
+		QueryImage imageQueries = new QueryImage(sessionFactory);
+
+		Image retrievedImage = imageQueries.getImage(FILENAME);
+
+		assertNotNull(retrievedImage);
+		assertEquals(FILENAME, retrievedImage.getFilename());
+	}
 }

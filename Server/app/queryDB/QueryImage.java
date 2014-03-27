@@ -11,6 +11,8 @@ import models.Image;
 import org.hibernate.Hibernate;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Order;
+import org.hibernate.criterion.Restrictions;
 
 import com.google.common.collect.ImmutableList;
 
@@ -25,7 +27,7 @@ public class QueryImage {
 		Session session = sessionFactory.getCurrentSession();
 		session.beginTransaction();
 
-		Image image = (Image) session.byId(Image.class).load(id);
+		Image image = getImage(session, id);
 
 		if (image != null) {
 			Hibernate.initialize(image.getTags());
@@ -41,8 +43,8 @@ public class QueryImage {
 		Session session = sessionFactory.getCurrentSession();
 		session.beginTransaction();
 
-		Image image = (Image) session.createQuery(
-				"FROM Image WHERE filename='" + filename + "'").uniqueResult();
+		Image image = (Image) session.createCriteria(Image.class)
+				.add(Restrictions.eq("filename", filename)).uniqueResult();
 
 		session.getTransaction().commit();
 
@@ -53,8 +55,8 @@ public class QueryImage {
 		Session session = sessionFactory.getCurrentSession();
 		session.beginTransaction();
 
-		Image image = (Image) session
-				.createQuery("FROM Image WHERE id > " + id + " ORDER BY id ASC")
+		Image image = (Image) session.createCriteria(Image.class)
+				.add(Restrictions.gt("id", id)).addOrder(Order.asc("id"))
 				.setMaxResults(1).uniqueResult();
 
 		session.getTransaction().commit();
@@ -66,9 +68,8 @@ public class QueryImage {
 		Session session = sessionFactory.getCurrentSession();
 		session.beginTransaction();
 
-		Image image = (Image) session
-				.createQuery(
-						"FROM Image WHERE id < " + id + " ORDER BY id DESC")
+		Image image = (Image) session.createCriteria(Image.class)
+				.add(Restrictions.lt("id", id)).addOrder(Order.desc("id"))
 				.setMaxResults(1).uniqueResult();
 
 		session.getTransaction().commit();
@@ -80,8 +81,8 @@ public class QueryImage {
 		Session session = sessionFactory.getCurrentSession();
 		session.beginTransaction();
 
-		Image image = (Image) session.createQuery("FROM Image ORDER BY id ASC")
-				.setMaxResults(1).uniqueResult();
+		Image image = (Image) session.createCriteria(Image.class)
+				.addOrder(Order.asc("id")).setMaxResults(1).uniqueResult();
 
 		session.getTransaction().commit();
 
@@ -92,9 +93,8 @@ public class QueryImage {
 		Session session = sessionFactory.getCurrentSession();
 		session.beginTransaction();
 
-		Image image = (Image) session
-				.createQuery("FROM Image ORDER BY id DESC").setMaxResults(1)
-				.uniqueResult();
+		Image image = (Image) session.createCriteria(Image.class)
+				.addOrder(Order.desc("id")).setMaxResults(1).uniqueResult();
 
 		session.getTransaction().commit();
 
@@ -106,7 +106,8 @@ public class QueryImage {
 		session.beginTransaction();
 
 		@SuppressWarnings("unchecked")
-		List<Image> images = session.createQuery("FROM Image").list();
+		List<Image> images = session.createCriteria(Image.class)
+				.addOrder(Order.asc("id")).list();
 		List<Image> copy = ImmutableList.copyOf(images);
 
 		session.getTransaction().commit();
@@ -119,8 +120,9 @@ public class QueryImage {
 		session.beginTransaction();
 
 		@SuppressWarnings("unchecked")
-		List<Image> images = session.createQuery("FROM Image ORDER BY id ASC")
-				.setFirstResult(offset).setMaxResults(limit).list();
+		List<Image> images = session.createCriteria(Image.class)
+				.addOrder(Order.asc("id")).setFirstResult(offset)
+				.setMaxResults(limit).list();
 		List<Image> copy = ImmutableList.copyOf(images);
 
 		session.getTransaction().commit();
@@ -143,7 +145,7 @@ public class QueryImage {
 		Session session = sessionFactory.getCurrentSession();
 		session.beginTransaction();
 
-		Image image = (Image) session.byId(Image.class).load(id);
+		Image image = getImage(session, id);
 
 		if (image != null) {
 			image.setDescription(description);
@@ -151,15 +153,17 @@ public class QueryImage {
 
 		session.getTransaction().commit();
 
-		MetadataUtil.saveDescriptionToFile(new File(image.getFilename()),
-				description);
+		if (image != null) {
+			MetadataUtil.saveDescriptionToFile(new File(image.getFilename()),
+					description);
+		}
 	}
 
 	public void rateImage(long id, int rating) {
 		Session session = sessionFactory.getCurrentSession();
 		session.beginTransaction();
 
-		Image image = (Image) session.byId(Image.class).load(id);
+		Image image = getImage(session, id);
 
 		if (image != null) {
 			image.setRating(rating);
@@ -167,7 +171,10 @@ public class QueryImage {
 
 		session.getTransaction().commit();
 
-		MetadataUtil.saveRatingToFile(new File(image.getFilename()), rating);
+		if (image != null) {
+			MetadataUtil
+					.saveRatingToFile(new File(image.getFilename()), rating);
+		}
 	}
 
 	public void setDate(long id, Date date) {
@@ -177,12 +184,18 @@ public class QueryImage {
 		Session session = sessionFactory.getCurrentSession();
 		session.beginTransaction();
 
-		Image image = (Image) session.byId(Image.class).load(id);
+		Image image = getImage(session, id);
 
 		if (image != null) {
 			image.setDate(timestamp);
 		}
 
 		session.getTransaction().commit();
+	}
+
+	private Image getImage(Session session, long id) {
+		Image image = (Image) session.byId(Image.class).load(id);
+
+		return image;
 	}
 }

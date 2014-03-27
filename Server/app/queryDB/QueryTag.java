@@ -1,7 +1,9 @@
 package queryDB;
 
 import java.io.File;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import metadata.MetadataUtil;
 import models.Image;
@@ -25,7 +27,7 @@ public class QueryTag {
 		session.beginTransaction();
 
 		@SuppressWarnings("unchecked")
-		List<Tag> tags = session.createQuery("FROM Tag").list();
+		List<Tag> tags = session.createCriteria(Tag.class).list();
 		List<Tag> copy = ImmutableList.copyOf(tags);
 
 		session.getTransaction().commit();
@@ -37,9 +39,16 @@ public class QueryTag {
 		Session session = sessionFactory.getCurrentSession();
 		session.beginTransaction();
 
-		@SuppressWarnings("unchecked")
-		List<Image> images = session.createQuery(
-				"SELECT images FROM Tag WHERE name='" + name + "'").list();
+		Tag tag = getTag(session, name);
+
+		Set<Image> images = new HashSet<>();
+
+		if (tag != null) {
+			images = tag.getImages();
+
+			Hibernate.initialize(images);
+		}
+
 		List<Image> copy = ImmutableList.copyOf(images);
 
 		session.getTransaction().commit();
@@ -52,7 +61,7 @@ public class QueryTag {
 		session.beginTransaction();
 
 		Image image = (Image) session.byId(Image.class).load(id);
-		Tag tag = (Tag) session.byId(Tag.class).load(name);
+		Tag tag = getTag(session, name);
 
 		if (tag == null) {
 			tag = new Tag();
@@ -61,24 +70,35 @@ public class QueryTag {
 			session.save(tag);
 		}
 
-		image.getTags().add(tag);
+		if (image != null) {
+			image.getTags().add(tag);
+		}
 
 		session.getTransaction().commit();
 
-		MetadataUtil.saveTagToFile(new File(image.getFilename()), tag.getName());
+		if (image != null) {
+			MetadataUtil.saveTagToFile(new File(image.getFilename()),
+					tag.getName());
+		}
 	}
 
 	public Tag getTag(String name) {
 		Session session = sessionFactory.getCurrentSession();
 		session.beginTransaction();
 
-		Tag tag = (Tag) session.byId(Tag.class).load(name);
+		Tag tag = getTag(session, name);
 
 		if (tag != null) {
 			Hibernate.initialize(tag.getImages());
 		}
 
 		session.getTransaction().commit();
+
+		return tag;
+	}
+
+	private Tag getTag(Session session, String name) {
+		Tag tag = (Tag) session.byId(Tag.class).load(name);
 
 		return tag;
 	}

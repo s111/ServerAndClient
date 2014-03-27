@@ -5,6 +5,7 @@ import models.Thumbnail;
 
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
+import org.hibernate.criterion.Restrictions;
 
 public class QueryThumbnail {
 	private SessionFactory sessionFactory;
@@ -18,9 +19,7 @@ public class QueryThumbnail {
 		session.beginTransaction();
 
 		Image image = (Image) session.byId(Image.class).load(id);
-		Thumbnail thumbnail = (Thumbnail) session.createQuery(
-				"FROM Thumbnail WHERE size=" + size + " AND image.id=" + id)
-				.uniqueResult();
+		Thumbnail thumbnail = getThumbnail(session, id, size);
 
 		if (thumbnail != null) {
 			session.delete(thumbnail);
@@ -41,12 +40,16 @@ public class QueryThumbnail {
 		Session session = sessionFactory.getCurrentSession();
 		session.beginTransaction();
 
-		Thumbnail thumbnail = (Thumbnail) session.createQuery(
-				"FROM Thumbnail WHERE size=" + size + " AND image.id=" + id)
-				.uniqueResult();
+		Thumbnail thumbnail = getThumbnail(session, id, size);
 
 		session.getTransaction().commit();
 
 		return thumbnail;
+	}
+
+	private Thumbnail getThumbnail(Session session, long id, int size) {
+		return (Thumbnail) session.createCriteria(Thumbnail.class)
+				.add(Restrictions.eq("image.id", id))
+				.add(Restrictions.eq("size", size)).uniqueResult();
 	}
 }
