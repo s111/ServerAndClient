@@ -22,7 +22,9 @@ public class ImageListFetcher {
 	}
 
 	public Library importAllImages() {
-		Library library = new SingleLibrary();
+		Library library = com.github.groupa.client.main.Main.injector
+				.getInstance(Library.class);
+
 		ImageList imageList = null;
 
 		try {
@@ -44,6 +46,7 @@ public class ImageListFetcher {
 		for (ImageShort image : imageList.getImages()) {
 			library.add(imageObjectFactory.create(image.getId()));
 		}
+
 		return library;
 	}
 }

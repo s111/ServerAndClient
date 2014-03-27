@@ -10,19 +10,18 @@ import javax.swing.JMenuItem;
 
 import com.github.groupa.client.ImageListFetcher;
 import com.github.groupa.client.Library;
-import com.github.groupa.client.SingleLibrary;
-import com.github.groupa.client.gui.panels.RootPanel;
+import com.github.groupa.client.gui.panels.IRootPanel;
 import com.github.groupa.client.servercommunication.RESTService;
 
 public class MenuBar {
 	private JMenuBar menuBar = new JMenuBar();
 
-	private RootPanel rootPanel;
+	private IRootPanel rootPanel;
 
 	private JMenuItem fetchImagesItem;
 
 	@Inject
-	public MenuBar(RootPanel rootPanel) {
+	public MenuBar(IRootPanel rootPanel) {
 		this.rootPanel = rootPanel;
 
 		setUpFetchImages();
@@ -43,10 +42,6 @@ public class MenuBar {
 
 				Library lib = new ImageListFetcher(restService)
 						.importAllImages();
-
-				if (lib != null) {
-					Main.injector.getInstance(SingleLibrary.class).addAll(lib);
-				}
 			}
 		});
 	}

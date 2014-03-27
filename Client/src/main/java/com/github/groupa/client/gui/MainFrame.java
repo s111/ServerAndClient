@@ -9,8 +9,11 @@ import javax.swing.JMenuBar;
 import com.github.groupa.client.gui.panels.ContentPanel;
 import com.github.groupa.client.gui.panels.GridContentPanel;
 import com.github.groupa.client.gui.panels.GridSidebarPanel;
-import com.github.groupa.client.gui.panels.RootPanel;
+import com.github.groupa.client.gui.panels.IRootPanel;
+import com.github.groupa.client.gui.panels.ImageContentPanel;
+import com.github.groupa.client.gui.panels.ImageSidebarPanel;
 import com.github.groupa.client.gui.panels.SidebarPanel;
+import com.google.common.eventbus.EventBus;
 
 public class MainFrame implements Frame {
 	private static final String TITLE = "Photo Manager";
@@ -18,20 +21,27 @@ public class MainFrame implements Frame {
 	private static final int MINIMUM_WIDTH = 640;
 	private static final int MINIMUM_HEIGHT = 480;
 
+	private EventBus eventBus;
+
 	private JFrame frame = new JFrame();
 
-	private RootPanel rootPanel;
+	private IRootPanel rootPanel;
+
+	private ContentPanel imageContentPanel;
 
 	@Inject
-	public MainFrame(JMenuBar menuBar, RootPanel rootPanel) {
+	public MainFrame(EventBus eventBus, JMenuBar menuBar, IRootPanel rootPanel,
+			ImageContentPanel imageContentPanel) {
+		this.eventBus = eventBus;
+		this.rootPanel = rootPanel;
+		this.imageContentPanel = imageContentPanel;
+
 		frame.setTitle(TITLE);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setJMenuBar(menuBar);
 		frame.setMinimumSize(new Dimension(MINIMUM_WIDTH, MINIMUM_HEIGHT));
 		frame.setLocationRelativeTo(null);
 		frame.getContentPane().add(rootPanel.getPanel());
-
-		this.rootPanel = rootPanel;
 
 		setUpRootPanel();
 	}
@@ -56,8 +66,16 @@ public class MainFrame implements Frame {
 	private void setUpRootPanel() {
 		SidebarPanel gridSidebarPanel = new GridSidebarPanel();
 		ContentPanel gridContentPanel = new GridContentPanel();
+		SidebarPanel imageSidebarPanel = new ImageSidebarPanel();
+
+		eventBus.register(imageContentPanel);
 
 		rootPanel.addSidebarPanel("gridSidebarPanel", gridSidebarPanel);
 		rootPanel.addContentPanel("gridContentPanel", gridContentPanel);
+		rootPanel.addSidebarPanel("imageSidebarPanel", imageSidebarPanel);
+		rootPanel.addContentPanel("imageContentPanel", imageContentPanel);
+
+		rootPanel.switchSidebarPanel("imageSidebarPanel");
+		rootPanel.switchContentPanel("imageContentPanel");
 	}
 }

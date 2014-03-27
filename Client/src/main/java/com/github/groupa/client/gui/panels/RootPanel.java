@@ -7,7 +7,7 @@ import javax.swing.JPanel;
 
 import net.miginfocom.swing.MigLayout;
 
-public class RootPanel implements Panel {
+public class RootPanel implements IRootPanel {
 	JPanel panel = new JPanel();
 
 	private CardLayout sidebarPanelLayout;
@@ -20,7 +20,7 @@ public class RootPanel implements Panel {
 	public RootPanel(JPanel sidebarPanelContainer,
 			CardLayout sidebarPanelLayout, JPanel contentPanelContainer,
 			CardLayout contentPanelLayout) {
-		MigLayout layout = new MigLayout();
+		MigLayout layout = new MigLayout("debug");
 		panel.setLayout(layout);
 
 		this.sidebarPanelContainer = sidebarPanelContainer;
@@ -36,18 +36,22 @@ public class RootPanel implements Panel {
 		panel.add(contentPanelContainer, "grow, push");
 	}
 
+	@Override
 	public void addSidebarPanel(String identifier, SidebarPanel sidebarPanel) {
-		this.sidebarPanelContainer.add(sidebarPanel.getPanel(), identifier);
+		sidebarPanelContainer.add(sidebarPanel.getPanel(), identifier);
 	}
 
+	@Override
 	public void addContentPanel(String identifier, ContentPanel contentPanel) {
-		this.contentPanelContainer.add(contentPanel.getPanel(), identifier);
+		contentPanelContainer.add(contentPanel.getPanel(), identifier);
 	}
 
+	@Override
 	public void switchSidebarPanel(String identifier) {
 		sidebarPanelLayout.show(sidebarPanelContainer, identifier);
 	}
 
+	@Override
 	public void switchContentPanel(String identifier) {
 		contentPanelLayout.show(contentPanelContainer, identifier);
 	}

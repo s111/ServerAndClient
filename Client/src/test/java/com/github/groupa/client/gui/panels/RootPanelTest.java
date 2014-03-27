@@ -24,7 +24,7 @@ public class RootPanelTest {
 	private CardLayout sidebarPanelLayout;
 	private CardLayout contentPanelLayout;
 
-	private RootPanel rootPanel;
+	private IRootPanel rootPanel;
 
 	@Before
 	public void setUp() {

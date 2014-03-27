@@ -2,7 +2,6 @@ package com.github.groupa.client.gui;
 
 import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 import java.awt.Dimension;
 
@@ -12,24 +11,57 @@ import javax.swing.JPanel;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.github.groupa.client.gui.panels.RootPanel;
+import com.github.groupa.client.gui.panels.ContentPanel;
+import com.github.groupa.client.gui.panels.IRootPanel;
+import com.github.groupa.client.gui.panels.ImageContentPanel;
+import com.github.groupa.client.gui.panels.SidebarPanel;
+import com.google.common.eventbus.EventBus;
 
 public class MainFrameTest {
-	private RootPanel mockRootPanel;
+	private IRootPanel mockRootPanel;
 
 	@Before
 	public void setUp() {
-		JPanel panel = new JPanel();
+		mockRootPanel = new IRootPanel() {
+			@Override
+			public JPanel getPanel() {
+				return new JPanel();
+			}
 
-		mockRootPanel = mock(RootPanel.class);
-		when(mockRootPanel.getPanel()).thenReturn(panel);
+			@Override
+			public void switchSidebarPanel(String identifier) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void switchContentPanel(String identifier) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void addSidebarPanel(String identifier,
+					SidebarPanel sidebarPanel) {
+				// TODO Auto-generated method stub
+
+			}
+
+			@Override
+			public void addContentPanel(String identifier,
+					ContentPanel contentPanel) {
+				// TODO Auto-generated method stub
+
+			}
+		};
 	}
 
 	@Test
 	public void setTitle() {
 		String title = "title";
 
-		MainFrame mainFrame = new MainFrame(new JMenuBar(), mockRootPanel);
+		MainFrame mainFrame = new MainFrame(new EventBus(), new JMenuBar(),
+				mockRootPanel, mock(ImageContentPanel.class));
 		mainFrame.setTitle(title);
 
 		assertEquals(title, mainFrame.getFrame().getTitle());
@@ -39,7 +71,8 @@ public class MainFrameTest {
 	public void setMinimumSize() {
 		Dimension minimumSize = new Dimension(640, 480);
 
-		MainFrame mainFrame = new MainFrame(new JMenuBar(), mockRootPanel);
+		MainFrame mainFrame = new MainFrame(new EventBus(), new JMenuBar(),
+				mockRootPanel, mock(ImageContentPanel.class));
 		mainFrame.setMinimumSize(minimumSize);
 
 		assertEquals(minimumSize, mainFrame.getFrame().getMinimumSize());

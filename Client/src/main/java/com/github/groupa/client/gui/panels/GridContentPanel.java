@@ -17,7 +17,7 @@ public class GridContentPanel implements ContentPanel {
 	private JPanel panel = new JPanel();
 
 	public GridContentPanel() {
-		MigLayout layout = new MigLayout();
+		MigLayout layout = new MigLayout("debug");
 
 		panel.setLayout(layout);
 
