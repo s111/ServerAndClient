@@ -91,11 +91,11 @@ public class ConstrainedLibrary implements Library {
 		return comparator;
 	}
 
-	public Library addConstraint(int type) {
+	public ConstrainedLibrary addConstraint(int type) {
 		return addConstraint(type, true);
 	}
 
-	public Library addConstraint(int type, boolean invertResult) {
+	public ConstrainedLibrary addConstraint(int type, boolean invertResult) {
 		if (type == HAS_IMAGE) {
 			constraints.add(new Constraint(type, null, invertResult));
 		} else {
@@ -105,11 +105,11 @@ public class ConstrainedLibrary implements Library {
 		return this;
 	}
 
-	public Library addConstraint(int type, Object criteria) {
+	public ConstrainedLibrary addConstraint(int type, Object criteria) {
 		return addConstraint(type, criteria, true);
 	}
 
-	public Library addConstraint(int type, Object criteria,
+	public ConstrainedLibrary addConstraint(int type, Object criteria,
 			boolean invertResult) {
 		if (type == HAS_TAG) {
 			constraints.add(new Constraint(type, criteria, invertResult));
