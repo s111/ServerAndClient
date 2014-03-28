@@ -80,8 +80,5 @@ public class MainFrame implements Frame {
 		rootPanel.addContentPanel("gridContentPanel", gridContentPanel);
 		rootPanel.addSidebarPanel("imageSidebarPanel", imageSidebarPanel);
 		rootPanel.addContentPanel("imageContentPanel", imageContentPanel);
-
-		rootPanel.switchSidebarPanel("imageSidebarPanel");
-		rootPanel.switchContentPanel("imageContentPanel");
 	}
 }

@@ -5,7 +5,6 @@ import java.awt.Component;
 
 import javax.swing.JPanel;
 
-import com.github.groupa.client.Main;
 import com.github.groupa.client.views.GridView;
 
 public class GridBottomPanel {
@@ -16,16 +15,11 @@ public class GridBottomPanel {
 
 	public GridBottomPanel(GridView gridView) {
 		setupRightPanel();
-		setupLeftPanel();
 		addPanels();
 	}
 
 	public void setupRightPanel() {
 		new ZoomSlider().setUpZoomSlider(rightPanel);
-	}
-
-	public void setupLeftPanel() {
-		leftPanel.add(Main.injector.getInstance(PreviewPanel.class).getPanel());
 	}
 
 	public void addPanels() {

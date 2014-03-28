@@ -13,10 +13,10 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 
 import com.github.groupa.client.ImageListFetcher;
 import com.github.groupa.client.Library;
-import com.github.groupa.client.Main;
 import com.github.groupa.client.SingleLibrary;
 import com.github.groupa.client.events.SwitchViewEvent;
 import com.github.groupa.client.events.UploadImageEvent;
+import com.github.groupa.client.main.Main;
 import com.github.groupa.client.views.View;
 import com.google.common.eventbus.EventBus;
 
@@ -70,7 +70,8 @@ public class MenuBar {
 				int returnVal = chooser.showOpenDialog(null);
 
 				if (returnVal == JFileChooser.APPROVE_OPTION) {
-					eventBus.post(new UploadImageEvent(chooser.getSelectedFile()));
+					eventBus.post(new UploadImageEvent(chooser
+							.getSelectedFile()));
 				}
 			}
 		});
@@ -81,7 +82,7 @@ public class MenuBar {
 				eventBus.post(new SwitchViewEvent(View.IMAGE_VIEW));
 			}
 		});
-		
+
 		getAllImages.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
@@ -90,7 +91,8 @@ public class MenuBar {
 					public void run() {
 						Library lib = imageListFetcher.importAllImages();
 						if (lib != null) {
-							Main.injector.getInstance(SingleLibrary.class).addAll(lib);
+							Main.injector.getInstance(SingleLibrary.class)
+									.addAll(lib);
 						}
 					}
 				});
