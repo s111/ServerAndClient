@@ -1,6 +1,7 @@
 package com.github.groupa.client.components;
 
 import java.awt.Component;
+import java.awt.Image;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -13,6 +14,8 @@ import java.awt.geom.Point2D;
 public class ZoomAndPanListener implements MouseListener, MouseMotionListener, MouseWheelListener {
 
 	private Component targetComponent;
+
+	private Image image;
 
 	private double currentX;
 	private double currentY;
@@ -81,16 +84,22 @@ public class ZoomAndPanListener implements MouseListener, MouseMotionListener, M
 
 	public AffineTransform getCurrentTransform() {
 
-		AffineTransform tx = new AffineTransform();
+		AffineTransform transformer = new AffineTransform();
 
 		double centerX = (double) targetComponent.getWidth() / 2;
 		double centerY = (double) targetComponent.getHeight() / 2;
 
-		tx.translate(centerX, centerY);
-		tx.scale(zoom, zoom);
-		tx.translate(currentX, currentY);
+		// Set upper-left coordinate (0, 0) to center of component
+		transformer.translate(centerX, centerY);
 
-		return tx;
+		transformer.scale(zoom, zoom);
+
+		transformer.translate(currentX, currentY);
+
+		// Paint image to center of component
+		transformer.translate(-image.getWidth(null) / 2, -image.getHeight(null) / 2);
+
+		return transformer;
 
 	}
 
@@ -106,6 +115,11 @@ public class ZoomAndPanListener implements MouseListener, MouseMotionListener, M
 			ex.printStackTrace();
 			return null;
 		}
+
+	}
+
+	public void setImageInfo(Image image) {
+		this.image = image;
 
 	}
 }
