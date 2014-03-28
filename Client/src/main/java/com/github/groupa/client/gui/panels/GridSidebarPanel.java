@@ -36,8 +36,6 @@ public class GridSidebarPanel implements SidebarPanel {
 
 	private JTextField searchField;
 
-	// TODO This should not depend on grid view, rather pass the update as a
-	// event!
 	@Inject
 	public GridSidebarPanel(EventBus eventBus, Library library,
 			ActiveImage activeImage) {
