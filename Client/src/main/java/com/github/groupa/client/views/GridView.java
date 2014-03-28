@@ -19,10 +19,6 @@ import net.miginfocom.swing.MigLayout;
 import com.github.groupa.client.Callback;
 import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.Library;
-import com.github.groupa.client.SingleLibrary;
-import com.github.groupa.client.components.GridBottomPanel;
-import com.github.groupa.client.components.SearchField;
-import com.github.groupa.client.components.SortOptionList;
 import com.github.groupa.client.components.ThumbPanel;
 import com.github.groupa.client.events.LibraryAddEvent;
 import com.github.groupa.client.events.SwitchViewEvent;
@@ -40,7 +36,7 @@ public class GridView {
 	private String previewThumbSize = "xl";
 
 	@Inject
-	public GridView(EventBus eventBus, SingleLibrary library) {
+	public GridView(EventBus eventBus, Library library) {
 		this.eventBus = eventBus;
 		this.library = library;
 		eventBus.register(this);
@@ -146,10 +142,6 @@ public class GridView {
 			}
 		});
 		mainPanel.add(thumbScroll, "grow");
-		mainPanel.add(new SearchField(eventBus, library, this).getPanel(),
-				"north");
-		mainPanel.add(new SortOptionList().getPanel(), "north");
-		mainPanel.add(new GridBottomPanel(this).getPanel(), "south");
 
 	}
 

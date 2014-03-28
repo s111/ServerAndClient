@@ -21,8 +21,8 @@ import javax.swing.border.Border;
 
 import com.github.groupa.client.Library;
 import com.github.groupa.client.events.SwitchViewEvent;
-import com.github.groupa.client.views.View;
 import com.github.groupa.client.views.GridView.Thumb;
+import com.github.groupa.client.views.View;
 import com.google.common.eventbus.EventBus;
 
 @SuppressWarnings("serial")
@@ -181,15 +181,16 @@ public class ThumbPanel extends JPanel implements Scrollable {
 		int currentColumns = layout.getColumns();
 		int thumbSize = thumbs.get(0).getThumb(size).getWidth() + 3;
 		int wantedColumns = width / thumbSize;
-		int spare = width - wantedColumns*thumbSize;
-		if (currentColumns < wantedColumns && spare > 5 
-				|| currentColumns > wantedColumns 
+		int spare = width - wantedColumns * thumbSize;
+		if (currentColumns < wantedColumns && spare > 5
+				|| currentColumns > wantedColumns
 				|| currentColumns == wantedColumns && spare < 5) {
 			layout = new GridLayout(0, wantedColumns, 0, 0);
 			setLayout(layout);
-			//System.out.println(currentColumns + " : " + wantedColumns);
+			// System.out.println(currentColumns + " : " + wantedColumns);
 		} else {
-			//System.out.println(currentColumns + " : " + wantedColumns + " : " + thumbSize*wantedColumns + "/" + width + " : " + spare);
+			// System.out.println(currentColumns + " : " + wantedColumns + " : "
+			// + thumbSize*wantedColumns + "/" + width + " : " + spare);
 		}
 	}
 }
