@@ -92,11 +92,11 @@ public class GridSidebarPanel implements SidebarPanel {
 		searchButton = new JButton("Search");
 		panel.add(searchButton, "wrap");
 
-		addSearchButtonListener();
+		addSearchListeners();
 	}
 
-	private void addSearchButtonListener() {
-		searchButton.addActionListener(new ActionListener() {
+	private void addSearchListeners() {
+		ActionListener actionListener = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
 				String text = searchField.getText();
@@ -115,7 +115,10 @@ public class GridSidebarPanel implements SidebarPanel {
 					gridView.setLibrary(lib);
 				}
 			}
-		});
+		};
+
+		searchButton.addActionListener(actionListener);
+		searchField.addActionListener(actionListener);
 	}
 
 	@Override
