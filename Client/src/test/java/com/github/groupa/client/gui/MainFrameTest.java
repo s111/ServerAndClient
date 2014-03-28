@@ -15,18 +15,18 @@ import com.github.groupa.client.gui.frames.MainFrame;
 import com.github.groupa.client.gui.panels.ContentPanel;
 import com.github.groupa.client.gui.panels.GridContentPanel;
 import com.github.groupa.client.gui.panels.GridSidebarPanel;
-import com.github.groupa.client.gui.panels.IRootPanel;
+import com.github.groupa.client.gui.panels.RootPanel;
 import com.github.groupa.client.gui.panels.ImageContentPanel;
 import com.github.groupa.client.gui.panels.ImageSidebarPanel;
 import com.github.groupa.client.gui.panels.SidebarPanel;
 import com.google.common.eventbus.EventBus;
 
 public class MainFrameTest {
-	private IRootPanel mockRootPanel;
+	private RootPanel mockRootPanel;
 
 	@Before
 	public void setUp() {
-		mockRootPanel = new IRootPanel() {
+		mockRootPanel = new RootPanel() {
 			@Override
 			public JPanel getPanel() {
 				return new JPanel();

@@ -26,7 +26,7 @@ public class RootPanelTest {
 	private CardLayout sidebarPanelLayout;
 	private CardLayout contentPanelLayout;
 
-	private IRootPanel rootPanel;
+	private RootPanel rootPanel;
 
 	@Before
 	public void setUp() {
@@ -60,7 +60,7 @@ public class RootPanelTest {
 		sidebarPanelLayout = new CardLayout();
 		contentPanelLayout = new CardLayout();
 
-		rootPanel = new RootPanel(new EventBus(), sidebarPanelContainer,
+		rootPanel = new MainPanel(new EventBus(), sidebarPanelContainer,
 				sidebarPanelLayout, contentPanelContainer, contentPanelLayout);
 	}
 

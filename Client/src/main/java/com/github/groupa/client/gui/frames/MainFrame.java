@@ -9,7 +9,7 @@ import javax.swing.JMenuBar;
 import com.github.groupa.client.gui.panels.ContentPanel;
 import com.github.groupa.client.gui.panels.GridContentPanel;
 import com.github.groupa.client.gui.panels.GridSidebarPanel;
-import com.github.groupa.client.gui.panels.IRootPanel;
+import com.github.groupa.client.gui.panels.RootPanel;
 import com.github.groupa.client.gui.panels.ImageContentPanel;
 import com.github.groupa.client.gui.panels.ImageSidebarPanel;
 import com.github.groupa.client.gui.panels.SidebarPanel;
@@ -25,7 +25,7 @@ public class MainFrame implements Frame {
 
 	private JFrame frame = new JFrame();
 
-	private IRootPanel rootPanel;
+	private RootPanel rootPanel;
 
 	private SidebarPanel gridSidebarPanel;
 	private ContentPanel gridContentPanel;
@@ -33,7 +33,7 @@ public class MainFrame implements Frame {
 	private ContentPanel imageContentPanel;
 
 	@Inject
-	public MainFrame(EventBus eventBus, JMenuBar menuBar, IRootPanel rootPanel,
+	public MainFrame(EventBus eventBus, JMenuBar menuBar, RootPanel rootPanel,
 			GridSidebarPanel gridSidebarPanel,
 			GridContentPanel gridContentPanel,
 			ImageSidebarPanel imageSidebarPanel,

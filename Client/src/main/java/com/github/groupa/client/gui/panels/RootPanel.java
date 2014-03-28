@@ -1,91 +1,13 @@
 package com.github.groupa.client.gui.panels;
 
-import java.awt.CardLayout;
+public interface RootPanel extends Panel {
+	public abstract void addSidebarPanel(String identifier,
+			SidebarPanel sidebarPanel);
 
-import javax.inject.Inject;
-import javax.swing.JPanel;
+	public abstract void addContentPanel(String identifier,
+			ContentPanel contentPanel);
 
-import net.miginfocom.swing.MigLayout;
+	public abstract void switchSidebarPanel(String identifier);
 
-import com.github.groupa.client.events.SwitchViewEvent;
-import com.github.groupa.client.views.View;
-import com.google.common.eventbus.EventBus;
-import com.google.common.eventbus.Subscribe;
-
-public class RootPanel implements IRootPanel {
-	JPanel panel = new JPanel();
-
-	private CardLayout sidebarPanelLayout;
-	private CardLayout contentPanelLayout;
-
-	private JPanel sidebarPanelContainer;
-	private JPanel contentPanelContainer;
-
-	private EventBus eventBus;
-
-	@Inject
-	public RootPanel(EventBus eventBus, JPanel sidebarPanelContainer,
-			CardLayout sidebarPanelLayout, JPanel contentPanelContainer,
-			CardLayout contentPanelLayout) {
-		this.eventBus = eventBus;
-
-		MigLayout layout = new MigLayout();
-		panel.setLayout(layout);
-
-		this.sidebarPanelContainer = sidebarPanelContainer;
-		this.contentPanelContainer = contentPanelContainer;
-
-		this.sidebarPanelLayout = sidebarPanelLayout;
-		this.contentPanelLayout = contentPanelLayout;
-
-		sidebarPanelContainer.setLayout(sidebarPanelLayout);
-		contentPanelContainer.setLayout(contentPanelLayout);
-
-		panel.add(sidebarPanelContainer, "growy");
-		panel.add(contentPanelContainer, "grow, push");
-	}
-
-	@Override
-	public void addSidebarPanel(String identifier, SidebarPanel sidebarPanel) {
-		sidebarPanelContainer.add(sidebarPanel.getPanel(), identifier);
-	}
-
-	@Override
-	public void addContentPanel(String identifier, ContentPanel contentPanel) {
-		contentPanelContainer.add(contentPanel.getPanel(), identifier);
-	}
-
-	@Override
-	public void switchSidebarPanel(String identifier) {
-		sidebarPanelLayout.show(sidebarPanelContainer, identifier);
-	}
-
-	@Override
-	public void switchContentPanel(String identifier) {
-		contentPanelLayout.show(contentPanelContainer, identifier);
-	}
-
-	@Override
-	public JPanel getPanel() {
-		return panel;
-	}
-
-	@Subscribe
-	public void switchViewListener(SwitchViewEvent event) {
-		if (event.hasSwitched()) {
-			return;
-		}
-
-		String view = event.getView();
-
-		if (view.equals(View.IMAGE_VIEW)) {
-			switchSidebarPanel("imageSidebarPanel");
-			switchContentPanel("imageContentPanel");
-		} else {
-			switchSidebarPanel("gridSidebarPanel");
-			switchContentPanel("gridContentPanel");
-		}
-
-		eventBus.post(new SwitchViewEvent(event));
-	}
+	public abstract void switchContentPanel(String identifier);
 }
