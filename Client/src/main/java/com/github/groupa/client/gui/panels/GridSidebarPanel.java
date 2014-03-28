@@ -30,8 +30,6 @@ public class GridSidebarPanel implements SidebarPanel {
 
 	private Library library;
 
-	private GridPanel gridView;
-
 	private ActiveImage activeImage;
 
 	private JButton searchButton;
@@ -42,10 +40,9 @@ public class GridSidebarPanel implements SidebarPanel {
 	// event!
 	@Inject
 	public GridSidebarPanel(EventBus eventBus, Library library,
-			GridPanel gridView, ActiveImage activeImage) {
+			ActiveImage activeImage) {
 		this.eventBus = eventBus;
 		this.library = library;
-		this.gridView = gridView;
 		this.activeImage = activeImage;
 
 		MigLayout layout = new MigLayout();
@@ -108,11 +105,7 @@ public class GridSidebarPanel implements SidebarPanel {
 					eventBus.register(lib);
 				}
 
-				if (gridView != null) {
-					activeImage.setActiveLibrary(lib);
-
-					gridView.setLibrary(lib);
-				}
+				activeImage.setActiveLibrary(lib);
 			}
 		};
 

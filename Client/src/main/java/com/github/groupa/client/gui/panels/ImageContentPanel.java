@@ -21,7 +21,7 @@ import com.github.groupa.client.ActiveImage;
 import com.github.groupa.client.Callback;
 import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.Library;
-import com.github.groupa.client.events.DisplayedImageChangedEvent;
+import com.github.groupa.client.events.ActiveImageChangedEvent;
 import com.github.groupa.client.events.LibraryAddEvent;
 import com.github.groupa.client.events.SwitchViewEvent;
 import com.github.groupa.client.views.View;
@@ -139,7 +139,7 @@ public class ImageContentPanel implements ContentPanel {
 			public void success(Image image) {
 				imagePanel.setImage(image);
 
-				eventBus.post(new DisplayedImageChangedEvent(activeImageObject));
+				eventBus.post(new ActiveImageChangedEvent(activeImageObject));
 			}
 
 			@Override

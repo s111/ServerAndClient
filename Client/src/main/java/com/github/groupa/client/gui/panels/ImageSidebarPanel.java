@@ -24,7 +24,7 @@ import net.miginfocom.swing.MigLayout;
 
 import com.github.groupa.client.ActiveImage;
 import com.github.groupa.client.ImageObject;
-import com.github.groupa.client.events.DisplayedImageChangedEvent;
+import com.github.groupa.client.events.ActiveImageChangedEvent;
 import com.github.groupa.client.events.ImageInfoChangedEvent;
 import com.github.groupa.client.gui.TableCellListener;
 import com.google.common.eventbus.Subscribe;
@@ -233,7 +233,7 @@ public class ImageSidebarPanel implements SidebarPanel {
 	}
 
 	@Subscribe
-	public void displayedImageChangeListener(DisplayedImageChangedEvent event) {
+	public void activeImageChangedListener(ActiveImageChangedEvent event) {
 		ImageObject image = event.getImageObject();
 
 		setRatingSaveMode();

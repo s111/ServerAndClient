@@ -19,6 +19,7 @@ import net.miginfocom.swing.MigLayout;
 import com.github.groupa.client.Callback;
 import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.Library;
+import com.github.groupa.client.events.ActiveLibraryChangedEvent;
 import com.github.groupa.client.events.LibraryAddEvent;
 import com.github.groupa.client.events.SwitchViewEvent;
 import com.github.groupa.client.views.View;
@@ -77,6 +78,15 @@ public class GridPanel implements Panel {
 			if (lib != null && !lib.equals(library)) {
 				setLibrary(lib);
 			}
+		}
+	}
+
+	@Subscribe
+	public void activeLibrarychangeListener(ActiveLibraryChangedEvent event) {
+		Library library = event.getLibrary();
+
+		if (!library.equals(this.library)) {
+			setLibrary(library);
 		}
 	}
 
