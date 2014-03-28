@@ -19,6 +19,10 @@ public class ActiveImage {
 		return currentImageIndex;
 	}
 
+	public void setCurrentImageIndex(int currentImageIndex) {
+		this.currentImageIndex = currentImageIndex;
+	}
+
 	public ImageObject getImage() {
 		return library.getImage(currentImageIndex);
 	}

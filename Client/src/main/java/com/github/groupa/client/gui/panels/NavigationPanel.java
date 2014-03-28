@@ -16,7 +16,7 @@ public class NavigationPanel implements Panel {
 	private JButton nextButton;
 
 	public NavigationPanel() {
-		MigLayout layout = new MigLayout("debug");
+		MigLayout layout = new MigLayout();
 
 		panel.setLayout(layout);
 

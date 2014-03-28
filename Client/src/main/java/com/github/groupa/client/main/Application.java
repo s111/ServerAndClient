@@ -3,19 +3,15 @@ package com.github.groupa.client.main;
 import javax.inject.Inject;
 import javax.swing.SwingUtilities;
 
-import com.github.groupa.client.Library;
 import com.github.groupa.client.gui.MainFrame;
 
 public class Application {
 	public static final String BASEURL = "http://localhost:9000/api";
 
-	private Library library;
-
 	private MainFrame mainFrame;
 
 	@Inject
-	public Application(Library library, MainFrame mainFrame) {
-		this.library = library;
+	public Application(MainFrame mainFrame) {
 		this.mainFrame = mainFrame;
 	}
 

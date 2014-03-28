@@ -20,7 +20,7 @@ public class RootPanel implements IRootPanel {
 	public RootPanel(JPanel sidebarPanelContainer,
 			CardLayout sidebarPanelLayout, JPanel contentPanelContainer,
 			CardLayout contentPanelLayout) {
-		MigLayout layout = new MigLayout("debug");
+		MigLayout layout = new MigLayout();
 		panel.setLayout(layout);
 
 		this.sidebarPanelContainer = sidebarPanelContainer;

@@ -1,6 +1,8 @@
 package com.github.groupa.client.gui.panels;
 
 import java.awt.Color;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.inject.Inject;
 import javax.swing.BorderFactory;
@@ -36,6 +38,13 @@ public class ImageSidebarPanel implements SidebarPanel {
 	private JRadioButton ratingButtons[];
 
 	private DefaultListModel<Object> tagListModel;
+
+	private JButton editDescriptionButton;
+
+	private JButton editRatingButton;
+
+	private boolean savingDescription = false;
+	private boolean savingRating = false;
 
 	@Inject
 	public ImageSidebarPanel(ActiveImage activeImage) {
@@ -83,20 +92,101 @@ public class ImageSidebarPanel implements SidebarPanel {
 		}
 
 		panel.add(rater, "span 2");
-		panel.add(new JButton("Edit"), "wrap");
+
+		editRatingButton = new JButton("Edit");
+
+		panel.add(editRatingButton, "wrap");
+
+		addEditRatingButtonListener();
+	}
+
+	private void addEditRatingButtonListener() {
+		editRatingButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				ImageObject image = activeImage.getImage();
+
+				if (image == null) {
+					return;
+				}
+
+				if (savingRating) {
+					savingRating = false;
+
+					editRatingButton.setText("Edit");
+
+					for (int i = 0; i < 5; i++) {
+						ratingButtons[i].setEnabled(false);
+
+						if (ratingButtons[i].isSelected()) {
+							image.rate(i + 1);
+						}
+					}
+
+				} else {
+					savingRating = true;
+
+					editRatingButton.setText("Save");
+
+					for (int i = 0; i < 5; i++) {
+						ratingButtons[i].setEnabled(true);
+					}
+				}
+			}
+		});
 	}
 
 	private void setUpDescriptionField() {
 		panel.add(new JLabel("Description"), "wrap");
 
-		descriptionField = new JTextField("description");
+		descriptionField = new JTextField();
 		descriptionField.setEnabled(false);
 		descriptionField.setBorder(BorderFactory.createEmptyBorder());
 		descriptionField.setDisabledTextColor(Color.BLACK);
 		descriptionField.setBackground(UIManager.getColor("Panel.background"));
 
 		panel.add(descriptionField, "span 2, growx, pushx, wmax 160");
-		panel.add(new JButton("Edit"), "wrap");
+
+		editDescriptionButton = new JButton("Edit");
+
+		panel.add(editDescriptionButton, "wrap");
+
+		addEditDescriptionButtonListener();
+	}
+
+	private void addEditDescriptionButtonListener() {
+		editDescriptionButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				ImageObject image = activeImage.getImage();
+
+				if (image == null) {
+					return;
+				}
+
+				if (savingDescription) {
+					savingDescription = false;
+
+					image.describe(descriptionField.getText());
+
+					editDescriptionButton.setText("Edit");
+					descriptionField.setEnabled(false);
+					descriptionField.setBorder(BorderFactory
+							.createEmptyBorder());
+					descriptionField.setBackground(UIManager
+							.getColor("Panel.background"));
+				} else {
+					savingDescription = true;
+
+					editDescriptionButton.setText("Save");
+					descriptionField.requestFocus();
+					descriptionField.setEnabled(true);
+					descriptionField.setBorder(BorderFactory
+							.createLineBorder(Color.BLACK));
+				}
+			}
+		});
 	}
 
 	@Override
@@ -124,7 +214,7 @@ public class ImageSidebarPanel implements SidebarPanel {
 
 		int rating = image.getRating() - 1;
 
-		if (rating > 0) {
+		if (rating >= 0) {
 			ratingButtons[rating].setSelected(true);
 		}
 

@@ -17,6 +17,7 @@ import com.github.groupa.client.Library;
 import com.github.groupa.client.components.ImagePanel;
 import com.github.groupa.client.events.DisplayedImageChangedEvent;
 import com.github.groupa.client.events.LibraryAddEvent;
+import com.github.groupa.client.gui.ActiveImage;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
@@ -27,20 +28,21 @@ public class ImageContentPanel implements ContentPanel {
 
 	private EventBus eventBus;
 
-	private int currentImageIndex = -1;
+	private ActiveImage activeImage;
 
 	private ImagePanel imagePanel;
 
+	private int currentImageIndex = -1;
+
 	@Inject
 	public ImageContentPanel(Library library, EventBus eventBus,
-			ImagePanel imagePanel) {
+			ActiveImage activeImage, ImagePanel imagePanel) {
 		this.library = library;
-
 		this.eventBus = eventBus;
-
+		this.activeImage = activeImage;
 		this.imagePanel = imagePanel;
 
-		MigLayout layout = new MigLayout("debug");
+		MigLayout layout = new MigLayout();
 
 		panel.setLayout(layout);
 
@@ -75,6 +77,9 @@ public class ImageContentPanel implements ContentPanel {
 		}
 
 		currentImageIndex = (count + index) % count;
+
+		activeImage.setCurrentImageIndex(currentImageIndex);
+
 		ImageObject activeImageObject = library.getImage(currentImageIndex);
 
 		eventBus.post(new DisplayedImageChangedEvent(activeImageObject));
