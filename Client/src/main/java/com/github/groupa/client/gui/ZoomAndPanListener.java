@@ -11,7 +11,8 @@ import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 
-public class ZoomAndPanListener implements MouseListener, MouseMotionListener, MouseWheelListener {
+public class ZoomAndPanListener implements MouseListener, MouseMotionListener,
+		MouseWheelListener {
 
 	private Component imagePanel;
 
@@ -65,7 +66,8 @@ public class ZoomAndPanListener implements MouseListener, MouseMotionListener, M
 		transformer.translate(centerX, centerY);
 
 		// Get large images to resize down so they fit the window
-		if (image.getWidth(null) > imagePanel.getWidth() || image.getHeight(null) > imagePanel.getHeight()) {
+		if (image.getWidth(null) > imagePanel.getWidth()
+				|| image.getHeight(null) > imagePanel.getHeight()) {
 			double ratio;
 			if (image.getWidth(null) > image.getHeight(null)) {
 				ratio = (double) image.getWidth(null) / imagePanel.getWidth();
@@ -81,7 +83,8 @@ public class ZoomAndPanListener implements MouseListener, MouseMotionListener, M
 		transformer.translate(currentX, currentY);
 
 		// Paint image to center of component
-		transformer.translate(-image.getWidth(null) / 2, -image.getHeight(null) / 2);
+		transformer.translate(-image.getWidth(null) / 2,
+				-image.getHeight(null) / 2);
 
 		return transformer;
 
@@ -101,6 +104,10 @@ public class ZoomAndPanListener implements MouseListener, MouseMotionListener, M
 	}
 
 	private void moveCamera(MouseEvent e) {
+		if (image == null) {
+			return;
+		}
+
 		Point2D adjPreviousPoint = getTranslatedPoint(previousX, previousY);
 		Point2D adjNewPoint = getTranslatedPoint(e.getX(), e.getY());
 
