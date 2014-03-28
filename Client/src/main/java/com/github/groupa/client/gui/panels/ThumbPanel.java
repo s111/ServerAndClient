@@ -21,7 +21,7 @@ import javax.swing.border.Border;
 
 import com.github.groupa.client.Library;
 import com.github.groupa.client.events.SwitchViewEvent;
-import com.github.groupa.client.views.GridView.Thumb;
+import com.github.groupa.client.gui.panels.GridPanel.Thumb;
 import com.github.groupa.client.views.View;
 import com.google.common.eventbus.EventBus;
 

@@ -1,4 +1,4 @@
-package com.github.groupa.client.views;
+package com.github.groupa.client.gui.panels;
 
 import java.awt.Image;
 import java.awt.event.ComponentAdapter;
@@ -21,12 +21,12 @@ import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.Library;
 import com.github.groupa.client.events.LibraryAddEvent;
 import com.github.groupa.client.events.SwitchViewEvent;
-import com.github.groupa.client.gui.panels.ThumbPanel;
+import com.github.groupa.client.views.View;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
-public class GridView {
-	private JPanel mainPanel;
+public class GridPanel implements Panel {
+	private JPanel panel;
 	private ThumbPanel thumbPanel;
 	private EventBus eventBus = null;
 	private Library library = null;
@@ -36,7 +36,7 @@ public class GridView {
 	private String previewThumbSize = "xl";
 
 	@Inject
-	public GridView(EventBus eventBus, Library library) {
+	public GridPanel(EventBus eventBus, Library library) {
 		this.eventBus = eventBus;
 		this.library = library;
 		eventBus.register(this);
@@ -44,8 +44,9 @@ public class GridView {
 		setLibrary(library);
 	}
 
+	@Override
 	public JPanel getPanel() {
-		return mainPanel;
+		return panel;
 	}
 
 	public void setPanelThumbSize(String size) {
@@ -132,7 +133,7 @@ public class GridView {
 
 	private void setUpImageViewer() {
 		MigLayout layout = new MigLayout("fill");
-		mainPanel = new JPanel(layout);
+		panel = new JPanel(layout);
 		thumbPanel = new ThumbPanel(eventBus, panelThumbSize);
 		final JScrollPane thumbScroll = new JScrollPane(thumbPanel);
 		thumbScroll.addComponentListener(new ComponentAdapter() {
@@ -141,7 +142,7 @@ public class GridView {
 				thumbPanel.widthChanged(thumbScroll.getWidth());
 			}
 		});
-		mainPanel.add(thumbScroll, "grow");
+		panel.add(thumbScroll, "grow");
 
 	}
 

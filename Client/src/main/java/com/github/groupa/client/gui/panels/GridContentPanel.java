@@ -7,14 +7,13 @@ import javax.swing.border.EtchedBorder;
 
 import net.miginfocom.swing.MigLayout;
 
-import com.github.groupa.client.views.GridView;
 import com.google.common.eventbus.EventBus;
 
 public class GridContentPanel implements ContentPanel {
 	private JPanel panel = new JPanel();
 
 	@Inject
-	public GridContentPanel(EventBus eventBus, GridView gridView) {
+	public GridContentPanel(EventBus eventBus, GridPanel gridView) {
 		MigLayout layout = new MigLayout();
 
 		panel.setLayout(layout);

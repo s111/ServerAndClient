@@ -21,7 +21,6 @@ import net.miginfocom.swing.MigLayout;
 import com.github.groupa.client.ActiveImage;
 import com.github.groupa.client.ConstrainedLibrary;
 import com.github.groupa.client.Library;
-import com.github.groupa.client.views.GridView;
 import com.google.common.eventbus.EventBus;
 
 public class GridSidebarPanel implements SidebarPanel {
@@ -31,7 +30,7 @@ public class GridSidebarPanel implements SidebarPanel {
 
 	private Library library;
 
-	private GridView gridView;
+	private GridPanel gridView;
 
 	private ActiveImage activeImage;
 
@@ -43,7 +42,7 @@ public class GridSidebarPanel implements SidebarPanel {
 	// event!
 	@Inject
 	public GridSidebarPanel(EventBus eventBus, Library library,
-			GridView gridView, ActiveImage activeImage) {
+			GridPanel gridView, ActiveImage activeImage) {
 		this.eventBus = eventBus;
 		this.library = library;
 		this.gridView = gridView;
