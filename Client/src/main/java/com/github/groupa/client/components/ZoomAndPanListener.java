@@ -23,6 +23,9 @@ public class ZoomAndPanListener implements MouseListener, MouseMotionListener, M
 	private double previousY;
 	private double zoom = 1;
 
+	private double panLimitX;
+	private double panLimitY;
+
 	public ZoomAndPanListener(Component imagePanel) {
 		this.imagePanel = imagePanel;
 	}
@@ -101,7 +104,6 @@ public class ZoomAndPanListener implements MouseListener, MouseMotionListener, M
 			}
 
 			transformer.scale(zoom / ratio, zoom / ratio);
-			System.out.println("Ratio: " + ratio);
 		}
 
 		transformer.scale(zoom, zoom);
@@ -137,5 +139,10 @@ public class ZoomAndPanListener implements MouseListener, MouseMotionListener, M
 
 	public void resetZoom() {
 		zoom = 1;
+	}
+
+	public void resetPan() {
+		currentX = 0;
+		currentY = 0;
 	}
 }
