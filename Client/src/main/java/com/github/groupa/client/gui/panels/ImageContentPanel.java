@@ -131,14 +131,15 @@ public class ImageContentPanel implements ContentPanel {
 
 		activeImage.setCurrentImageIndex(currentImageIndex);
 
-		ImageObject activeImageObject = library.getImage(currentImageIndex);
-
-		eventBus.post(new DisplayedImageChangedEvent(activeImageObject));
+		final ImageObject activeImageObject = library
+				.getImage(currentImageIndex);
 
 		activeImageObject.loadImageWithCallback(new Callback<Image>() {
 			@Override
 			public void success(Image image) {
 				imagePanel.setImage(image);
+
+				eventBus.post(new DisplayedImageChangedEvent(activeImageObject));
 			}
 
 			@Override
