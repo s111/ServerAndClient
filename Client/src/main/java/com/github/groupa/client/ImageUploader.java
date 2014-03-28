@@ -25,7 +25,7 @@ public class ImageUploader {
 	private RESTService restService;
 
 	@Inject
-	public ImageUploader(RESTService restService, SingleLibrary library) {
+	public ImageUploader(RESTService restService, Library library) {
 		this.restService = restService;
 		this.library = library;
 	}
