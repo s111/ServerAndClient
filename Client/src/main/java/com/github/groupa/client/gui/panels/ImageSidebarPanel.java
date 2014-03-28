@@ -20,10 +20,10 @@ import javax.swing.border.EtchedBorder;
 
 import net.miginfocom.swing.MigLayout;
 
+import com.github.groupa.client.ActiveImage;
 import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.events.DisplayedImageChangedEvent;
 import com.github.groupa.client.events.ImageInfoChangedEvent;
-import com.github.groupa.client.gui.ActiveImage;
 import com.google.common.eventbus.Subscribe;
 
 public class ImageSidebarPanel implements SidebarPanel {

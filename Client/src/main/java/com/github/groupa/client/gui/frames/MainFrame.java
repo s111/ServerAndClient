@@ -1,4 +1,4 @@
-package com.github.groupa.client.gui;
+package com.github.groupa.client.gui.frames;
 
 import java.awt.Dimension;
 

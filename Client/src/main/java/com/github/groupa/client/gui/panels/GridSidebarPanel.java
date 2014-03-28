@@ -18,9 +18,9 @@ import javax.swing.border.EtchedBorder;
 
 import net.miginfocom.swing.MigLayout;
 
+import com.github.groupa.client.ActiveImage;
 import com.github.groupa.client.ConstrainedLibrary;
 import com.github.groupa.client.Library;
-import com.github.groupa.client.gui.ActiveImage;
 import com.github.groupa.client.views.GridView;
 import com.google.common.eventbus.EventBus;
 

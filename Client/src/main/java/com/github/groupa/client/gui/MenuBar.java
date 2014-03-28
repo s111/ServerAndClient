@@ -1,4 +1,4 @@
-package com.github.groupa.client.main;
+package com.github.groupa.client.gui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -10,6 +10,7 @@ import javax.swing.JMenuItem;
 
 import com.github.groupa.client.ImageListFetcher;
 import com.github.groupa.client.events.SwitchViewEvent;
+import com.github.groupa.client.main.Main;
 import com.github.groupa.client.servercommunication.RESTService;
 import com.github.groupa.client.views.View;
 import com.google.common.eventbus.EventBus;

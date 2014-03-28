@@ -1,9 +1,6 @@
-package com.github.groupa.client.gui;
+package com.github.groupa.client;
 
 import javax.inject.Inject;
-
-import com.github.groupa.client.ImageObject;
-import com.github.groupa.client.Library;
 
 public class ActiveImage {
 	private int currentImageIndex = -1;

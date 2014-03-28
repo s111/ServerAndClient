@@ -11,6 +11,7 @@ import javax.swing.JPanel;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.github.groupa.client.gui.frames.MainFrame;
 import com.github.groupa.client.gui.panels.ContentPanel;
 import com.github.groupa.client.gui.panels.GridContentPanel;
 import com.github.groupa.client.gui.panels.GridSidebarPanel;

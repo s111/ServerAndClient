@@ -3,7 +3,7 @@ package com.github.groupa.client.main;
 import javax.inject.Inject;
 import javax.swing.SwingUtilities;
 
-import com.github.groupa.client.gui.MainFrame;
+import com.github.groupa.client.gui.frames.MainFrame;
 
 public class Application {
 	public static final String BASEURL = "http://localhost:9000/api";

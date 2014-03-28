@@ -5,16 +5,16 @@ import javax.swing.JMenuBar;
 
 import retrofit.RestAdapter;
 
+import com.github.groupa.client.ActiveImage;
 import com.github.groupa.client.Library;
 import com.github.groupa.client.RESTErrorHandler;
 import com.github.groupa.client.SingleLibrary;
 import com.github.groupa.client.factories.ImageObjectFactory;
-import com.github.groupa.client.gui.ActiveImage;
+import com.github.groupa.client.gui.MenuBar;
 import com.github.groupa.client.gui.panels.IRootPanel;
 import com.github.groupa.client.gui.panels.RootPanel;
 import com.github.groupa.client.main.Application;
 import com.github.groupa.client.main.Main;
-import com.github.groupa.client.main.MenuBar;
 import com.github.groupa.client.servercommunication.RESTService;
 import com.github.groupa.client.views.GridView;
 import com.google.common.eventbus.EventBus;

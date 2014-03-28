@@ -5,7 +5,7 @@ import static org.mockito.Mockito.verify;
 
 import org.junit.Test;
 
-import com.github.groupa.client.gui.MainFrame;
+import com.github.groupa.client.gui.frames.MainFrame;
 
 public class ApplicationTest {
 	@Test
