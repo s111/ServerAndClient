@@ -22,7 +22,6 @@ import com.github.groupa.client.Callback;
 import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.Library;
 import com.github.groupa.client.events.ActiveImageChangedEvent;
-import com.github.groupa.client.events.LibraryAddEvent;
 import com.github.groupa.client.events.SwitchViewEvent;
 import com.github.groupa.client.views.View;
 import com.google.common.eventbus.EventBus;
@@ -151,13 +150,6 @@ public class ImageContentPanel implements ContentPanel {
 	@Override
 	public JPanel getPanel() {
 		return panel;
-	}
-
-	@Subscribe
-	public void libraryAddImageListener(LibraryAddEvent event) {
-		if (currentImageIndex == -1 && event.getLibrary().equals(library)) {
-			setImage(0);
-		}
 	}
 
 	@Subscribe
