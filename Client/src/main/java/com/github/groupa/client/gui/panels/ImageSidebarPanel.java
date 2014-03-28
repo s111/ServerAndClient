@@ -5,18 +5,20 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.inject.Inject;
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.BorderFactory;
 import javax.swing.ButtonGroup;
-import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.UIManager;
 import javax.swing.border.EtchedBorder;
+import javax.swing.table.DefaultTableModel;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -24,6 +26,7 @@ import com.github.groupa.client.ActiveImage;
 import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.events.DisplayedImageChangedEvent;
 import com.github.groupa.client.events.ImageInfoChangedEvent;
+import com.github.groupa.client.gui.TableCellListener;
 import com.google.common.eventbus.Subscribe;
 
 public class ImageSidebarPanel implements SidebarPanel {
@@ -37,7 +40,7 @@ public class ImageSidebarPanel implements SidebarPanel {
 
 	private JRadioButton ratingButtons[];
 
-	private DefaultListModel<Object> tagListModel;
+	private DefaultTableModel tagTableModel;
 
 	private JButton editDescriptionButton;
 
@@ -53,7 +56,7 @@ public class ImageSidebarPanel implements SidebarPanel {
 		setUpPanel();
 		setUpDescriptionField();
 		setUpRatingButtons();
-		setUpTagList();
+		setUpTagTable();
 	}
 
 	private void setUpPanel() {
@@ -63,16 +66,61 @@ public class ImageSidebarPanel implements SidebarPanel {
 		panel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
 	}
 
-	private void setUpTagList() {
-		panel.add(new JLabel("Tags"), "wrap");
+	private void setUpTagTable() {
+		tagTableModel = new DefaultTableModel();
+		tagTableModel.addColumn("Tags");
 
-		tagListModel = new DefaultListModel<>();
+		JTable jTable = new JTable(tagTableModel);
 
-		JList<Object> jList = new JList<>(tagListModel);
+		setUpTableCellListener(jTable);
 
-		JScrollPane scrollPane = new JScrollPane(jList);
+		JScrollPane scrollPane = new JScrollPane(jTable);
 
 		panel.add(scrollPane, "span 3, grow, push");
+	}
+
+	private void setUpTableCellListener(JTable jTable) {
+		@SuppressWarnings("serial")
+		Action action = new AbstractAction() {
+			public void actionPerformed(ActionEvent event) {
+				TableCellListener cell = (TableCellListener) event.getSource();
+
+				int rowCount = tagTableModel.getRowCount();
+				int currentRow = cell.getRow();
+				int lastRow = rowCount - 1;
+
+				String newValue = (String) cell.getNewValue();
+				String oldValue = (String) cell.getOldValue();
+
+				// You are adding a new tag
+				if (currentRow == lastRow) {
+					if (newValue != null && !newValue.trim().equals("")) {
+						Object[] emptyRow = {};
+						tagTableModel.addRow(emptyRow);
+
+						activeImage.getImage().addTag(newValue);
+					}
+				}
+				// You are editing a tag
+				else {
+					// The last row is for new tags only
+					if (currentRow == lastRow) {
+						return;
+					}
+
+					if (newValue == null || newValue.trim().equals("")) {
+						tagTableModel.removeRow(cell.getRow());
+
+						// TODO Send tag delete request
+					} else if (!newValue.equals(oldValue)) {
+						// TODO Send tag update request or delete old tag and
+						// add new tag
+					}
+				}
+			}
+		};
+
+		new TableCellListener(jTable, action);
 	}
 
 	private void setUpRatingButtons() {
@@ -204,11 +252,21 @@ public class ImageSidebarPanel implements SidebarPanel {
 			ratingButtons[rating].setSelected(true);
 		}
 
-		tagListModel.clear();
+		updateTagTable(image);
+	}
+
+	private void updateTagTable(ImageObject image) {
+		tagTableModel.setRowCount(0);
 
 		for (String tag : image.getTags()) {
-			tagListModel.addElement(tag);
+			Object[] row = { tag };
+
+			tagTableModel.addRow(row);
 		}
+
+		Object[] emptyRow = {};
+
+		tagTableModel.addRow(emptyRow);
 	}
 
 	private void setDescriptionSaveMode() {
