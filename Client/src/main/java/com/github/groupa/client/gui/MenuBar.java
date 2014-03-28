@@ -4,15 +4,16 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.inject.Inject;
+import javax.swing.JFileChooser;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import com.github.groupa.client.ImageListFetcher;
-import com.github.groupa.client.events.SwitchViewEvent;
+import com.github.groupa.client.events.UploadImageEvent;
 import com.github.groupa.client.main.Main;
 import com.github.groupa.client.servercommunication.RESTService;
-import com.github.groupa.client.views.View;
 import com.google.common.eventbus.EventBus;
 
 public class MenuBar {
@@ -21,41 +22,39 @@ public class MenuBar {
 	private EventBus eventBus;
 
 	private JMenuItem fetchImagesItem;
-	private JMenuItem showGridView;
-	private JMenuItem showImageView;
+	private JMenuItem uploadImageItem;
 
 	@Inject
 	public MenuBar(EventBus eventBus) {
 		this.eventBus = eventBus;
 
 		setUpFetchImages();
-		setUpShowImageView();
-		setUpShowGridView();
+		setUpUploadImage();
 
 		JMenu fileMenu = new JMenu("File");
 		fileMenu.add(fetchImagesItem);
-		fileMenu.add(showGridView);
-		fileMenu.add(showImageView);
+		fileMenu.add(uploadImageItem);
 
 		menuBar.add(fileMenu);
 	}
 
-	private void setUpShowGridView() {
-		showGridView = new JMenuItem("Show grid view");
-		showGridView.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent event) {
-				eventBus.post(new SwitchViewEvent(View.GRID_VIEW));
-			}
-		});
-	}
+	private void setUpUploadImage() {
+		uploadImageItem = new JMenuItem("Upload image");
+		uploadImageItem.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent action) {
+				JFileChooser chooser = new JFileChooser();
 
-	private void setUpShowImageView() {
-		showImageView = new JMenuItem("Show image view");
-		showImageView.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent event) {
-				eventBus.post(new SwitchViewEvent(View.IMAGE_VIEW));
+				FileNameExtensionFilter filter = new FileNameExtensionFilter(
+						".jpg, .jpeg, .gif, .png", "jpg", "jpeg", "gif", "png");
+
+				chooser.setFileFilter(filter);
+
+				int returnVal = chooser.showOpenDialog(null);
+
+				if (returnVal == JFileChooser.APPROVE_OPTION) {
+					eventBus.post(new UploadImageEvent(chooser
+							.getSelectedFile()));
+				}
 			}
 		});
 	}

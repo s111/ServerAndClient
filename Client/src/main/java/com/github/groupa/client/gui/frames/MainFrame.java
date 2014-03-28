@@ -6,6 +6,7 @@ import javax.inject.Inject;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
 
+import com.github.groupa.client.ImageUploader;
 import com.github.groupa.client.gui.panels.ContentPanel;
 import com.github.groupa.client.gui.panels.GridContentPanel;
 import com.github.groupa.client.gui.panels.GridSidebarPanel;
@@ -13,6 +14,7 @@ import com.github.groupa.client.gui.panels.IRootPanel;
 import com.github.groupa.client.gui.panels.ImageContentPanel;
 import com.github.groupa.client.gui.panels.ImageSidebarPanel;
 import com.github.groupa.client.gui.panels.SidebarPanel;
+import com.github.groupa.client.main.Main;
 import com.google.common.eventbus.EventBus;
 
 public class MainFrame implements Frame {
@@ -46,6 +48,7 @@ public class MainFrame implements Frame {
 		this.imageContentPanel = imageContentPanel;
 
 		eventBus.register(rootPanel);
+		eventBus.register(Main.injector.getInstance(ImageUploader.class));
 
 		frame.setTitle(TITLE);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
