@@ -24,7 +24,8 @@ public class ImagePanel extends JPanel {
 	public void setImage(Image image) {
 		this.image = image;
 
-		zoomAndPanListener.setImageInfo(image);
+		zoomAndPanListener.setImage(image);
+		zoomAndPanListener.resetZoom();
 
 		repaint();
 	}

@@ -13,7 +13,7 @@ import java.awt.geom.Point2D;
 
 public class ZoomAndPanListener implements MouseListener, MouseMotionListener, MouseWheelListener {
 
-	private Component targetComponent;
+	private Component imagePanel;
 
 	private Image image;
 
@@ -23,8 +23,8 @@ public class ZoomAndPanListener implements MouseListener, MouseMotionListener, M
 	private double previousY;
 	private double zoom = 1;
 
-	public ZoomAndPanListener(Component targetComponent) {
-		this.targetComponent = targetComponent;
+	public ZoomAndPanListener(Component imagePanel) {
+		this.imagePanel = imagePanel;
 	}
 
 	public void mouseClicked(MouseEvent e) {
@@ -53,7 +53,7 @@ public class ZoomAndPanListener implements MouseListener, MouseMotionListener, M
 
 	public void mouseWheelMoved(MouseWheelEvent e) {
 		if (e.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL) {
-			incrementZoom(.1 * -(double) e.getWheelRotation());
+			zoom(.1 * -(double) e.getWheelRotation());
 		}
 	}
 
@@ -61,36 +61,48 @@ public class ZoomAndPanListener implements MouseListener, MouseMotionListener, M
 		Point2D adjPreviousPoint = getTranslatedPoint(previousX, previousY);
 		Point2D adjNewPoint = getTranslatedPoint(e.getX(), e.getY());
 
-		double newX = adjNewPoint.getX() - adjPreviousPoint.getX();
-		double newY = adjNewPoint.getY() - adjPreviousPoint.getY();
+		double dx = adjNewPoint.getX() - adjPreviousPoint.getX();
+		double dy = adjNewPoint.getY() - adjPreviousPoint.getY();
 
 		previousX = e.getX();
 		previousY = e.getY();
 
-		currentX += newX;
-		currentY += newY;
+		currentX += dx;
+		currentY += dy;
 
-		targetComponent.repaint();
+		imagePanel.repaint();
 	}
 
-	private void incrementZoom(double amount) {
+	private void zoom(double amount) {
 		if (zoom < 0) {
 			zoom = 0.00001;
 		}
 		zoom += amount;
 		zoom = Math.max(0.00001, zoom);
-		targetComponent.repaint();
+		imagePanel.repaint();
 	}
 
 	public AffineTransform getCurrentTransform() {
 
 		AffineTransform transformer = new AffineTransform();
 
-		double centerX = (double) targetComponent.getWidth() / 2;
-		double centerY = (double) targetComponent.getHeight() / 2;
-
 		// Set upper-left coordinate (0, 0) to center of component
+		double centerX = (double) imagePanel.getWidth() / 2;
+		double centerY = (double) imagePanel.getHeight() / 2;
 		transformer.translate(centerX, centerY);
+
+		// Get large images to resize down so they fit the window
+		if (image.getWidth(null) > imagePanel.getWidth() || image.getHeight(null) > imagePanel.getHeight()) {
+			double ratio;
+			if (image.getWidth(null) > image.getHeight(null)) {
+				ratio = (double) image.getWidth(null) / imagePanel.getWidth();
+			} else {
+				ratio = (double) image.getHeight(null) / imagePanel.getHeight();
+			}
+
+			transformer.scale(zoom / ratio, zoom / ratio);
+			System.out.println("Ratio: " + ratio);
+		}
 
 		transformer.scale(zoom, zoom);
 
@@ -118,8 +130,12 @@ public class ZoomAndPanListener implements MouseListener, MouseMotionListener, M
 
 	}
 
-	public void setImageInfo(Image image) {
+	public void setImage(Image image) {
 		this.image = image;
 
+	}
+
+	public void resetZoom() {
+		zoom = 1;
 	}
 }
