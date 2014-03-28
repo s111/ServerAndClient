@@ -187,10 +187,13 @@ public class ThumbPanel extends JPanel implements Scrollable {
 				|| currentColumns == wantedColumns && spare < 5) {
 			layout = new GridLayout(0, wantedColumns, 0, 0);
 			setLayout(layout);
-			// System.out.println(currentColumns + " : " + wantedColumns);
+
+			revalidate();
+
+			System.out.println(currentColumns + " : " + wantedColumns);
 		} else {
-			// System.out.println(currentColumns + " : " + wantedColumns + " : "
-			// + thumbSize*wantedColumns + "/" + width + " : " + spare);
+			System.out.println(currentColumns + " : " + wantedColumns + " : "
+					+ thumbSize * wantedColumns + "/" + width + " : " + spare);
 		}
 	}
 }
