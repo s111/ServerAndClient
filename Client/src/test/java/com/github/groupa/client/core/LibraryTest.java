@@ -59,18 +59,17 @@ public class LibraryTest {
 	public void testEventBus() {
 		test.cleanup();
 		test.testEventBusAdd(singleLibrary);
-		test.cleanup();
 
+		test.cleanup();
 		test.setupConstrainedLibrary();
 		test.testEventBusAdd(constrainedLibrary);
-
-		test.cleanup();
-		test.setupConstrainedLibrary();
-		test.testSortedLibrary();
-		test.cleanup();
 	}
 
-	private void testSortedLibrary() {
+	@Test
+	public void testSortedLibrary() {
+		test.cleanup();
+		test.setupConstrainedLibrary();
+
 		constrainedLibrary.sort(ConstrainedLibrary.SORT_RATING_ASC);
 		constrainedLibrary.add(MockImageObject
 				.get(1, null, null, null, null, 0));
@@ -104,6 +103,8 @@ public class LibraryTest {
 		assertEquals(3, constrainedLibrary.getImage(3).getId());
 		assertEquals(6, constrainedLibrary.getImage(4).getId());
 		assertEquals(1, constrainedLibrary.getImage(5).getId());
+
+		test.cleanup();
 	}
 
 	private void testEventBusAdd(Library lib) {
