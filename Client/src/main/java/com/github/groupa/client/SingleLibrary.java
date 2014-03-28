@@ -18,7 +18,7 @@ public class SingleLibrary implements Library {
 
 	@Override
 	public ImageObject add(ImageObject img) {
-		if (!images.contains(img)) {
+		if (!hasImage(img.getId())) {
 			images.add(img);
 
 			if (eventBus != null) {

@@ -9,7 +9,6 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 
 import com.github.groupa.client.ImageListFetcher;
-import com.github.groupa.client.Library;
 import com.github.groupa.client.gui.panels.IRootPanel;
 import com.github.groupa.client.servercommunication.RESTService;
 
@@ -37,11 +36,16 @@ public class MenuBar {
 		fetchImagesItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				RESTService restService = Main.injector
-						.getInstance(RESTService.class);
+				new Thread(new Runnable() {
+					@Override
+					public void run() {
+						RESTService restService = Main.injector
+								.getInstance(RESTService.class);
 
-				Library lib = new ImageListFetcher(restService)
-						.importAllImages();
+						// TODO
+						new ImageListFetcher(restService).importAllImages();
+					}
+				}).start();
 			}
 		});
 	}

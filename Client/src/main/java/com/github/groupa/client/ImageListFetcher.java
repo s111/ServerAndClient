@@ -22,7 +22,7 @@ public class ImageListFetcher {
 		this.restService = restService;
 	}
 
-	public Library importAllImages() {
+	public void importAllImages() {
 		Library library = Main.injector.getInstance(Library.class);
 
 		ImageList imageList = null;
@@ -32,12 +32,10 @@ public class ImageListFetcher {
 		} catch (ConnectException exception) {
 			logger.error("Could not connect to the server: "
 					+ exception.getMessage());
-			return null;
 		}
 
 		if (imageList == null) {
 			logger.error("Unknown problem getting images");
-			return null;
 		}
 
 		ImageObjectFactory imageObjectFactory = Main.injector
@@ -46,7 +44,5 @@ public class ImageListFetcher {
 		for (ImageShort image : imageList.getImages()) {
 			library.add(imageObjectFactory.create(image.getId()));
 		}
-
-		return library;
 	}
 }
