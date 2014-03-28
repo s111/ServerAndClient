@@ -23,9 +23,6 @@ public class ZoomAndPanListener implements MouseListener, MouseMotionListener, M
 	private double previousY;
 	private double zoom = 1;
 
-	private double panLimitX;
-	private double panLimitY;
-
 	public ZoomAndPanListener(Component imagePanel) {
 		this.imagePanel = imagePanel;
 	}
@@ -55,41 +52,14 @@ public class ZoomAndPanListener implements MouseListener, MouseMotionListener, M
 	}
 
 	public void mouseWheelMoved(MouseWheelEvent e) {
-		if (e.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL) {
-			zoom(.1 * -(double) e.getWheelRotation());
-		}
-	}
-
-	private void moveCamera(MouseEvent e) {
-		Point2D adjPreviousPoint = getTranslatedPoint(previousX, previousY);
-		Point2D adjNewPoint = getTranslatedPoint(e.getX(), e.getY());
-
-		double dx = adjNewPoint.getX() - adjPreviousPoint.getX();
-		double dy = adjNewPoint.getY() - adjPreviousPoint.getY();
-
-		previousX = e.getX();
-		previousY = e.getY();
-
-		currentX += dx;
-		currentY += dy;
-
-		imagePanel.repaint();
-	}
-
-	private void zoom(double amount) {
-		if (zoom < 0) {
-			zoom = 0.00001;
-		}
-		zoom += amount;
-		zoom = Math.max(0.00001, zoom);
-		imagePanel.repaint();
+		zoom(e);
 	}
 
 	public AffineTransform getCurrentTransform() {
 
 		AffineTransform transformer = new AffineTransform();
 
-		// Set upper-left coordinate (0, 0) to center of component
+		// Set upper-left coordinate (0, 0) of image to center of component
 		double centerX = (double) imagePanel.getWidth() / 2;
 		double centerY = (double) imagePanel.getHeight() / 2;
 		transformer.translate(centerX, centerY);
@@ -117,6 +87,46 @@ public class ZoomAndPanListener implements MouseListener, MouseMotionListener, M
 
 	}
 
+	public void setImage(Image image) {
+		this.image = image;
+	}
+
+	public void resetZoom() {
+		zoom = 1;
+	}
+
+	public void resetPan() {
+		currentX = 0;
+		currentY = 0;
+	}
+
+	private void moveCamera(MouseEvent e) {
+		Point2D adjPreviousPoint = getTranslatedPoint(previousX, previousY);
+		Point2D adjNewPoint = getTranslatedPoint(e.getX(), e.getY());
+
+		double dx = adjNewPoint.getX() - adjPreviousPoint.getX();
+		double dy = adjNewPoint.getY() - adjPreviousPoint.getY();
+
+		previousX = e.getX();
+		previousY = e.getY();
+
+		currentX += dx;
+		currentY += dy;
+
+		imagePanel.repaint();
+	}
+
+	private void zoom(MouseWheelEvent e) {
+		if (e.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL) {
+			if (zoom < 0) {
+				zoom = 0.00001;
+			}
+			zoom += .1 * -(double) e.getWheelRotation();
+			zoom = Math.max(0.00001, zoom);
+			imagePanel.repaint();
+		}
+	}
+
 	// Convert the panel coordinates into the cooresponding coordinates on the
 	// translated image.
 	private Point2D getTranslatedPoint(double panelX, double panelY) {
@@ -129,20 +139,5 @@ public class ZoomAndPanListener implements MouseListener, MouseMotionListener, M
 			ex.printStackTrace();
 			return null;
 		}
-
-	}
-
-	public void setImage(Image image) {
-		this.image = image;
-
-	}
-
-	public void resetZoom() {
-		zoom = 1;
-	}
-
-	public void resetPan() {
-		currentX = 0;
-		currentY = 0;
 	}
 }
