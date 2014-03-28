@@ -3,10 +3,16 @@ package com.github.groupa.client.gui.panels;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 
 import javax.inject.Inject;
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
+import javax.swing.InputMap;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
+import javax.swing.KeyStroke;
 import javax.swing.border.EtchedBorder;
 
 import net.miginfocom.swing.MigLayout;
@@ -76,6 +82,42 @@ public class ImageContentPanel implements ContentPanel {
 		});
 
 		panel.add(navigationPanel.getPanel(), "growx");
+
+		addKeyBindings();
+	}
+
+	@SuppressWarnings("serial")
+	private void addKeyBindings() {
+		InputMap inputMap = panel
+				.getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+		ActionMap actionMap = panel.getActionMap();
+
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), "keyLeft");
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), "keyRight");
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE, 0),
+				"previousView");
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_BACK_SPACE, 0),
+				"previousView");
+
+		actionMap.put("keyLeft", new AbstractAction() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				setImage(currentImageIndex - 1);
+			}
+		});
+
+		actionMap.put("keyRight", new AbstractAction() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				setImage(currentImageIndex + 1);
+			}
+		});
+		actionMap.put("previousView", new AbstractAction() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				eventBus.post(new SwitchViewEvent(View.GRID_VIEW));
+			}
+		});
 	}
 
 	private void setImage(int index) {
