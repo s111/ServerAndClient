@@ -1,4 +1,4 @@
-package com.github.groupa.client.components;
+package com.github.groupa.client.gui.panels;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -21,13 +21,13 @@ import javax.swing.border.Border;
 
 import com.github.groupa.client.Library;
 import com.github.groupa.client.events.SwitchViewEvent;
+import com.github.groupa.client.gui.panels.GridPanel.Thumb;
 import com.github.groupa.client.views.View;
-import com.github.groupa.client.views.GridView.Thumb;
 import com.google.common.eventbus.EventBus;
 
 @SuppressWarnings("serial")
 public class ThumbPanel extends JPanel implements Scrollable {
-	private GridLayout layout = new GridLayout(0, 4, 0, 0);
+	private GridLayout layout = new GridLayout(0, 2, 0, 0);
 
 	private List<Thumb> thumbs = new ArrayList<>();
 	private List<Thumb> selectedThumbs = new ArrayList<>();
@@ -181,15 +181,14 @@ public class ThumbPanel extends JPanel implements Scrollable {
 		int currentColumns = layout.getColumns();
 		int thumbSize = thumbs.get(0).getThumb(size).getWidth() + 3;
 		int wantedColumns = width / thumbSize;
-		int spare = width - wantedColumns*thumbSize;
-		if (currentColumns < wantedColumns && spare > 5 
-				|| currentColumns > wantedColumns 
+		int spare = width - wantedColumns * thumbSize;
+		if (currentColumns < wantedColumns && spare > 5
+				|| currentColumns > wantedColumns
 				|| currentColumns == wantedColumns && spare < 5) {
 			layout = new GridLayout(0, wantedColumns, 0, 0);
 			setLayout(layout);
-			//System.out.println(currentColumns + " : " + wantedColumns);
-		} else {
-			//System.out.println(currentColumns + " : " + wantedColumns + " : " + thumbSize*wantedColumns + "/" + width + " : " + spare);
+
+			revalidate();
 		}
 	}
 }

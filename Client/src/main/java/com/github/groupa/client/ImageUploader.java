@@ -12,6 +12,7 @@ import retrofit.mime.TypedFile;
 import com.github.groupa.client.events.UploadImageEvent;
 import com.github.groupa.client.factories.ImageObjectFactory;
 import com.github.groupa.client.jsonobjects.ImageInfo;
+import com.github.groupa.client.main.Main;
 import com.github.groupa.client.servercommunication.RESTService;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
@@ -24,7 +25,7 @@ public class ImageUploader {
 	private RESTService restService;
 
 	@Inject
-	public ImageUploader(RESTService restService, SingleLibrary library) {
+	public ImageUploader(RESTService restService, Library library) {
 		this.restService = restService;
 		this.library = library;
 	}

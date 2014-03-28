@@ -1,18 +1,22 @@
 package com.github.groupa.client.modules;
 
 import javax.inject.Singleton;
+import javax.swing.JMenuBar;
 
 import retrofit.RestAdapter;
 
-import com.github.groupa.client.Application;
-import com.github.groupa.client.ImageListFetcher;
-import com.github.groupa.client.MainFrame;
+import com.github.groupa.client.ActiveImage;
+import com.github.groupa.client.Library;
 import com.github.groupa.client.RESTErrorHandler;
 import com.github.groupa.client.SingleLibrary;
 import com.github.groupa.client.factories.ImageObjectFactory;
+import com.github.groupa.client.gui.MenuBar;
+import com.github.groupa.client.gui.panels.GridPanel;
+import com.github.groupa.client.gui.panels.RootPanel;
+import com.github.groupa.client.gui.panels.MainPanel;
+import com.github.groupa.client.main.Application;
+import com.github.groupa.client.main.Main;
 import com.github.groupa.client.servercommunication.RESTService;
-import com.github.groupa.client.views.GridView;
-import com.github.groupa.client.views.ImageView;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
@@ -21,13 +25,11 @@ import com.google.inject.assistedinject.FactoryModuleBuilder;
 public class DIModule extends AbstractModule {
 	@Override
 	protected void configure() {
-		bind(Application.class).in(Singleton.class);
+		bind(Library.class).to(SingleLibrary.class).in(Singleton.class);
 		bind(EventBus.class).in(Singleton.class);
-		bind(MainFrame.class).in(Singleton.class);
-		bind(ImageView.class).in(Singleton.class);
-		bind(GridView.class).in(Singleton.class);
-		bind(SingleLibrary.class).in(Singleton.class);
-		bind(ImageListFetcher.class).in(Singleton.class);
+		bind(GridPanel.class).in(Singleton.class);
+		bind(ActiveImage.class).in(Singleton.class);
+		bind(RootPanel.class).to(MainPanel.class);
 
 		install(new FactoryModuleBuilder().build(ImageObjectFactory.class));
 	}
@@ -36,9 +38,16 @@ public class DIModule extends AbstractModule {
 	@Singleton
 	private RESTService provideRESTService() {
 		RestAdapter restAdapter = new RestAdapter.Builder()
-				.setEndpoint(Application.serverAPIBaseURL)
+				.setEndpoint(Application.BASEURL)
 				.setErrorHandler(new RESTErrorHandler()).build();
 
 		return restAdapter.create(RESTService.class);
+	}
+
+	@Provides
+	private JMenuBar provideMenuBar() {
+		MenuBar menuBar = Main.injector.getInstance(MenuBar.class);
+
+		return menuBar.getMenuBar();
 	}
 }

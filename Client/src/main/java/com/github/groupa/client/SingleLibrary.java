@@ -18,10 +18,12 @@ public class SingleLibrary implements Library {
 
 	@Override
 	public ImageObject add(ImageObject img) {
-		if (!images.contains(img)) {
+		if (!hasImage(img.getId())) {
 			images.add(img);
-			if (eventBus != null)
+
+			if (eventBus != null) {
 				eventBus.post(new LibraryAddEvent(this, img));
+			}
 		}
 
 		return img;
@@ -66,7 +68,8 @@ public class SingleLibrary implements Library {
 		Iterator<ImageObject> itr = images.iterator();
 		while (itr.hasNext()) {
 			ImageObject image = itr.next();
-			if (hasImage(image.getId())) itr.remove();
+			if (hasImage(image.getId()))
+				itr.remove();
 		}
 		if (images.size() > 0) {
 			this.images.addAll(images);
@@ -77,7 +80,8 @@ public class SingleLibrary implements Library {
 
 	private boolean hasImage(long id) {
 		for (ImageObject image : images) {
-			if (image.getId() == id) return true;
+			if (image.getId() == id)
+				return true;
 		}
 		return false;
 	}

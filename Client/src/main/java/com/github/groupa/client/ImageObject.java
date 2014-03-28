@@ -91,8 +91,8 @@ public class ImageObject {
 			loadImage();
 		}
 		if (hasImageRaw()) {
-			thumbs.put(size, imageRaw.getScaledInstance(
-					thumbSize.get(size), -1, Image.SCALE_FAST));
+			thumbs.put(size, imageRaw.getScaledInstance(thumbSize.get(size),
+					-1, Image.SCALE_FAST));
 		}
 	}
 
@@ -128,6 +128,7 @@ public class ImageObject {
 		Response imageRawResponse = null;
 
 		try {
+			// TODO Change back to RAW/Compressed
 			imageRawResponse = restService.getImageRaw(id);
 		} catch (ConnectException e) {
 			logger.warn("Could not get raw image for id: " + id);
