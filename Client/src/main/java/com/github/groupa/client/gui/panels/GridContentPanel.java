@@ -7,7 +7,6 @@ import javax.swing.border.EtchedBorder;
 
 import net.miginfocom.swing.MigLayout;
 
-import com.github.groupa.client.main.Main;
 import com.github.groupa.client.views.GridView;
 import com.google.common.eventbus.EventBus;
 
@@ -15,14 +14,13 @@ public class GridContentPanel implements ContentPanel {
 	private JPanel panel = new JPanel();
 
 	@Inject
-	public GridContentPanel(EventBus eventBus) {
+	public GridContentPanel(EventBus eventBus, GridView gridView) {
 		MigLayout layout = new MigLayout();
 
 		panel.setLayout(layout);
 
 		panel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
 
-		GridView gridView = Main.injector.getInstance(GridView.class);
 		eventBus.register(gridView);
 
 		panel.add(gridView.getPanel(), "grow, push");

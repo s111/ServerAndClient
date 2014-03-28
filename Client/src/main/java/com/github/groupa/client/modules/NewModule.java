@@ -16,6 +16,7 @@ import com.github.groupa.client.main.Application;
 import com.github.groupa.client.main.Main;
 import com.github.groupa.client.main.MenuBar;
 import com.github.groupa.client.servercommunication.RESTService;
+import com.github.groupa.client.views.GridView;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
@@ -26,6 +27,7 @@ public class NewModule extends AbstractModule {
 	protected void configure() {
 		bind(Library.class).to(SingleLibrary.class).in(Singleton.class);
 		bind(EventBus.class).in(Singleton.class);
+		bind(GridView.class).in(Singleton.class);
 		bind(ActiveImage.class).in(Singleton.class);
 		bind(IRootPanel.class).to(RootPanel.class);
 
