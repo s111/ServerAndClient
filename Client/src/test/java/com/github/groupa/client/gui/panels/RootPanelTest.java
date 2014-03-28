@@ -12,6 +12,8 @@ import javax.swing.JPanel;
 import org.junit.Before;
 import org.junit.Test;
 
+import com.google.common.eventbus.EventBus;
+
 public class RootPanelTest {
 	private JPanel sidebarPanelContainer;
 	private SidebarPanel mockSidebarPanel1;
@@ -58,8 +60,8 @@ public class RootPanelTest {
 		sidebarPanelLayout = new CardLayout();
 		contentPanelLayout = new CardLayout();
 
-		rootPanel = new RootPanel(sidebarPanelContainer, sidebarPanelLayout,
-				contentPanelContainer, contentPanelLayout);
+		rootPanel = new RootPanel(new EventBus(), sidebarPanelContainer,
+				sidebarPanelLayout, contentPanelContainer, contentPanelLayout);
 	}
 
 	@Test

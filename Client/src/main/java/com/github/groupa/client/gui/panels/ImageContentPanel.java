@@ -17,7 +17,9 @@ import com.github.groupa.client.Library;
 import com.github.groupa.client.components.ImagePanel;
 import com.github.groupa.client.events.DisplayedImageChangedEvent;
 import com.github.groupa.client.events.LibraryAddEvent;
+import com.github.groupa.client.events.SwitchViewEvent;
 import com.github.groupa.client.gui.ActiveImage;
+import com.github.groupa.client.views.View;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
@@ -66,6 +68,14 @@ public class ImageContentPanel implements ContentPanel {
 			}
 		});
 
+		navigationPanel.setUpAction(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				ImageContentPanel.this.eventBus.post(new SwitchViewEvent(
+						View.GRID_VIEW));
+			}
+		});
+
 		panel.add(navigationPanel.getPanel(), "growx");
 	}
 
@@ -105,6 +115,25 @@ public class ImageContentPanel implements ContentPanel {
 	public void libraryAddImageListener(LibraryAddEvent event) {
 		if (currentImageIndex == -1 && event.getLibrary().equals(library)) {
 			setImage(0);
+		}
+	}
+
+	@Subscribe
+	public void switchViewListener(SwitchViewEvent event) {
+		if (event.hasSwitched() && View.IMAGE_VIEW.equals(event.getView())) {
+			ImageObject img = event.getImageObject();
+			if (img != null) {
+				Library lib = event.getLibrary();
+				if (lib != null)
+					library = lib;
+				if (library == null)
+					return;
+				int idx = library.indexOf(img);
+				if (idx < 0)
+					return;
+				currentImageIndex = idx;
+			}
+			setImage(currentImageIndex);
 		}
 	}
 }

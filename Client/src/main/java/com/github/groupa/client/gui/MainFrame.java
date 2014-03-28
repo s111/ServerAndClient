@@ -45,6 +45,8 @@ public class MainFrame implements Frame {
 		this.imageSidebarPanel = imageSidebarPanel;
 		this.imageContentPanel = imageContentPanel;
 
+		eventBus.register(rootPanel);
+
 		frame.setTitle(TITLE);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setJMenuBar(menuBar);
