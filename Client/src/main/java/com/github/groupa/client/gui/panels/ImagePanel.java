@@ -1,4 +1,4 @@
-package com.github.groupa.client.components;
+package com.github.groupa.client.gui.panels;
 
 import java.awt.BorderLayout;
 import java.awt.Image;
@@ -8,8 +8,6 @@ import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
-
-import com.github.groupa.client.gui.panels.Panel;
 
 public class ImagePanel implements Panel {
 	private static final String IMAGE_NOT_LOADED = "image not loaded";

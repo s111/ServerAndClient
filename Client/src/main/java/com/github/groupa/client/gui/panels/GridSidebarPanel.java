@@ -45,7 +45,7 @@ public class GridSidebarPanel implements SidebarPanel {
 		this.library = library;
 		this.gridView = gridView;
 
-		MigLayout layout = new MigLayout("debug");
+		MigLayout layout = new MigLayout();
 
 		panel.setLayout(layout);
 

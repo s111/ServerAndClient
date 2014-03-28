@@ -42,7 +42,9 @@ public class MenuBar {
 						RESTService restService = Main.injector
 								.getInstance(RESTService.class);
 
-						// TODO
+						// TODO We need to fix the way we import images.
+						// And more importanly we need to disable this menu
+						// until the thread is completed.
 						new ImageListFetcher(restService).importAllImages();
 					}
 				}).start();

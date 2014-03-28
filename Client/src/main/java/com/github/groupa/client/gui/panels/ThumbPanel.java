@@ -1,4 +1,4 @@
-package com.github.groupa.client.components;
+package com.github.groupa.client.gui.panels;
 
 import java.awt.Color;
 import java.awt.Dimension;

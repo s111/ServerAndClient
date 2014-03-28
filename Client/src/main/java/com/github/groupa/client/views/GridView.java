@@ -19,9 +19,9 @@ import net.miginfocom.swing.MigLayout;
 import com.github.groupa.client.Callback;
 import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.Library;
-import com.github.groupa.client.components.ThumbPanel;
 import com.github.groupa.client.events.LibraryAddEvent;
 import com.github.groupa.client.events.SwitchViewEvent;
+import com.github.groupa.client.gui.panels.ThumbPanel;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
