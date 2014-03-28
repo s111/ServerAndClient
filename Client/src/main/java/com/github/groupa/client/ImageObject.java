@@ -129,7 +129,7 @@ public class ImageObject {
 
 		try {
 			// TODO Change back to RAW/Compressed
-			imageRawResponse = restService.getThumbnailLarge(id);
+			imageRawResponse = restService.getImageRaw(id);
 		} catch (ConnectException e) {
 			logger.warn("Could not get raw image for id: " + id);
 		}

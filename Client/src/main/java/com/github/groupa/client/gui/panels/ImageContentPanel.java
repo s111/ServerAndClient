@@ -49,7 +49,7 @@ public class ImageContentPanel implements ContentPanel {
 
 		panel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
 
-		panel.add(imagePanel.getPanel(), "grow, push, wrap");
+		panel.add(imagePanel, "grow, push, wrap");
 
 		NavigationPanel navigationPanel = new NavigationPanel();
 

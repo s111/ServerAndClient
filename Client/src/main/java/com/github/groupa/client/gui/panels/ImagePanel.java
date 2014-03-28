@@ -1,49 +1,51 @@
 package com.github.groupa.client.gui.panels;
 
-import java.awt.BorderLayout;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.geom.AffineTransform;
 
-import javax.swing.Box;
-import javax.swing.BoxLayout;
-import javax.swing.ImageIcon;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 
-public class ImagePanel implements Panel {
-	private static final String IMAGE_NOT_LOADED = "image not loaded";
-	private JPanel panel = new JPanel();
+import com.github.groupa.client.gui.ZoomAndPanListener;
 
-	private JLabel imageLabel;
+@SuppressWarnings("serial")
+public class ImagePanel extends JPanel {
+
+	private ZoomAndPanListener zoomAndPanListener;
+
+	private Image image;
 
 	public ImagePanel() {
-		panel.setLayout(new BoxLayout(panel, BoxLayout.X_AXIS));
-
-		imageLabel = new JLabel(IMAGE_NOT_LOADED);
-
-		setUpPanel();
-	}
-
-	@Override
-	public JPanel getPanel() {
-		return panel;
+		zoomAndPanListener = new ZoomAndPanListener(this);
+		addMouseListener(zoomAndPanListener);
+		addMouseMotionListener(zoomAndPanListener);
+		addMouseWheelListener(zoomAndPanListener);
 	}
 
 	public void setImage(Image image) {
-		updateImageLabel(image);
+		this.image = image;
+
+		zoomAndPanListener.setImage(image);
+		zoomAndPanListener.resetZoom();
+		zoomAndPanListener.resetPan();
+
+		repaint();
 	}
 
-	private void setUpPanel() {
-		panel.add(Box.createHorizontalGlue());
-		panel.add(imageLabel, BorderLayout.CENTER);
-		panel.add(Box.createHorizontalGlue());
+	public Image getImage() {
+		return image;
 	}
 
-	private void updateImageLabel(Image image) {
-		if (image == null) {
-			return;
-		}
+	@Override
+	public void paintComponent(Graphics g) {
+		setOpaque(false);
+		Graphics2D g2d = (Graphics2D) g.create();
 
-		imageLabel.setText("");
-		imageLabel.setIcon(new ImageIcon(image));
+		AffineTransform transformer = zoomAndPanListener.getCurrentTransform();
+
+		g2d.drawImage(image, transformer, null);
+		g2d.dispose();
+
 	}
 }
