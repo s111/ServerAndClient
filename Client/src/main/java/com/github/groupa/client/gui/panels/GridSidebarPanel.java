@@ -95,9 +95,7 @@ public class GridSidebarPanel implements SidebarPanel {
 		searchButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				System.out.println("Clicked");
 				String text = searchField.getText();
-				System.out.println(text);
 				Library lib;
 				if (text == null || text.equals("")) {
 					lib = library;
