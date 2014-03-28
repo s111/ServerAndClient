@@ -27,13 +27,22 @@ public class MainFrame implements Frame {
 
 	private IRootPanel rootPanel;
 
+	private SidebarPanel gridSidebarPanel;
+	private ContentPanel gridContentPanel;
+	private SidebarPanel imageSidebarPanel;
 	private ContentPanel imageContentPanel;
 
 	@Inject
 	public MainFrame(EventBus eventBus, JMenuBar menuBar, IRootPanel rootPanel,
+			GridSidebarPanel gridSidebarPanel,
+			GridContentPanel gridContentPanel,
+			ImageSidebarPanel imageSidebarPanel,
 			ImageContentPanel imageContentPanel) {
 		this.eventBus = eventBus;
 		this.rootPanel = rootPanel;
+		this.gridSidebarPanel = gridSidebarPanel;
+		this.gridContentPanel = gridContentPanel;
+		this.imageSidebarPanel = imageSidebarPanel;
 		this.imageContentPanel = imageContentPanel;
 
 		frame.setTitle(TITLE);
@@ -64,10 +73,7 @@ public class MainFrame implements Frame {
 	}
 
 	private void setUpRootPanel() {
-		SidebarPanel gridSidebarPanel = new GridSidebarPanel();
-		ContentPanel gridContentPanel = new GridContentPanel();
-		SidebarPanel imageSidebarPanel = new ImageSidebarPanel();
-
+		eventBus.register(imageSidebarPanel);
 		eventBus.register(imageContentPanel);
 
 		rootPanel.addSidebarPanel("gridSidebarPanel", gridSidebarPanel);

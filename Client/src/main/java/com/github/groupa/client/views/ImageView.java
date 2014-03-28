@@ -33,6 +33,7 @@ import com.github.groupa.client.components.MetadataField;
 import com.github.groupa.client.components.RotateButtons;
 import com.github.groupa.client.events.DisplayedImageChangedEvent;
 import com.github.groupa.client.events.SwitchViewEvent;
+import com.github.groupa.client.main.Main;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
@@ -215,7 +216,7 @@ public class ImageView {
 	}
 
 	private JPanel createPicturePanel() {
-		imagePanel = new ImagePanel();
+		imagePanel = Main.injector.getInstance(ImagePanel.class);
 
 		eventBus.register(imagePanel);
 
