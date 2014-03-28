@@ -97,12 +97,11 @@ public class ImageSidebarPanel implements SidebarPanel {
 
 		panel.add(editRatingButton, "wrap");
 
-		addEditRatingButtonListener();
+		addEditRatingListeners();
 	}
 
-	private void addEditRatingButtonListener() {
-		editRatingButton.addActionListener(new ActionListener() {
-
+	private void addEditRatingListeners() {
+		ActionListener actionListener = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
 				ImageObject image = activeImage.getImage();
@@ -112,29 +111,22 @@ public class ImageSidebarPanel implements SidebarPanel {
 				}
 
 				if (savingRating) {
-					savingRating = false;
+					int selected = setRatingSaveMode();
 
-					editRatingButton.setText("Edit");
-
-					for (int i = 0; i < 5; i++) {
-						ratingButtons[i].setEnabled(false);
-
-						if (ratingButtons[i].isSelected()) {
-							image.rate(i + 1);
-						}
+					if (selected != -1) {
+						image.rate(selected + 1);
 					}
-
 				} else {
-					savingRating = true;
-
-					editRatingButton.setText("Save");
-
-					for (int i = 0; i < 5; i++) {
-						ratingButtons[i].setEnabled(true);
-					}
+					setRatingEditMode();
 				}
 			}
-		});
+		};
+
+		editRatingButton.addActionListener(actionListener);
+
+		for (JRadioButton radioButton : ratingButtons) {
+			radioButton.addActionListener(actionListener);
+		}
 	}
 
 	private void setUpDescriptionField() {
@@ -152,11 +144,11 @@ public class ImageSidebarPanel implements SidebarPanel {
 
 		panel.add(editDescriptionButton, "wrap");
 
-		addEditDescriptionButtonListener();
+		addEditDescriptionListeners();
 	}
 
-	private void addEditDescriptionButtonListener() {
-		editDescriptionButton.addActionListener(new ActionListener() {
+	private void addEditDescriptionListeners() {
+		ActionListener actionListener = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
 				ImageObject image = activeImage.getImage();
@@ -166,27 +158,17 @@ public class ImageSidebarPanel implements SidebarPanel {
 				}
 
 				if (savingDescription) {
-					savingDescription = false;
+					setDescriptionSaveMode();
 
 					image.describe(descriptionField.getText());
-
-					editDescriptionButton.setText("Edit");
-					descriptionField.setEnabled(false);
-					descriptionField.setBorder(BorderFactory
-							.createEmptyBorder());
-					descriptionField.setBackground(UIManager
-							.getColor("Panel.background"));
 				} else {
-					savingDescription = true;
-
-					editDescriptionButton.setText("Save");
-					descriptionField.requestFocus();
-					descriptionField.setEnabled(true);
-					descriptionField.setBorder(BorderFactory
-							.createLineBorder(Color.BLACK));
+					setDescriptionEditMode();
 				}
 			}
-		});
+		};
+
+		editDescriptionButton.addActionListener(actionListener);
+		descriptionField.addActionListener(actionListener);
 	}
 
 	@Override
@@ -204,7 +186,11 @@ public class ImageSidebarPanel implements SidebarPanel {
 
 	@Subscribe
 	public void displayedImageChangeListener(DisplayedImageChangedEvent event) {
-		updateFields(event.getImageObject());
+		ImageObject image = event.getImageObject();
+
+		setRatingSaveMode();
+		setDescriptionSaveMode();
+		updateFields(image);
 	}
 
 	private void updateFields(ImageObject image) {
@@ -222,6 +208,52 @@ public class ImageSidebarPanel implements SidebarPanel {
 
 		for (String tag : image.getTags()) {
 			tagListModel.addElement(tag);
+		}
+	}
+
+	private void setDescriptionSaveMode() {
+		savingDescription = false;
+
+		editDescriptionButton.setText("Edit");
+		descriptionField.setEnabled(false);
+		descriptionField.setBorder(BorderFactory.createEmptyBorder());
+		descriptionField.setBackground(UIManager.getColor("Panel.background"));
+	}
+
+	private void setDescriptionEditMode() {
+		savingDescription = true;
+
+		editDescriptionButton.setText("Save");
+		descriptionField.requestFocus();
+		descriptionField.setEnabled(true);
+		descriptionField.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+	}
+
+	private int setRatingSaveMode() {
+		int selected = -1;
+
+		savingRating = false;
+
+		editRatingButton.setEnabled(true);
+
+		for (int i = 0; i < 5; i++) {
+			ratingButtons[i].setEnabled(false);
+
+			if (ratingButtons[i].isSelected()) {
+				selected = i;
+			}
+		}
+
+		return selected;
+	}
+
+	private void setRatingEditMode() {
+		savingRating = true;
+
+		editRatingButton.setEnabled(false);
+
+		for (int i = 0; i < 5; i++) {
+			ratingButtons[i].setEnabled(true);
 		}
 	}
 }
