@@ -1,6 +1,7 @@
 package com.github.groupa.client.components;
 
 import java.awt.Component;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
@@ -26,6 +27,12 @@ public class ZoomAndPanListener implements MouseListener, MouseMotionListener, M
 	private Point dragStartScreen;
 	private Point dragEndScreen;
 	private AffineTransform coordTransform = new AffineTransform();
+
+	private int panLimitX;
+	private int panLimitY;
+
+	private int imageWidth;
+	private int imageHeight;
 
 	public ZoomAndPanListener(Component targetComponent) {
 		this.targetComponent = targetComponent;
@@ -59,6 +66,7 @@ public class ZoomAndPanListener implements MouseListener, MouseMotionListener, M
 	}
 
 	public void mouseDragged(MouseEvent e) {
+		// enforcePanLimit()
 		moveCamera(e);
 	}
 
@@ -71,9 +79,30 @@ public class ZoomAndPanListener implements MouseListener, MouseMotionListener, M
 			dragEndScreen = e.getPoint();
 			Point2D.Float dragStart = transformPoint(dragStartScreen);
 			Point2D.Float dragEnd = transformPoint(dragEndScreen);
+
 			double dx = dragEnd.getX() - dragStart.getX();
 			double dy = dragEnd.getY() - dragStart.getY();
+
+			// ///////// Pan limit
+			panLimitX = targetComponent.getWidth();
+			panLimitY = targetComponent.getHeight();
+
+			if (coordTransform.getTranslateX() + dx < 0 || coordTransform.getTranslateX() + imageWidth + dx > panLimitX) {
+				dx = 0;
+			}
+			if (coordTransform.getTranslateY() + dx < 0 || coordTransform.getTranslateY() + imageHeight + dy > panLimitY) {
+				dy = 0;
+			}
+
+			System.out.println("dx : " + dx);
+			System.out.println("dy : " + dy);
+			System.out.println("coordTransform X : " + coordTransform.getTranslateX());
+			System.out.println("coordTransform Y : " + coordTransform.getTranslateY());
+
+			// //////////
+
 			coordTransform.translate(dx, dy);
+
 			dragStartScreen = dragEndScreen;
 			dragEndScreen = null;
 			targetComponent.repaint();
@@ -138,4 +167,8 @@ public class ZoomAndPanListener implements MouseListener, MouseMotionListener, M
 
 	}
 
+	public void setImageInfo(Image image) {
+		imageWidth = image.getWidth(null);
+		imageHeight = image.getHeight(null);
+	}
 }

@@ -24,14 +24,20 @@ public class ImagePanel extends JPanel {
 	public void setImage(Image image) {
 		this.image = image;
 
+		zoomAndPanListener.setImageInfo(image);
+
 		repaint();
+	}
+
+	public Image getImage() {
+		return image;
 	}
 
 	@Override
 	public void paintComponent(Graphics g1) {
 		super.paintComponent(g1);
 
-		Graphics2D g = (Graphics2D) g1;
+		Graphics2D g = (Graphics2D) g1.create();
 		g.setTransform(zoomAndPanListener.getCoordTransform());
 
 		if (image != null) {
