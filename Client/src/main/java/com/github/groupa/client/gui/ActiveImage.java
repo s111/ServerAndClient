@@ -15,6 +15,10 @@ public class ActiveImage {
 		this.library = library;
 	}
 
+	public void setActiveLibrary(Library library) {
+		this.library = library;
+	}
+
 	public int getCurrentImageIndex() {
 		return currentImageIndex;
 	}

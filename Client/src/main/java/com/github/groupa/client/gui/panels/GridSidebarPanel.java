@@ -20,6 +20,7 @@ import net.miginfocom.swing.MigLayout;
 
 import com.github.groupa.client.ConstrainedLibrary;
 import com.github.groupa.client.Library;
+import com.github.groupa.client.gui.ActiveImage;
 import com.github.groupa.client.views.GridView;
 import com.google.common.eventbus.EventBus;
 
@@ -32,6 +33,8 @@ public class GridSidebarPanel implements SidebarPanel {
 
 	private GridView gridView;
 
+	private ActiveImage activeImage;
+
 	private JButton searchButton;
 
 	private JTextField searchField;
@@ -40,10 +43,11 @@ public class GridSidebarPanel implements SidebarPanel {
 	// event!
 	@Inject
 	public GridSidebarPanel(EventBus eventBus, Library library,
-			GridView gridView) {
+			GridView gridView, ActiveImage activeImage) {
 		this.eventBus = eventBus;
 		this.library = library;
 		this.gridView = gridView;
+		this.activeImage = activeImage;
 
 		MigLayout layout = new MigLayout();
 
@@ -106,6 +110,8 @@ public class GridSidebarPanel implements SidebarPanel {
 				}
 
 				if (gridView != null) {
+					activeImage.setActiveLibrary(lib);
+
 					gridView.setLibrary(lib);
 				}
 			}
