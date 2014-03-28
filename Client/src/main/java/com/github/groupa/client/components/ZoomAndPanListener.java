@@ -1,8 +1,6 @@
 package com.github.groupa.client.components;
 
 import java.awt.Component;
-import java.awt.Image;
-import java.awt.Point;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
@@ -13,44 +11,25 @@ import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 
 public class ZoomAndPanListener implements MouseListener, MouseMotionListener, MouseWheelListener {
-	public static final int DEFAULT_MIN_ZOOM_LEVEL = -20;
-	public static final int DEFAULT_MAX_ZOOM_LEVEL = 10;
-	public static final double DEFAULT_ZOOM_MULTIPLICATION_FACTOR = 1.2;
 
 	private Component targetComponent;
 
-	private int zoomLevel = 0;
-	private int minZoomLevel = DEFAULT_MIN_ZOOM_LEVEL;
-	private int maxZoomLevel = DEFAULT_MAX_ZOOM_LEVEL;
-	private double zoomMultiplicationFactor = DEFAULT_ZOOM_MULTIPLICATION_FACTOR;
-
-	private Point dragStartScreen;
-	private Point dragEndScreen;
-	private AffineTransform coordTransform = new AffineTransform();
-
-	private int panLimitX;
-	private int panLimitY;
-
-	private int imageWidth;
-	private int imageHeight;
+	private double currentX;
+	private double currentY;
+	private double previousX;
+	private double previousY;
+	private double zoom = 1;
 
 	public ZoomAndPanListener(Component targetComponent) {
 		this.targetComponent = targetComponent;
-	}
-
-	public ZoomAndPanListener(Component targetComponent, int minZoomLevel, int maxZoomLevel, double zoomMultiplicationFactor) {
-		this.targetComponent = targetComponent;
-		this.minZoomLevel = minZoomLevel;
-		this.maxZoomLevel = maxZoomLevel;
-		this.zoomMultiplicationFactor = zoomMultiplicationFactor;
 	}
 
 	public void mouseClicked(MouseEvent e) {
 	}
 
 	public void mousePressed(MouseEvent e) {
-		dragStartScreen = e.getPoint();
-		dragEndScreen = null;
+		previousX = e.getX();
+		previousY = e.getY();
 	}
 
 	public void mouseReleased(MouseEvent e) {
@@ -66,109 +45,67 @@ public class ZoomAndPanListener implements MouseListener, MouseMotionListener, M
 	}
 
 	public void mouseDragged(MouseEvent e) {
-		// enforcePanLimit()
 		moveCamera(e);
 	}
 
 	public void mouseWheelMoved(MouseWheelEvent e) {
-		zoomCamera(e);
+		if (e.getScrollType() == MouseWheelEvent.WHEEL_UNIT_SCROLL) {
+			incrementZoom(.1 * -(double) e.getWheelRotation());
+		}
 	}
 
 	private void moveCamera(MouseEvent e) {
+		Point2D adjPreviousPoint = getTranslatedPoint(previousX, previousY);
+		Point2D adjNewPoint = getTranslatedPoint(e.getX(), e.getY());
+
+		double newX = adjNewPoint.getX() - adjPreviousPoint.getX();
+		double newY = adjNewPoint.getY() - adjPreviousPoint.getY();
+
+		previousX = e.getX();
+		previousY = e.getY();
+
+		currentX += newX;
+		currentY += newY;
+
+		targetComponent.repaint();
+	}
+
+	private void incrementZoom(double amount) {
+		if (zoom < 0) {
+			zoom = 0.00001;
+		}
+		zoom += amount;
+		zoom = Math.max(0.00001, zoom);
+		targetComponent.repaint();
+	}
+
+	public AffineTransform getCurrentTransform() {
+
+		AffineTransform tx = new AffineTransform();
+
+		double centerX = (double) targetComponent.getWidth() / 2;
+		double centerY = (double) targetComponent.getHeight() / 2;
+
+		tx.translate(centerX, centerY);
+		tx.scale(zoom, zoom);
+		tx.translate(currentX, currentY);
+
+		return tx;
+
+	}
+
+	// Convert the panel coordinates into the cooresponding coordinates on the
+	// translated image.
+	private Point2D getTranslatedPoint(double panelX, double panelY) {
+
+		AffineTransform tx = getCurrentTransform();
+		Point2D point2d = new Point2D.Double(panelX, panelY);
 		try {
-			dragEndScreen = e.getPoint();
-			Point2D.Float dragStart = transformPoint(dragStartScreen);
-			Point2D.Float dragEnd = transformPoint(dragEndScreen);
-
-			double dx = dragEnd.getX() - dragStart.getX();
-			double dy = dragEnd.getY() - dragStart.getY();
-
-			// ///////// Pan limit
-			panLimitX = targetComponent.getWidth();
-			panLimitY = targetComponent.getHeight();
-
-			if (coordTransform.getTranslateX() + dx < 0 || coordTransform.getTranslateX() + imageWidth + dx > panLimitX) {
-				dx = 0;
-			}
-			if (coordTransform.getTranslateY() + dx < 0 || coordTransform.getTranslateY() + imageHeight + dy > panLimitY) {
-				dy = 0;
-			}
-
-			System.out.println("dx : " + dx);
-			System.out.println("dy : " + dy);
-			System.out.println("coordTransform X : " + coordTransform.getTranslateX());
-			System.out.println("coordTransform Y : " + coordTransform.getTranslateY());
-
-			// //////////
-
-			coordTransform.translate(dx, dy);
-
-			dragStartScreen = dragEndScreen;
-			dragEndScreen = null;
-			targetComponent.repaint();
+			return tx.inverseTransform(point2d, null);
 		} catch (NoninvertibleTransformException ex) {
 			ex.printStackTrace();
+			return null;
 		}
-	}
 
-	private void zoomCamera(MouseWheelEvent e) {
-		try {
-			int wheelRotation = e.getWheelRotation();
-			Point p = e.getPoint();
-			if (wheelRotation > 0) {
-				if (zoomLevel < maxZoomLevel) {
-					zoomLevel++;
-					Point2D p1 = transformPoint(p);
-					coordTransform.scale(1 / zoomMultiplicationFactor, 1 / zoomMultiplicationFactor);
-					Point2D p2 = transformPoint(p);
-					coordTransform.translate(p2.getX() - p1.getX(), p2.getY() - p1.getY());
-					targetComponent.repaint();
-				}
-			} else {
-				if (zoomLevel > minZoomLevel) {
-					zoomLevel--;
-					Point2D p1 = transformPoint(p);
-					coordTransform.scale(zoomMultiplicationFactor, zoomMultiplicationFactor);
-					Point2D p2 = transformPoint(p);
-					coordTransform.translate(p2.getX() - p1.getX(), p2.getY() - p1.getY());
-					targetComponent.repaint();
-				}
-			}
-		} catch (NoninvertibleTransformException ex) {
-			ex.printStackTrace();
-		}
-	}
-
-	private Point2D.Float transformPoint(Point p1) throws NoninvertibleTransformException {
-		AffineTransform inverse = coordTransform.createInverse();
-		Point2D.Float p2 = new Point2D.Float();
-		inverse.transform(p1, p2);
-		return p2;
-	}
-
-	public int getZoomLevel() {
-
-		return zoomLevel;
-
-	}
-
-	public void setZoomLevel(int zoomLevel) {
-		this.zoomLevel = zoomLevel;
-
-	}
-
-	public AffineTransform getCoordTransform() {
-		return coordTransform;
-
-	}
-
-	public void setCoordTransform(AffineTransform coordTransform) {
-		this.coordTransform = coordTransform;
-
-	}
-
-	public void setImageInfo(Image image) {
-		imageWidth = image.getWidth(null);
-		imageHeight = image.getHeight(null);
 	}
 }
