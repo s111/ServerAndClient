@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import com.github.groupa.client.factories.ImageObjectFactory;
 import com.github.groupa.client.jsonobjects.ImageList;
 import com.github.groupa.client.jsonobjects.ImageShort;
+import com.github.groupa.client.main.Main;
 import com.github.groupa.client.servercommunication.RESTService;
 import com.google.inject.Inject;
 
@@ -22,8 +23,7 @@ public class ImageListFetcher {
 	}
 
 	public Library importAllImages() {
-		Library library = com.github.groupa.client.main.Main.injector
-				.getInstance(Library.class);
+		Library library = Main.injector.getInstance(Library.class);
 
 		ImageList imageList = null;
 
@@ -40,7 +40,7 @@ public class ImageListFetcher {
 			return null;
 		}
 
-		ImageObjectFactory imageObjectFactory = com.github.groupa.client.main.Main.injector
+		ImageObjectFactory imageObjectFactory = Main.injector
 				.getInstance(ImageObjectFactory.class);
 
 		for (ImageShort image : imageList.getImages()) {

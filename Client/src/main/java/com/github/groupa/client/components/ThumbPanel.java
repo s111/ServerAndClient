@@ -27,7 +27,7 @@ import com.google.common.eventbus.EventBus;
 
 @SuppressWarnings("serial")
 public class ThumbPanel extends JPanel implements Scrollable {
-	private GridLayout layout = new GridLayout(0, 4, 0, 0);
+	private GridLayout layout = new GridLayout(0, 2, 0, 0);
 
 	private List<Thumb> thumbs = new ArrayList<>();
 	private List<Thumb> selectedThumbs = new ArrayList<>();
@@ -189,11 +189,6 @@ public class ThumbPanel extends JPanel implements Scrollable {
 			setLayout(layout);
 
 			revalidate();
-
-			System.out.println(currentColumns + " : " + wantedColumns);
-		} else {
-			System.out.println(currentColumns + " : " + wantedColumns + " : "
-					+ thumbSize * wantedColumns + "/" + width + " : " + spare);
 		}
 	}
 }

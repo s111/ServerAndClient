@@ -16,7 +16,7 @@ public class GridContentPanel implements ContentPanel {
 
 	@Inject
 	public GridContentPanel(EventBus eventBus) {
-		MigLayout layout = new MigLayout("debug");
+		MigLayout layout = new MigLayout();
 
 		panel.setLayout(layout);
 
@@ -25,11 +25,7 @@ public class GridContentPanel implements ContentPanel {
 		GridView gridView = Main.injector.getInstance(GridView.class);
 		eventBus.register(gridView);
 
-		panel.add(gridView.getPanel(), "grow, push, wrap");
-
-		NavigationPanel navigationPanel = new NavigationPanel();
-
-		panel.add(navigationPanel.getPanel(), "growx");
+		panel.add(gridView.getPanel(), "grow, push");
 	}
 
 	@Override
