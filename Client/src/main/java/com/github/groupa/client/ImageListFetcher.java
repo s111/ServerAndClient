@@ -36,6 +36,8 @@ public class ImageListFetcher {
 
 		if (imageList == null) {
 			logger.error("Unknown problem getting images");
+
+			return;
 		}
 
 		ImageObjectFactory imageObjectFactory = Main.injector
