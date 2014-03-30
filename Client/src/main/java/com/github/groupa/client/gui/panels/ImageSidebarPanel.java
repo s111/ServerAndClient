@@ -132,11 +132,13 @@ public class ImageSidebarPanel implements SidebarPanel {
 		JPanel rater = new JPanel();
 
 		for (int i = 0; i < 5; i++) {
+			JLabel jLabel = new JLabel(Integer.toString(i + 1));
 			ratingButtons[i] = new JRadioButton();
 			ratingButtons[i].setEnabled(false);
 			ratingButtonGroup.add(ratingButtons[i]);
 
 			rater.add(ratingButtons[i]);
+			rater.add(jLabel);
 		}
 
 		panel.add(rater, "span 2");
