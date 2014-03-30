@@ -5,17 +5,24 @@ import java.awt.Dimension;
 import javax.inject.Inject;
 import javax.swing.JFrame;
 import javax.swing.JMenuBar;
+import javax.swing.UIManager;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.github.groupa.client.gui.panels.ContentPanel;
 import com.github.groupa.client.gui.panels.GridContentPanel;
 import com.github.groupa.client.gui.panels.GridSidebarPanel;
-import com.github.groupa.client.gui.panels.RootPanel;
 import com.github.groupa.client.gui.panels.ImageContentPanel;
 import com.github.groupa.client.gui.panels.ImageSidebarPanel;
+import com.github.groupa.client.gui.panels.RootPanel;
 import com.github.groupa.client.gui.panels.SidebarPanel;
 import com.google.common.eventbus.EventBus;
 
 public class MainFrame implements Frame {
+	private static final Logger logger = LoggerFactory
+			.getLogger(MainFrame.class);
+
 	private static final String TITLE = "Photo Manager";
 
 	private static final int MINIMUM_WIDTH = 640;
@@ -47,6 +54,8 @@ public class MainFrame implements Frame {
 
 		eventBus.register(rootPanel);
 
+		tryToSetSystemLookAndFeel();
+
 		frame.setTitle(TITLE);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setJMenuBar(menuBar);
@@ -72,6 +81,16 @@ public class MainFrame implements Frame {
 
 	public void setMinimumSize(Dimension minimumSize) {
 		frame.setMinimumSize(minimumSize);
+	}
+
+	private void tryToSetSystemLookAndFeel() {
+		try {
+			UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+		} catch (Exception exception) {
+			// If system look and feel can't be found, swing should just use the
+			// crossplatform one
+			logger.warn("Could not set system look and feel");
+		}
 	}
 
 	private void setUpRootPanel() {
