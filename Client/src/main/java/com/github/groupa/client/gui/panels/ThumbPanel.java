@@ -53,7 +53,7 @@ public class ThumbPanel extends JPanel implements Scrollable {
 
 	private EventBus eventBus;
 	private Library library;
-	private Thumb currentThumb = null;
+	private Thumb activeThumb = null;
 
 	@Inject
 	public ThumbPanel(EventBus eventBus, Library library) {
@@ -111,7 +111,7 @@ public class ThumbPanel extends JPanel implements Scrollable {
 		}
 		repaint();
 	}
-	
+
 	public List<ImageObject> getSelectedThumbs() {
 		List<ImageObject> list = new ArrayList<>();
 		for (Thumb thumb : selectedThumbs) {
@@ -120,11 +120,24 @@ public class ThumbPanel extends JPanel implements Scrollable {
 		return list;
 	}
 
-	public void setPanelThumbSize(String size) {
-		this.size = size;
-		setLibrary(library); //TODO: Reuse thumbs
+	public ImageObject getActiveImage() {
+		return (activeThumb == null) ? null : activeThumb.getImageObject();
+	}
+
+	public void setActiveImage(ImageObject image) {
+		for (Thumb thumb : thumbs) {
+			ImageObject img = thumb.getImageObject();
+			if (img.equals(image)) {
+				setActiveThumb(thumb);
+			}
+		}
 	}
 	
+	public void setPanelThumbSize(String size) {
+		this.size = size;
+		setLibrary(library); // TODO: Reuse thumbs
+	}
+
 	@Subscribe
 	public void switchViewListener(SwitchViewEvent event) {
 		if (event.hasSwitched() && View.GRID_VIEW.equals(event.getView())) {
@@ -154,14 +167,14 @@ public class ThumbPanel extends JPanel implements Scrollable {
 			}
 		}
 	}
-	
+
 	@Subscribe
 	public void LibrarySortListener(LibrarySortEvent event) {
 		if (event.getLibrary().equals(library)) {
-			setLibrary(library); //TODO: Reuse old thumbs
+			setLibrary(library); // TODO: Reuse old thumbs
 		}
 	}
-	
+
 	private void setLibrary(Library library) {
 		this.library = library;
 		this.thumbs.clear();
@@ -184,23 +197,23 @@ public class ThumbPanel extends JPanel implements Scrollable {
 		add(label);
 		repaint();
 	}
-	
+
 	private void addImages(List<ImageObject> list) {
-		for (ImageObject img : list) { //TODO: Make thread safe
+		for (ImageObject img : list) { // TODO: Make thread safe
 			addImage(img);
 		}
 	}
 
-	private void setCurrentThumb(Thumb thumb) {
-		if (currentThumb != null) {
-			if (selectedThumbs.contains(currentThumb)) {
-				setBorder(currentThumb, selectedThumbBorder);
+	private void setActiveThumb(Thumb thumb) {
+		if (activeThumb != null) {
+			if (selectedThumbs.contains(activeThumb)) {
+				setBorder(activeThumb, selectedThumbBorder);
 			} else {
-				setBorder(currentThumb, defaultThumbBorder);
+				setBorder(activeThumb, defaultThumbBorder);
 			}
 		}
-		currentThumb = thumb;
-		setBorder(currentThumb, currentThumbBorder);
+		activeThumb = thumb;
+		setBorder(activeThumb, currentThumbBorder);
 	}
 
 	private void setBorder(Thumb thumb, Border border) {
@@ -248,14 +261,14 @@ public class ThumbPanel extends JPanel implements Scrollable {
 				if (arg0.getClickCount() == 1) {
 					if (!arg0.isControlDown()) {
 						deselectThumbs();
-						setCurrentThumb(thumb);
+						setActiveThumb(thumb);
 					} else {
 						if (selectedThumbs.contains(thumb)) {
 							deselectThumb(thumb);
 						} else {
 							selectThumb(thumb);
 						}
-						setCurrentThumb(thumb);
+						setActiveThumb(thumb);
 					}
 				} else if (arg0.getClickCount() == 2) {
 					imageDoubleClicked(thumb);
@@ -263,7 +276,7 @@ public class ThumbPanel extends JPanel implements Scrollable {
 			}
 		}
 	}
-	
+
 	public class Thumb {
 		private ImageObject imageObject;
 		private Map<String, JLabel> labels;

@@ -51,6 +51,14 @@ public class GridPanel implements Panel {
 		return thumbPanel.getSelectedThumbs();
 	}
 
+	public ImageObject getActiveImage() {
+		return thumbPanel.getActiveImage();
+	}
+	
+	public void setActiveImage(ImageObject image) {
+		thumbPanel.setActiveImage(image);
+	}
+
 	private void setUpImageViewer() {
 		MigLayout layout = new MigLayout("fill");
 		panel = new JPanel(layout);
