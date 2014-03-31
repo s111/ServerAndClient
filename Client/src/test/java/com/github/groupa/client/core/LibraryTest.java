@@ -141,6 +141,6 @@ public class LibraryTest {
 
 	private void cleanup() {
 		test.expectedImage = null;
-		rootLibrary.getImages().clear();
+		rootLibrary.clear();
 	}
 }

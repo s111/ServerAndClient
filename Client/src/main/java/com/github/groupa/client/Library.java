@@ -40,10 +40,12 @@ public class Library {
 	public Library addConstraint(LibraryConstraint constraint) {
 		constraints.add(constraint);
 		ArrayList<ImageObject> list = new ArrayList<>();
-		for (ImageObject img : images) {
-			if (img != null) {
-				if (!constraint.isSatisfied(img)) {
-					list.add(img);
+		synchronized (images) {
+			for (ImageObject img : images) {
+				if (img != null) {
+					if (!constraint.isSatisfied(img)) {
+						list.add(img);
+					}
 				}
 			}
 		}
@@ -65,7 +67,13 @@ public class Library {
 	}
 
 	public List<ImageObject> getImages() {
-		return images;
+		List<ImageObject> list = new ArrayList<>();
+		list.addAll(images);
+		return list;
+	}
+
+	public void clear() {
+		images.clear();
 	}
 
 	public void add(ImageObject img) {
@@ -121,17 +129,13 @@ public class Library {
 
 	@Subscribe
 	public void libaryAddListener(LibraryAddEvent event) {
-		try {
-			if (parent == null || !event.getLibrary().equals(parent))
-				return;
-			ImageObject img = event.getImage();
-			if (img == null) {
-				tryAddImages(event.getImages());
-			} else {
-				tryAddImage(img);
-			}
-		} catch (Exception e) {
-			System.out.println(e.getStackTrace());
+		if (parent == null || !event.getLibrary().equals(parent))
+			return;
+		ImageObject img = event.getImage();
+		if (img == null) {
+			tryAddImages(event.getImages());
+		} else {
+			tryAddImage(img);
 		}
 	}
 
@@ -157,7 +161,7 @@ public class Library {
 		synchronized (images) {
 			if ((success = !images.contains(img))
 					&& LibraryConstraint.satisfied(constraints, img)) {
-				 images.add(img);
+				images.add(img);
 			}
 		}
 		if (success) {
