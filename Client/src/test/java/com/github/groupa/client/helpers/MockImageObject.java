@@ -2,7 +2,6 @@ package com.github.groupa.client.helpers;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-
 import java.awt.Image;
 import java.util.List;
 
@@ -21,8 +20,12 @@ public class MockImageObject {
 			when(img.getDescription()).thenReturn(description);
 		if (imageInfo != null)
 			when(img.getImageInfo()).thenReturn(imageInfo);
-		if (tags != null)
+		if (tags != null) {
 			when(img.getTags()).thenReturn(tags);
+			for (String tag : tags) {
+				when(img.hasTag(tag)).thenReturn(true);
+			}
+		}
 		if (image != null)
 			when(img.getImageRaw()).thenReturn(image);
 		when(img.getRating()).thenReturn(rating);

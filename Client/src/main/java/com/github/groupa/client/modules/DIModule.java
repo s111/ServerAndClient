@@ -8,7 +8,6 @@ import retrofit.RestAdapter;
 import com.github.groupa.client.ActiveImage;
 import com.github.groupa.client.Library;
 import com.github.groupa.client.RESTErrorHandler;
-import com.github.groupa.client.SingleLibrary;
 import com.github.groupa.client.factories.ImageObjectFactory;
 import com.github.groupa.client.gui.MenuBar;
 import com.github.groupa.client.gui.panels.GridPanel;
@@ -25,7 +24,7 @@ import com.google.inject.assistedinject.FactoryModuleBuilder;
 public class DIModule extends AbstractModule {
 	@Override
 	protected void configure() {
-		bind(Library.class).to(SingleLibrary.class).in(Singleton.class);
+		bind(Library.class).in(Singleton.class);
 		bind(EventBus.class).in(Singleton.class);
 		bind(GridPanel.class).in(Singleton.class);
 		bind(ActiveImage.class).in(Singleton.class);

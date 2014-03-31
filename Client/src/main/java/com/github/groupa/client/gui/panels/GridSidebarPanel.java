@@ -19,8 +19,8 @@ import javax.swing.border.EtchedBorder;
 import net.miginfocom.swing.MigLayout;
 
 import com.github.groupa.client.ActiveImage;
-import com.github.groupa.client.ConstrainedLibrary;
 import com.github.groupa.client.Library;
+import com.github.groupa.client.LibraryConstraint;
 import com.google.common.eventbus.EventBus;
 
 public class GridSidebarPanel implements SidebarPanel {
@@ -98,9 +98,8 @@ public class GridSidebarPanel implements SidebarPanel {
 				if (text == null || text.equals("")) {
 					lib = library;
 				} else {
-					lib = new ConstrainedLibrary(eventBus, library)
-							.addConstraint(ConstrainedLibrary.HAS_TAG, text);
-					eventBus.register(lib);
+					lib = new Library(library)
+							.addConstraint(new LibraryConstraint(LibraryConstraint.HAS_TAG, text));
 				}
 
 				activeImage.setActiveLibrary(lib);
