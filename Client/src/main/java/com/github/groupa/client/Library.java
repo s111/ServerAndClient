@@ -10,6 +10,7 @@ import java.util.Set;
 import com.github.groupa.client.events.ImageInfoChangedEvent;
 import com.github.groupa.client.events.LibraryAddEvent;
 import com.github.groupa.client.events.LibraryRemoveEvent;
+import com.github.groupa.client.events.LibrarySortEvent.LibrarySortEvent;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
@@ -188,7 +189,9 @@ public class Library {
 
 	private synchronized void sort() {
 		if (comparator != null) {
-			LibrarySort.sort(images, comparator);
+			if (LibrarySort.sort(images, comparator)) {
+				eventBus.post(new LibrarySortEvent(this));
+			}
 		}
 	}
 }

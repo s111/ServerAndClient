@@ -13,6 +13,7 @@ import com.github.groupa.client.gui.MenuBar;
 import com.github.groupa.client.gui.panels.GridPanel;
 import com.github.groupa.client.gui.panels.RootPanel;
 import com.github.groupa.client.gui.panels.MainPanel;
+import com.github.groupa.client.gui.panels.ThumbPanel;
 import com.github.groupa.client.main.Application;
 import com.github.groupa.client.main.Main;
 import com.github.groupa.client.servercommunication.RESTService;
@@ -27,6 +28,7 @@ public class DIModule extends AbstractModule {
 		bind(Library.class).in(Singleton.class);
 		bind(EventBus.class).in(Singleton.class);
 		bind(GridPanel.class).in(Singleton.class);
+		bind(ThumbPanel.class).in(Singleton.class);
 		bind(ActiveImage.class).in(Singleton.class);
 		bind(RootPanel.class).to(MainPanel.class);
 
