@@ -2,6 +2,7 @@ package com.github.groupa.client.gui.panels;
 
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.swing.JPanel;
@@ -9,6 +10,7 @@ import javax.swing.JScrollPane;
 
 import net.miginfocom.swing.MigLayout;
 
+import com.github.groupa.client.ImageObject;
 import com.google.common.eventbus.EventBus;
 
 public class GridPanel implements Panel {
@@ -30,7 +32,7 @@ public class GridPanel implements Panel {
 	}
 
 	public void setPanelThumbSize(String size) {
-		panelThumbSize = size;
+		thumbPanel.setPanelThumbSize(size);
 	}
 
 	public void setPreviewThumbSize(String size) {
@@ -43,6 +45,10 @@ public class GridPanel implements Panel {
 
 	public String getPanelThumbSize() {
 		return panelThumbSize;
+	}
+	
+	public List<ImageObject> getSelectedThumbs() {
+		return thumbPanel.getSelectedThumbs();
 	}
 
 	private void setUpImageViewer() {

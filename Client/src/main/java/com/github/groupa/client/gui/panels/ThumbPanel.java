@@ -112,6 +112,19 @@ public class ThumbPanel extends JPanel implements Scrollable {
 		repaint();
 	}
 	
+	public List<ImageObject> getSelectedThumbs() {
+		List<ImageObject> list = new ArrayList<>();
+		for (Thumb thumb : selectedThumbs) {
+			list.add(thumb.getImageObject());
+		}
+		return list;
+	}
+
+	public void setPanelThumbSize(String size) {
+		this.size = size;
+		setLibrary(library); //TODO: Reuse thumbs
+	}
+	
 	@Subscribe
 	public void switchViewListener(SwitchViewEvent event) {
 		if (event.hasSwitched() && View.GRID_VIEW.equals(event.getView())) {
