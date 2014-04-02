@@ -14,6 +14,8 @@ public class NavigationPanel implements Panel {
 	private JButton previousButton;
 	private JButton upButton;
 	private JButton nextButton;
+	private JButton rotateCWButton;
+	private JButton rotateCCWButton;
 
 	public NavigationPanel() {
 		MigLayout layout = new MigLayout();
@@ -23,13 +25,17 @@ public class NavigationPanel implements Panel {
 		panel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
 
 		previousButton = new JButton("<--");
+		rotateCCWButton = new JButton("CCW");
 		upButton = new JButton("#");
+		rotateCWButton = new JButton(" CW ");
 		nextButton = new JButton("-->");
 
 		JPanel buttons = new JPanel();
 
 		buttons.add(previousButton);
+		buttons.add(rotateCCWButton);
 		buttons.add(upButton);
+		buttons.add(rotateCWButton);
 		buttons.add(nextButton);
 
 		panel.add(buttons, "dock center");
@@ -45,6 +51,14 @@ public class NavigationPanel implements Panel {
 
 	public void setUpAction(ActionListener actionListener) {
 		upButton.addActionListener(actionListener);
+	}
+
+	public void setCWAction(ActionListener actionListener) {
+		rotateCWButton.addActionListener(actionListener);
+	}
+
+	public void setCCWAction(ActionListener actionListener) {
+		rotateCCWButton.addActionListener(actionListener);
 	}
 
 	@Override
