@@ -47,8 +47,8 @@ public class GridPanel implements Panel {
 		return panelThumbSize;
 	}
 	
-	public List<ImageObject> getSelectedThumbs() {
-		return thumbPanel.getSelectedThumbs();
+	public List<ImageObject> getSelectedImages() {
+		return thumbPanel.getSelectedImages();
 	}
 
 	public ImageObject getActiveImage() {

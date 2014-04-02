@@ -189,9 +189,8 @@ public class Library {
 
 	private synchronized void sort() {
 		if (comparator != null) {
-			if (LibrarySort.sort(images, comparator)) {
-				eventBus.post(new LibrarySortEvent(this));
-			}
+			Collections.sort(images, comparator);
+			eventBus.post(new LibrarySortEvent(this));
 		}
 	}
 }
