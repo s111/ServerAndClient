@@ -3,6 +3,7 @@ package com.github.groupa.client.servercommunication;
 import java.net.ConnectException;
 
 import retrofit.client.Response;
+import retrofit.http.Body;
 import retrofit.http.Field;
 import retrofit.http.FormUrlEncoded;
 import retrofit.http.GET;
@@ -15,6 +16,7 @@ import retrofit.mime.TypedFile;
 
 import com.github.groupa.client.jsonobjects.ImageInfo;
 import com.github.groupa.client.jsonobjects.ImageList;
+import com.google.gson.JsonObject;
 
 public interface RESTService {
 	@GET("/images")
@@ -73,5 +75,9 @@ public interface RESTService {
 	@FormUrlEncoded
 	@POST("/images/{id}/tag")
 	public Response tagImage(@Path("id") long id, @Field("value") String tags)
+			throws ConnectException;
+
+	@POST("/images/update")
+	public Response updateMultipleImages(@Body JsonObject json)
 			throws ConnectException;
 }
