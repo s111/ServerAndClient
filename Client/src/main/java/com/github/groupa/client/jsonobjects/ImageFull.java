@@ -1,6 +1,5 @@
 package com.github.groupa.client.jsonobjects;
 
-import java.sql.Timestamp;
 import java.util.List;
 
 public class ImageFull {
@@ -13,8 +12,6 @@ public class ImageFull {
 	private String description;
 
 	private List<String> tags;
-
-	private Timestamp date;
 
 	public long getId() {
 		return id;
@@ -55,13 +52,4 @@ public class ImageFull {
 	public void setIds(List<Long> ids) {
 		this.ids = ids;
 	}
-
-	public Timestamp getDate() {
-		return date;
-	}
-
-	public void setDate(Timestamp date) {
-		this.date = date;
-	}
-
 }
