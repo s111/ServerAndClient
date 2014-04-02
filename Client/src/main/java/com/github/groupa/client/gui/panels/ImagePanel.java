@@ -3,38 +3,32 @@ package com.github.groupa.client.gui.panels;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
-import java.awt.geom.AffineTransform;
 
 import javax.swing.JPanel;
 
-import com.github.groupa.client.gui.ZoomAndPanListener;
+import com.github.groupa.client.gui.listeners.ImagePanelMouseListener;
 
 @SuppressWarnings("serial")
 public class ImagePanel extends JPanel {
-
-	private ZoomAndPanListener zoomAndPanListener;
-
 	private Image image;
 
+	private ImagePanelMouseListener imagePanelMouseListener;
+
 	public ImagePanel() {
-		zoomAndPanListener = new ZoomAndPanListener(this);
-		addMouseListener(zoomAndPanListener);
-		addMouseMotionListener(zoomAndPanListener);
-		addMouseWheelListener(zoomAndPanListener);
+		imagePanelMouseListener = new ImagePanelMouseListener(this);
+
+		addMouseListener(imagePanelMouseListener);
+		addMouseMotionListener(imagePanelMouseListener);
+		addMouseWheelListener(imagePanelMouseListener);
 	}
 
 	public void setImage(Image image) {
 		this.image = image;
 
-		zoomAndPanListener.setImage(image);
-		zoomAndPanListener.resetZoom();
-		zoomAndPanListener.resetPan();
+		imagePanelMouseListener.resetZoom();
+		imagePanelMouseListener.resetPan();
 
 		repaint();
-	}
-
-	public Image getImage() {
-		return image;
 	}
 
 	@Override
@@ -46,9 +40,12 @@ public class ImagePanel extends JPanel {
 			return;
 		}
 
-		AffineTransform transformer = zoomAndPanListener.getCurrentTransform();
-
-		g2d.drawImage(image, transformer, null);
+		g2d.drawImage(image, imagePanelMouseListener.getCurrentTransform(),
+				null);
 		g2d.dispose();
+	}
+
+	public Image getImage() {
+		return image;
 	}
 }

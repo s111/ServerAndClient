@@ -1,22 +1,16 @@
-package com.github.groupa.client.gui;
+package com.github.groupa.client.gui.listeners;
 
-import java.awt.Component;
-import java.awt.Image;
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 
-public class ZoomAndPanListener implements MouseListener, MouseMotionListener,
-		MouseWheelListener {
+import com.github.groupa.client.gui.panels.ImagePanel;
 
-	private Component imagePanel;
-
-	private Image image;
+public class ImagePanelMouseListener extends MouseAdapter {
+	private ImagePanel imagePanel;
 
 	private double currentX;
 	private double currentY;
@@ -24,40 +18,31 @@ public class ZoomAndPanListener implements MouseListener, MouseMotionListener,
 	private double previousY;
 	private double zoom = 1;
 
-	public ZoomAndPanListener(Component imagePanel) {
+	public ImagePanelMouseListener(ImagePanel imagePanel) {
 		this.imagePanel = imagePanel;
 	}
 
-	public void mouseClicked(MouseEvent e) {
+	@Override
+	public void mousePressed(MouseEvent event) {
+		previousX = event.getX();
+		previousY = event.getY();
 	}
 
-	public void mousePressed(MouseEvent e) {
-		previousX = e.getX();
-		previousY = e.getY();
+	@Override
+	public void mouseReleased(MouseEvent event) {
 	}
 
-	public void mouseReleased(MouseEvent e) {
+	@Override
+	public void mouseDragged(MouseEvent event) {
+		moveCamera(event);
 	}
 
-	public void mouseEntered(MouseEvent e) {
-	}
-
-	public void mouseExited(MouseEvent e) {
-	}
-
-	public void mouseMoved(MouseEvent e) {
-	}
-
-	public void mouseDragged(MouseEvent e) {
-		moveCamera(e);
-	}
-
-	public void mouseWheelMoved(MouseWheelEvent e) {
-		zoom(e);
+	@Override
+	public void mouseWheelMoved(MouseWheelEvent event) {
+		zoom(event);
 	}
 
 	public AffineTransform getCurrentTransform() {
-
 		AffineTransform transformer = new AffineTransform();
 
 		// Set upper-left coordinate (0, 0) of image to center of component
@@ -66,13 +51,17 @@ public class ZoomAndPanListener implements MouseListener, MouseMotionListener,
 		transformer.translate(centerX, centerY);
 
 		// Get large images to resize down so they fit the window
-		if (image.getWidth(null) > imagePanel.getWidth()
-				|| image.getHeight(null) > imagePanel.getHeight()) {
+		if (imagePanel.getImage().getWidth(null) > imagePanel.getWidth()
+				|| imagePanel.getImage().getHeight(null) > imagePanel
+						.getHeight()) {
 			double ratio;
-			if (image.getWidth(null) > image.getHeight(null)) {
-				ratio = (double) image.getWidth(null) / imagePanel.getWidth();
+			if (imagePanel.getImage().getWidth(null) > imagePanel.getImage()
+					.getHeight(null)) {
+				ratio = (double) imagePanel.getImage().getWidth(null)
+						/ imagePanel.getWidth();
 			} else {
-				ratio = (double) image.getHeight(null) / imagePanel.getHeight();
+				ratio = (double) imagePanel.getImage().getHeight(null)
+						/ imagePanel.getHeight();
 			}
 
 			transformer.scale(zoom / ratio, zoom / ratio);
@@ -83,15 +72,11 @@ public class ZoomAndPanListener implements MouseListener, MouseMotionListener,
 		transformer.translate(currentX, currentY);
 
 		// Paint image to center of component
-		transformer.translate(-image.getWidth(null) / 2,
-				-image.getHeight(null) / 2);
+		transformer.translate(-imagePanel.getImage().getWidth(null) / 2,
+				-imagePanel.getImage().getHeight(null) / 2);
 
 		return transformer;
 
-	}
-
-	public void setImage(Image image) {
-		this.image = image;
 	}
 
 	public void resetZoom() {
@@ -104,7 +89,7 @@ public class ZoomAndPanListener implements MouseListener, MouseMotionListener,
 	}
 
 	private void moveCamera(MouseEvent e) {
-		if (image == null) {
+		if (imagePanel.getImage() == null) {
 			return;
 		}
 
