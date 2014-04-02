@@ -186,7 +186,6 @@ public class ThumbPanel extends JPanel implements Scrollable {
 		removeAll();
 		for (ImageObject image : images) {
 			Thumb thumb = thumbs.get(image);
-			setBorder(thumb, defaultThumbBorder);
 			add(thumb.getThumb(size));
 		}
 		revalidate();
