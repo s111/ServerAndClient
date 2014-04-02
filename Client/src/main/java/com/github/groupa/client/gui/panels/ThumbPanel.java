@@ -3,25 +3,19 @@ package com.github.groupa.client.gui.panels;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
-import java.awt.Image;
 import java.awt.Rectangle;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import javax.swing.BorderFactory;
-import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.Scrollable;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 
-import com.github.groupa.client.Callback;
 import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.Library;
 import com.github.groupa.client.events.ActiveLibraryChangedEvent;
@@ -37,14 +31,15 @@ import com.google.inject.Inject;
 public class ThumbPanel extends JPanel implements Scrollable {
 	private GridLayout layout = new GridLayout(0, 2, 0, 0);
 
-	private List<Thumb> thumbs = new ArrayList<>();
-	private List<Thumb> selectedThumbs = new ArrayList<>();
-	private Map<Thumb, ThumbListener> thumbListeners = new HashMap<>();
+	private List<ImageObject> images = new ArrayList<>();
+	private List<ImageObject> selectedImages = new ArrayList<>();
+
+	private Map<ImageObject, Thumb> thumbs = new HashMap<>();
 
 	private Border selectedThumbBorder = BorderFactory.createLineBorder(
-			Color.cyan, 2);
-	private Border currentThumbBorder = BorderFactory.createLineBorder(
 			Color.blue, 2);
+	private Border activeThumbBorder = BorderFactory.createLineBorder(
+			Color.cyan, 2);
 
 	private Border defaultThumbBorder = BorderFactory.createEmptyBorder(2, 2,
 			2, 2);
@@ -53,7 +48,7 @@ public class ThumbPanel extends JPanel implements Scrollable {
 
 	private EventBus eventBus;
 	private Library library;
-	private Thumb activeThumb = null;
+	private ImageObject activeImage = null;
 
 	@Inject
 	public ThumbPanel(EventBus eventBus, Library library) {
@@ -112,27 +107,30 @@ public class ThumbPanel extends JPanel implements Scrollable {
 		repaint();
 	}
 
-	public List<ImageObject> getSelectedThumbs() {
+	public List<ImageObject> getSelectedImages() {
 		List<ImageObject> list = new ArrayList<>();
-		for (Thumb thumb : selectedThumbs) {
-			list.add(thumb.getImageObject());
-		}
+		list.addAll(selectedImages);
 		return list;
 	}
 
 	public ImageObject getActiveImage() {
-		return (activeThumb == null) ? null : activeThumb.getImageObject();
+		return activeImage;
 	}
 
 	public void setActiveImage(ImageObject image) {
-		for (Thumb thumb : thumbs) {
-			ImageObject img = thumb.getImageObject();
-			if (img.equals(image)) {
-				setActiveThumb(thumb);
+		if (image == activeImage || !images.contains(image))
+			return;
+		if (activeImage != null) {
+			if (selectedImages.contains(activeImage)) {
+				setBorder(thumbs.get(activeImage), selectedThumbBorder);
+			} else {
+				setBorder(thumbs.get(activeImage), defaultThumbBorder);
 			}
 		}
+		activeImage = image;
+		setBorder(thumbs.get(image), activeThumbBorder);
 	}
-	
+
 	public void setPanelThumbSize(String size) {
 		this.size = size;
 		setLibrary(library); // TODO: Reuse thumbs
@@ -175,26 +173,23 @@ public class ThumbPanel extends JPanel implements Scrollable {
 		}
 	}
 
+	private Library getLibrary() {
+		return library;
+	}
+	
 	private void setLibrary(Library library) {
 		this.library = library;
-		this.thumbs.clear();
-		this.selectedThumbs.clear();
+		this.images.clear();
+		this.selectedImages.clear();
+		activeImage = null;
 		removeAll();
-		for (ImageObject img : library.getImages()) {
-			addImage(img);
-		}
-		repaint();
+		addImages(library.getImages());
 	}
 
-	private void addImage(ImageObject image) {
-		Thumb thumb = new Thumb(image);
-		thumbs.add(thumb);
+	private void addThumbToPanel(Thumb thumb) {
 		JLabel label = thumb.getThumb(size);
-		setBorder(thumb, defaultThumbBorder);
-		ThumbListener listener = new ThumbListener(thumb);
-		label.addMouseListener(listener);
-		thumbListeners.put(thumb, listener);
 		add(label);
+		setBorder(thumb, defaultThumbBorder);
 		repaint();
 	}
 
@@ -204,113 +199,54 @@ public class ThumbPanel extends JPanel implements Scrollable {
 		}
 	}
 
-	private void setActiveThumb(Thumb thumb) {
-		if (activeThumb != null) {
-			if (selectedThumbs.contains(activeThumb)) {
-				setBorder(activeThumb, selectedThumbBorder);
-			} else {
-				setBorder(activeThumb, defaultThumbBorder);
+	private void addImage(ImageObject image) {
+		images.add(image);
+		Thumb thumb = new Thumb(image) {
+			@Override
+			public void singleClick() {
+				ThumbPanel.this.deselectImages();
+				ThumbPanel.this.setActiveImage(getImageObject());
 			}
-		}
-		activeThumb = thumb;
-		setBorder(activeThumb, currentThumbBorder);
+
+			@Override
+			public void ctrlClick() {
+				if (ThumbPanel.this.selectedImages.contains(getImageObject())) {
+					ThumbPanel.this.deselectImage(getImageObject());
+				} else {
+					ThumbPanel.this.selectImage(getImageObject());
+				}
+				ThumbPanel.this.setActiveImage(getImageObject());
+			}
+
+			@Override
+			public void doubleClick() {
+				eventBus.post(new SwitchViewEvent(View.IMAGE_VIEW, getImageObject(), ThumbPanel.this.getLibrary()));
+			}
+
+		};
+		thumbs.put(image, thumb);
+		addThumbToPanel(thumb);
 	}
 
 	private void setBorder(Thumb thumb, Border border) {
 		thumb.getThumb(size).setBorder(border);
 	}
 
-	private void deselectThumbs() {
-		Iterator<Thumb> itr = selectedThumbs.iterator();
-		while (itr.hasNext()) {
-			Thumb thumb = itr.next();
-			setBorder(thumb, defaultThumbBorder);
-			itr.remove();
+	private void deselectImages() {
+		List<ImageObject> list = new ArrayList<>();
+		list.addAll(selectedImages);
+		for (ImageObject image : list) {
+			deselectImage(image);
 		}
 	}
 
-	private void imageDoubleClicked(Thumb thumb) {
-		eventBus.post(new SwitchViewEvent(View.IMAGE_VIEW, thumb
-				.getImageObject(), library));
+	private void deselectImage(ImageObject image) {
+		setBorder(thumbs.get(image), defaultThumbBorder);
+		selectedImages.remove(image);
 	}
 
-	private void deselectThumb(Thumb thumb) {
-		if (!selectedThumbs.contains(thumb))
-			return;
-		setBorder(thumb, defaultThumbBorder);
-		selectedThumbs.remove(thumb);
-	}
-
-	private void selectThumb(Thumb thumb) {
-		if (selectedThumbs.contains(thumb))
-			return;
-		setBorder(thumb, selectedThumbBorder);
-		selectedThumbs.add(thumb);
-	}
-
-	private class ThumbListener extends MouseAdapter {
-		private Thumb thumb;
-
-		public ThumbListener(Thumb thumb) {
-			this.thumb = thumb;
-		}
-
-		@Override
-		public void mouseClicked(MouseEvent arg0) {
-			if (arg0.getButton() == MouseEvent.BUTTON1) {
-				if (arg0.getClickCount() == 1) {
-					if (!arg0.isControlDown()) {
-						deselectThumbs();
-						setActiveThumb(thumb);
-					} else {
-						if (selectedThumbs.contains(thumb)) {
-							deselectThumb(thumb);
-						} else {
-							selectThumb(thumb);
-						}
-						setActiveThumb(thumb);
-					}
-				} else if (arg0.getClickCount() == 2) {
-					imageDoubleClicked(thumb);
-				}
-			}
-		}
-	}
-
-	public class Thumb {
-		private ImageObject imageObject;
-		private Map<String, JLabel> labels;
-
-		public Thumb(ImageObject img) {
-			this.imageObject = img;
-			labels = new HashMap<String, JLabel>();
-		}
-
-		public ImageObject getImageObject() {
-			return imageObject;
-		}
-
-		public JLabel getThumb(String size) {
-			JLabel label = labels.get(size);
-			if (label == null) {
-				final JLabel newLabel = new JLabel();
-				newLabel.setText("Not loaded");
-				label = newLabel;
-				labels.put(size, label);
-				imageObject.loadThumbWithCallback(new Callback<Image>() {
-					@Override
-					public void success(Image image) {
-						newLabel.setText("");
-						newLabel.setIcon(new ImageIcon(image));
-					}
-
-					@Override
-					public void failure() {
-						newLabel.setText("Error loading image");
-					}
-				}, size);
-			}
-			return label;
-		}
+	private void selectImage(ImageObject image) {
+		setBorder(thumbs.get(image), selectedThumbBorder);
+		selectedImages.add(image);
 	}
 }
