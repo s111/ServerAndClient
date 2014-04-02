@@ -80,6 +80,20 @@ public class ImageContentPanel implements ContentPanel {
 			}
 		});
 
+		navigationPanel.setCWAction(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+		
+		navigationPanel.setCCWAction(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+			}
+		});
+
 		panel.add(navigationPanel.getPanel(), "growx");
 
 		addKeyBindings();
