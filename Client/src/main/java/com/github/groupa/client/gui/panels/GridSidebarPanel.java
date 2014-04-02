@@ -27,11 +27,13 @@ public class GridSidebarPanel implements SidebarPanel {
 
 	private ThumbPanel thumbPanel;
 	private Library rootLibrary;
+	private ZoomSlider zoomSlider;
 
 	@Inject
-	public GridSidebarPanel(Library rootLibrary, ThumbPanel thumbPanel) {
+	public GridSidebarPanel(Library rootLibrary, ThumbPanel thumbPanel, ZoomSlider zoomSlider) {
 		this.rootLibrary = rootLibrary;
 		this.thumbPanel = thumbPanel;
+		this.zoomSlider = zoomSlider;
 
 		MigLayout layout = new MigLayout();
 
@@ -42,6 +44,12 @@ public class GridSidebarPanel implements SidebarPanel {
 		setUpSearchComponents();
 		setUpSortComponents();
 		setUpTagComponents();
+		setUpZoomComponents();
+	}
+
+	private void setUpZoomComponents() {
+		panel.add(new JLabel("Zoom"), "wrap");
+		panel.add(zoomSlider.getPanel(), "wrap");
 	}
 
 	private void setUpTagComponents() {
