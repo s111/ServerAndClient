@@ -107,6 +107,14 @@ public class Library {
 		return images.contains(image);
 	}
 
+	private boolean hasImage(long id) {
+		for (ImageObject image : images) {
+			if (image.getId() == id)
+				return true;
+		}
+		return false;
+	}
+
 	public int indexOf(ImageObject img) {
 		return images.indexOf(img);
 	}
@@ -143,7 +151,7 @@ public class Library {
 	private void tryAddImages(List<ImageObject> list) {
 		List<ImageObject> newImages = new ArrayList<>();
 		for (ImageObject img : list) {
-			if (!images.contains(img)
+			if (!hasImage(img.getId())
 					&& LibraryConstraint.satisfied(constraints, img)) {
 				newImages.add(img);
 			}
@@ -160,8 +168,9 @@ public class Library {
 	private void tryAddImage(ImageObject img) {
 		boolean success = false;
 		synchronized (images) {
-			if ((success = !images.contains(img))
-					&& LibraryConstraint.satisfied(constraints, img)) {
+			success = !hasImage(img.getId());
+
+			if (success && LibraryConstraint.satisfied(constraints, img)) {
 				images.add(img);
 			}
 		}
