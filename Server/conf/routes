@@ -31,6 +31,9 @@ POST   /api/images/:id/describe     controllers.ImageDescriber.describe(id: Long
 # Tag image
 POST   /api/images/:id/tag          controllers.ImageTagger.tag(id: Long)
 
+# Describe, rate and tag multiple images
+POST   /api/images/update           controllers.ImageUpdateMultiple.update()
+
 # Upload image
 POST   /api/image                   controllers.ImageUploader.upload()
 
