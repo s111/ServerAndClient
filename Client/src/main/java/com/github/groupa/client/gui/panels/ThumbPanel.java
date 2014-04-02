@@ -5,12 +5,13 @@ import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Rectangle;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import javax.swing.BorderFactory;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.Scrollable;
 import javax.swing.SwingConstants;
@@ -18,7 +19,6 @@ import javax.swing.border.Border;
 
 import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.Library;
-import com.github.groupa.client.events.ActiveLibraryChangedEvent;
 import com.github.groupa.client.events.LibraryAddEvent;
 import com.github.groupa.client.events.SwitchViewEvent;
 import com.github.groupa.client.events.LibrarySortEvent.LibrarySortEvent;
@@ -90,10 +90,10 @@ public class ThumbPanel extends JPanel implements Scrollable {
 	}
 
 	public void widthChanged(int width) {
-		if (thumbs.isEmpty())
+		if (images.isEmpty())
 			return;
 		int currentColumns = layout.getColumns();
-		int thumbSize = thumbs.get(0).getThumb(size).getWidth() + 3;
+		int thumbSize = thumbs.get(images.get(0)).getThumb(size).getWidth() + 3;
 		int wantedColumns = width / thumbSize;
 		int spare = width - wantedColumns * thumbSize;
 		if (currentColumns < wantedColumns && spare > 5
@@ -133,7 +133,7 @@ public class ThumbPanel extends JPanel implements Scrollable {
 
 	public void setPanelThumbSize(String size) {
 		this.size = size;
-		setLibrary(library); // TODO: Reuse thumbs
+		reAddThumbsToPanel();
 	}
 
 	@Subscribe
@@ -147,14 +147,6 @@ public class ThumbPanel extends JPanel implements Scrollable {
 	}
 
 	@Subscribe
-	public void activeLibrarychangeListener(ActiveLibraryChangedEvent event) {
-		Library library = event.getLibrary();
-		if (!library.equals(this.library)) {
-			setLibrary(library);
-		}
-	}
-
-	@Subscribe
 	public void libraryAddImageListener(LibraryAddEvent event) {
 		if (event.getLibrary().equals(library)) {
 			ImageObject image = event.getImage();
@@ -163,20 +155,26 @@ public class ThumbPanel extends JPanel implements Scrollable {
 			} else {
 				addImage(image);
 			}
+			Comparator<ImageObject> cmp = library.getComparator();
+			if (cmp != null) {
+				Collections.sort(images, cmp);
+				reAddThumbsToPanel();
+			}
 		}
 	}
 
 	@Subscribe
 	public void LibrarySortListener(LibrarySortEvent event) {
 		if (event.getLibrary().equals(library)) {
-			setLibrary(library); // TODO: Reuse old thumbs
+			Collections.sort(images, library.getComparator());
+			reAddThumbsToPanel();
 		}
 	}
 
 	private Library getLibrary() {
 		return library;
 	}
-	
+
 	private void setLibrary(Library library) {
 		this.library = library;
 		this.images.clear();
@@ -186,11 +184,13 @@ public class ThumbPanel extends JPanel implements Scrollable {
 		addImages(library.getImages());
 	}
 
-	private void addThumbToPanel(Thumb thumb) {
-		JLabel label = thumb.getThumb(size);
-		add(label);
-		setBorder(thumb, defaultThumbBorder);
-		repaint();
+	private void reAddThumbsToPanel() {
+		removeAll();
+		for (ImageObject image : images) {
+			Thumb thumb = thumbs.get(image);
+			setBorder(thumb, defaultThumbBorder);
+			add(thumb.getThumb(size));
+		}
 	}
 
 	private void addImages(List<ImageObject> list) {
@@ -210,6 +210,10 @@ public class ThumbPanel extends JPanel implements Scrollable {
 
 			@Override
 			public void ctrlClick() {
+				if (ThumbPanel.this.activeImage != null
+						&& ThumbPanel.this.selectedImages.isEmpty()) {
+					ThumbPanel.this.selectImage(ThumbPanel.this.activeImage);
+				}
 				if (ThumbPanel.this.selectedImages.contains(getImageObject())) {
 					ThumbPanel.this.deselectImage(getImageObject());
 				} else {
@@ -220,12 +224,13 @@ public class ThumbPanel extends JPanel implements Scrollable {
 
 			@Override
 			public void doubleClick() {
-				eventBus.post(new SwitchViewEvent(View.IMAGE_VIEW, getImageObject(), ThumbPanel.this.getLibrary()));
+				eventBus.post(new SwitchViewEvent(View.IMAGE_VIEW,
+						getImageObject(), ThumbPanel.this.getLibrary()));
 			}
-
 		};
 		thumbs.put(image, thumb);
-		addThumbToPanel(thumb);
+		setBorder(thumb, defaultThumbBorder);
+		add(thumb.getThumb(size));
 	}
 
 	private void setBorder(Thumb thumb, Border border) {
