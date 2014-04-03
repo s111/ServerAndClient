@@ -1,6 +1,7 @@
 package com.github.groupa.client;
 
 import java.awt.Image;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.ConnectException;
@@ -33,7 +34,7 @@ public class ImageObject {
 
 	private long id;
 
-	private Image imageRaw;
+	private BufferedImage imageRaw;
 
 	private ImageInfo imageInfo;
 
@@ -73,7 +74,7 @@ public class ImageObject {
 		return imageRaw;
 	}
 
-	public void loadImageWithCallback(final Callback<Image> callback) {
+	public void loadImageWithCallback(final Callback<BufferedImage> callback) {
 		new Thread(new Runnable() {
 			@Override
 			public void run() {

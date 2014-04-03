@@ -1,9 +1,9 @@
 package com.github.groupa.client.gui.panels;
 
-import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
 
 import javax.inject.Inject;
 import javax.swing.AbstractAction;
@@ -67,30 +67,30 @@ public class ImageContentPanel implements ContentPanel {
 
 		navigationPanel.setPreviousAction(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(ActionEvent event) {
 				setImage(currentImageIndex - 1);
 			}
 		});
 
 		navigationPanel.setUpAction(new ActionListener() {
 			@Override
-			public void actionPerformed(ActionEvent arg0) {
+			public void actionPerformed(ActionEvent event) {
 				ImageContentPanel.this.eventBus.post(new SwitchViewEvent(
 						View.GRID_VIEW));
 			}
 		});
 
 		navigationPanel.setCWAction(new ActionListener() {
-
 			@Override
-			public void actionPerformed(ActionEvent e) {
+			public void actionPerformed(ActionEvent event) {
+				ImageContentPanel.this.imagePanel.rotateCW();
 			}
 		});
-		
+
 		navigationPanel.setCCWAction(new ActionListener() {
-			
 			@Override
-			public void actionPerformed(ActionEvent arg0) {
+			public void actionPerformed(ActionEvent event) {
+				ImageContentPanel.this.imagePanel.rotateCCW();
 			}
 		});
 
@@ -147,9 +147,9 @@ public class ImageContentPanel implements ContentPanel {
 		final ImageObject activeImageObject = library
 				.getImage(currentImageIndex);
 
-		activeImageObject.loadImageWithCallback(new Callback<Image>() {
+		activeImageObject.loadImageWithCallback(new Callback<BufferedImage>() {
 			@Override
-			public void success(Image image) {
+			public void success(BufferedImage image) {
 				imagePanel.setImage(image);
 
 				eventBus.post(new ActiveImageChangedEvent(activeImageObject));
