@@ -227,4 +227,10 @@ public class ImageObject {
 
 		return imageFull.getTags().containsAll(tags);
 	}
+
+	public boolean equals(Object o) {
+		if (o == null)
+			return false;
+		return ((ImageObject) o).getId() == getId();
+	}
 }
