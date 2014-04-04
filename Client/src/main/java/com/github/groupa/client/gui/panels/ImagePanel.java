@@ -2,6 +2,8 @@ package com.github.groupa.client.gui.panels;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.event.ComponentAdapter;
+import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
@@ -30,6 +32,8 @@ public class ImagePanel extends JComponent {
 		addMouseListener(imageMouseListener);
 		addMouseMotionListener(imageMouseListener);
 		addMouseWheelListener(imageMouseListener);
+
+		addComponentListener(new ImagePanelListener());
 	}
 
 	public void setImage(BufferedImage image) {
@@ -255,5 +259,17 @@ public class ImagePanel extends JComponent {
 
 			repaint();
 		}
+	}
+
+	private class ImagePanelListener extends ComponentAdapter {
+
+		@Override
+		public void componentResized(ComponentEvent e) {
+			super.componentResized(e);
+			if (image != null) {
+				resizeToPanel();
+			}
+		}
+
 	}
 }
