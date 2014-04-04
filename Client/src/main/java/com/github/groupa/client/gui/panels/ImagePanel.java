@@ -14,34 +14,39 @@ import javax.swing.JComponent;
 
 @SuppressWarnings("serial")
 public class ImagePanel extends JComponent {
+	private static final double SCALE_MAX = 2.8;
+	private static final double SCALE_MIN = 0.1;
+
 	private BufferedImage image;
 
 	private double imageOffsetX;
 	private double imageOffsetY;
 
+	private double oldScale = 1;
 	private double scale = 1;
 	private double scaleWhereImageWillBeOutOfBounds;
 
 	private int rotation;
 
 	private boolean invertSize;
+	private boolean resizeImageToFitPanelOnNextRepaint;
 
 	public ImagePanel() {
 		ImageMouseListener imageMouseListener = new ImageMouseListener();
+		ImagePanelListener imageComponentListener = new ImagePanelListener();
 
 		addMouseListener(imageMouseListener);
 		addMouseMotionListener(imageMouseListener);
 		addMouseWheelListener(imageMouseListener);
-
-		addComponentListener(new ImagePanelListener());
+		addComponentListener(imageComponentListener);
 	}
 
 	public void setImage(BufferedImage image) {
 		this.image = image;
 
-		resetImage();
-		resizeToPanel();
+		resizeImageToFitPanelOnNextRepaint = true;
 
+		resetImage();
 		repaint();
 	}
 
@@ -75,6 +80,7 @@ public class ImagePanel extends JComponent {
 	}
 
 	private void resetImageScaling() {
+		oldScale = 1;
 		scale = 1;
 	}
 
@@ -86,16 +92,36 @@ public class ImagePanel extends JComponent {
 	protected void paintComponent(Graphics graphics) {
 		super.paintComponent(graphics);
 
-		if (image == null)
+		if (image == null) {
 			return;
+		}
 
 		calculateScaleWhereImageWillBeOutOfBounds();
 		checkOffsetBoundaries();
+
+		if (resizeImageToFitPanelOnNextRepaint) {
+			resetImagePosition();
+			resizeToPanel();
+
+			resizeImageToFitPanelOnNextRepaint = false;
+		}
 
 		AffineTransform imageTransformer = createTransformer();
 
 		Graphics2D graphics2d = (Graphics2D) graphics;
 		graphics2d.drawImage(image, imageTransformer, null);
+	}
+
+	/**
+	 * Should be called on next repaint not directly!
+	 */
+	private void resizeToPanel() {
+		if (getImageWidth() > getWidth() || getImageHeight() > getHeight()) {
+			// Scale the image down to just below panel size
+			setScale(scaleWhereImageWillBeOutOfBounds * 0.99);
+		} else {
+			resetImageScaling();
+		}
 	}
 
 	private void calculateScaleWhereImageWillBeOutOfBounds() {
@@ -119,8 +145,10 @@ public class ImagePanel extends JComponent {
 		double centerOfPanelRelativeToImageAnchorX = (getWidth() - getScaledImageWidth()) / 2;
 		double centerOfPanelRelativeToImageAnchorY = (getHeight() - getScaledImageHeight()) / 2;
 
-		double distanceFromTopLeftX = imageOffsetX + centerOfPanelRelativeToImageAnchorX;
-		double distanceFromTopLeftY = imageOffsetY + centerOfPanelRelativeToImageAnchorY;
+		double distanceFromTopLeftX = imageOffsetX
+				+ centerOfPanelRelativeToImageAnchorX;
+		double distanceFromTopLeftY = imageOffsetY
+				+ centerOfPanelRelativeToImageAnchorY;
 
 		/*
 		 * This function basically moves the coordiante system from the topleft
@@ -131,7 +159,8 @@ public class ImagePanel extends JComponent {
 
 		imageTransformer.scale(scale, scale);
 
-		imageTransformer.rotate(Math.toRadians(rotation), image.getWidth() / 2, image.getHeight() / 2);
+		imageTransformer.rotate(Math.toRadians(rotation), image.getWidth() / 2,
+				image.getHeight() / 2);
 
 		return imageTransformer;
 	}
@@ -150,31 +179,6 @@ public class ImagePanel extends JComponent {
 		imageOffsetX = Math.min(rightLimit, imageOffsetX);
 	}
 
-	private void resizeToPanel() {
-		double aspectRatio = (double) getImageHeight() / getImageWidth();
-		double scaleRatio = 1;
-
-		double newImageHeight = 0;
-		double newImageWidth = 0;
-
-		if (getImageWidth() > getWidth()) {
-			newImageHeight = aspectRatio * getWidth();
-			scaleRatio = getImageHeight() / newImageHeight;
-		}
-
-		if (newImageHeight == 0)
-			newImageHeight = getImageHeight();
-
-		if (newImageHeight > getHeight()) {
-			aspectRatio = (double) getImageWidth() / getImageHeight();
-
-			newImageWidth = getHeight() * aspectRatio;
-			scaleRatio = getImageWidth() / newImageWidth;
-		}
-
-		scale = 1 / scaleRatio;
-	}
-
 	private int getImageWidth() {
 		return invertSize ? image.getHeight() : image.getWidth();
 	}
@@ -184,17 +188,53 @@ public class ImagePanel extends JComponent {
 	}
 
 	private double getScaledImageWidth() {
-		return invertSize ? (getImageHeight() * scale) : (getImageWidth() * scale);
+		return image.getWidth() * scale;
 	}
 
 	private double getScaledImageHeight() {
-		return invertSize ? (getImageWidth() * scale) : (getImageHeight() * scale);
+		return image.getHeight() * scale;
+	}
+
+	private void setScale(double newScale) {
+		oldScale = scale;
+		scale = newScale;
+
+		restrainScale();
+		handleZoomOut();
+	}
+
+	private void restrainScale() {
+		scale = Math.max(SCALE_MIN, scale);
+		scale = Math.min(SCALE_MAX, scale);
+	}
+
+	private void handleZoomOut() {
+		boolean isZoomingOut = scale < oldScale;
+
+		if (isZoomingOut && oldScale >= scaleWhereImageWillBeOutOfBounds) {
+			double scaleDifference = oldScale
+					- scaleWhereImageWillBeOutOfBounds;
+
+			/*
+			 * Calculates how fast it should converge towards the center of the
+			 * panel. It will move faster as it comes closer. If the
+			 * scaleDifference is only 1 then 100% of the distance will be
+			 * covered if zoomed out. If the scaleDifference is 2 then 50% of
+			 * the distance will be covered and so on. scaleDifference telling
+			 * you how many "clicks" the image is zoomed out.
+			 */
+			float fractionOfDistanceTowardsCenterToMove = 1f / ((int) (scaleDifference * 10) + 1);
+
+			imageOffsetX = (int) (imageOffsetX - imageOffsetX
+					* fractionOfDistanceTowardsCenterToMove);
+			imageOffsetY = (int) (imageOffsetY - imageOffsetY
+					* fractionOfDistanceTowardsCenterToMove);
+		}
 	}
 
 	private class ImageMouseListener extends MouseAdapter {
 		private static final double SCALE_TICK = 0.1;
-		private static final double SCALE_MAX = 2.8;
-		private static final double SCALE_MIN = 0.1;
+
 		private int startOffsetX;
 		private int startOffsetY;
 
@@ -232,44 +272,21 @@ public class ImagePanel extends JComponent {
 		public void mouseWheelMoved(MouseWheelEvent event) {
 			super.mouseWheelMoved(event);
 
-			double oldScale = scale;
+			double newScale = scale - (SCALE_TICK * event.getWheelRotation());
 
-			scale -= (SCALE_TICK * event.getWheelRotation());
-			scale = Math.max(SCALE_MIN, scale);
-			scale = Math.min(SCALE_MAX, scale);
-
-			boolean isZoomingOut = scale < oldScale;
-
-			if (isZoomingOut && oldScale > scaleWhereImageWillBeOutOfBounds) {
-				double scaleDifference = oldScale - scaleWhereImageWillBeOutOfBounds;
-
-				/*
-				 * Calculates how fast it should converge towards the center of
-				 * the panel. It will move faster as it comes closer. If the
-				 * scaleDifference is only 1 then 100% of the distance will be
-				 * covered if zoomed out. If the scaleDifference is 2 then 50%
-				 * of the distance will be covered and so on. scaleDifference
-				 * telling you how many "clicks" the image is zoomed out.
-				 */
-				float fractionOfDistanceTowardsCenterToMove = 1f / ((int) (scaleDifference * 10) + 1);
-
-				imageOffsetX = (int) (imageOffsetX - imageOffsetX * fractionOfDistanceTowardsCenterToMove);
-				imageOffsetY = (int) (imageOffsetY - imageOffsetY * fractionOfDistanceTowardsCenterToMove);
-			}
-
+			setScale(newScale);
 			repaint();
 		}
 	}
 
 	private class ImagePanelListener extends ComponentAdapter {
-
 		@Override
 		public void componentResized(ComponentEvent e) {
 			super.componentResized(e);
-			if (image != null) {
-				resizeToPanel();
-			}
-		}
 
+			resizeImageToFitPanelOnNextRepaint = true;
+
+			repaint();
+		}
 	}
 }
