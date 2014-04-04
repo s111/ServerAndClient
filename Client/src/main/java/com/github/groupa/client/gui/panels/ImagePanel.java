@@ -128,11 +128,11 @@ public class ImagePanel extends JComponent {
 	}
 
 	private void checkOffsetBoundaries() {
-		double topLimit = -(getScaledImageHeight() - getHeight()) / 2;
-		double leftLimit = -(getScaledImageWidth() - getWidth()) / 2;
+		double topLimit = -getScaledImageHeight() / 2;
+		double leftLimit = -getScaledImageWidth() / 2;
 
-		double bottomLimit = (getScaledImageHeight() - getHeight()) / 2;
-		double rightLimit = (getScaledImageWidth() - getWidth()) / 2;
+		double bottomLimit = getScaledImageHeight() / 2;
+		double rightLimit = getScaledImageWidth() / 2;
 
 		imageOffsetY = Math.max(topLimit, imageOffsetY);
 		imageOffsetX = Math.max(leftLimit, imageOffsetX);
@@ -150,11 +150,11 @@ public class ImagePanel extends JComponent {
 	}
 
 	private double getScaledImageWidth() {
-		return getImageWidth() * scale;
+		return invertSize ? (getImageHeight() * scale) : (getImageWidth() * scale);
 	}
 
 	private double getScaledImageHeight() {
-		return (int) getImageHeight() * scale;
+		return invertSize ? (getImageWidth() * scale) : (getImageHeight() * scale);
 	}
 
 	private class ImageMouseListener extends MouseAdapter {
