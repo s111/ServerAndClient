@@ -36,6 +36,8 @@ public class ImagePanel extends JComponent {
 		this.image = image;
 
 		resetImage();
+		resizeToPanel();
+
 		repaint();
 	}
 
@@ -142,6 +144,28 @@ public class ImagePanel extends JComponent {
 
 		imageOffsetY = Math.min(bottomLimit, imageOffsetY);
 		imageOffsetX = Math.min(rightLimit, imageOffsetX);
+	}
+
+	private void resizeToPanel() {
+		double aspectRatio = (double) getImageHeight() / getImageWidth();
+		double scaleRatio = 1;
+
+		double newImageHeight = 0;
+		double newImageWidth = 0;
+
+		if (getImageWidth() > getWidth()) {
+			newImageHeight = aspectRatio * getWidth();
+			scaleRatio = getImageHeight() / newImageHeight;
+		}
+
+		if (newImageHeight > getHeight()) {
+			aspectRatio = (double) getImageWidth() / getImageHeight();
+
+			newImageWidth = getHeight() * aspectRatio;
+			scaleRatio = getImageWidth() / newImageWidth;
+		}
+
+		scale = 1 / scaleRatio;
 	}
 
 	private int getImageWidth() {
