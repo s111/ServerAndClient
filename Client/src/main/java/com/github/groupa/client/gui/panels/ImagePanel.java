@@ -158,6 +158,9 @@ public class ImagePanel extends JComponent {
 			scaleRatio = getImageHeight() / newImageHeight;
 		}
 
+		if (newImageHeight == 0)
+			newImageHeight = getImageHeight();
+
 		if (newImageHeight > getHeight()) {
 			aspectRatio = (double) getImageWidth() / getImageHeight();
 
