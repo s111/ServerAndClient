@@ -80,6 +80,9 @@ public class ImagePanel extends JComponent {
 	protected void paintComponent(Graphics graphics) {
 		super.paintComponent(graphics);
 
+		if (image == null)
+			return;
+
 		calculateScaleWhereImageWillBeOutOfBounds();
 		checkOffsetBoundaries();
 
