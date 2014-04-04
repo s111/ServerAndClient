@@ -107,16 +107,11 @@ public class ImagePanel extends JComponent {
 	private AffineTransform createTransformer() {
 		AffineTransform imageTransformer = new AffineTransform();
 
-		double scaledImageWidth = image.getWidth() * scale;
-		double scaledImageHeight = image.getHeight() * scale;
+		double centerOfPanelRelativeToImageAnchorX = (getWidth() - getScaledImageWidth()) / 2;
+		double centerOfPanelRelativeToImageAnchorY = (getHeight() - getScaledImageHeight()) / 2;
 
-		double centerOfPanelRelativeToImageAnchorX = (getWidth() - scaledImageWidth) / 2;
-		double centerOfPanelRelativeToImageAnchorY = (getHeight() - scaledImageHeight) / 2;
-
-		double distanceFromTopLeftX = imageOffsetX
-				+ centerOfPanelRelativeToImageAnchorX;
-		double distanceFromTopLeftY = imageOffsetY
-				+ centerOfPanelRelativeToImageAnchorY;
+		double distanceFromTopLeftX = imageOffsetX + centerOfPanelRelativeToImageAnchorX;
+		double distanceFromTopLeftY = imageOffsetY + centerOfPanelRelativeToImageAnchorY;
 
 		/*
 		 * This function basically moves the coordiante system from the topleft
@@ -127,18 +122,17 @@ public class ImagePanel extends JComponent {
 
 		imageTransformer.scale(scale, scale);
 
-		imageTransformer.rotate(Math.toRadians(rotation), image.getWidth() / 2,
-				image.getHeight() / 2);
+		imageTransformer.rotate(Math.toRadians(rotation), image.getWidth() / 2, image.getHeight() / 2);
 
 		return imageTransformer;
 	}
 
 	private void checkOffsetBoundaries() {
-		int topLimit = -getHeight() / 2;
-		int leftLimit = -getWidth() / 2;
+		double topLimit = -(getScaledImageHeight() - getHeight()) / 2;
+		double leftLimit = -(getScaledImageWidth() - getWidth()) / 2;
 
-		int bottomLimit = getHeight() / 2;
-		int rightLimit = getWidth() / 2;
+		double bottomLimit = (getScaledImageHeight() - getHeight()) / 2;
+		double rightLimit = (getScaledImageWidth() - getWidth()) / 2;
 
 		imageOffsetY = Math.max(topLimit, imageOffsetY);
 		imageOffsetX = Math.max(leftLimit, imageOffsetX);
@@ -153,6 +147,14 @@ public class ImagePanel extends JComponent {
 
 	private int getImageHeight() {
 		return invertSize ? image.getWidth() : image.getHeight();
+	}
+
+	private double getScaledImageWidth() {
+		return getImageWidth() * scale;
+	}
+
+	private double getScaledImageHeight() {
+		return (int) getImageHeight() * scale;
 	}
 
 	private class ImageMouseListener extends MouseAdapter {
@@ -205,8 +207,7 @@ public class ImagePanel extends JComponent {
 			boolean isZoomingOut = scale < oldScale;
 
 			if (isZoomingOut && oldScale > scaleWhereImageWillBeOutOfBounds) {
-				double scaleDifference = oldScale
-						- scaleWhereImageWillBeOutOfBounds;
+				double scaleDifference = oldScale - scaleWhereImageWillBeOutOfBounds;
 
 				/*
 				 * Calculates how fast it should converge towards the center of
@@ -218,10 +219,8 @@ public class ImagePanel extends JComponent {
 				 */
 				float fractionOfDistanceTowardsCenterToMove = 1f / ((int) (scaleDifference * 10) + 1);
 
-				imageOffsetX = (int) (imageOffsetX - imageOffsetX
-						* fractionOfDistanceTowardsCenterToMove);
-				imageOffsetY = (int) (imageOffsetY - imageOffsetY
-						* fractionOfDistanceTowardsCenterToMove);
+				imageOffsetX = (int) (imageOffsetX - imageOffsetX * fractionOfDistanceTowardsCenterToMove);
+				imageOffsetY = (int) (imageOffsetY - imageOffsetY * fractionOfDistanceTowardsCenterToMove);
 			}
 
 			repaint();
