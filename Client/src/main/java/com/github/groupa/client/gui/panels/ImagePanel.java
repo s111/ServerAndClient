@@ -44,27 +44,25 @@ public class ImagePanel extends JComponent {
 	public void setImage(BufferedImage image) {
 		this.image = image;
 
-		resizeImageToFitPanelOnNextRepaint = true;
-
 		resetImage();
 		repaint();
 	}
 
 	public void rotateCW() {
-		invertSize = !invertSize;
-
-		rotation += 90;
-
-		resetImagePosition();
-		repaint();
+		rotate(90);
 	}
 
 	public void rotateCCW() {
+		rotate(-90);
+	}
+
+	private void rotate(int dTheta) {
 		invertSize = !invertSize;
 
-		rotation -= 90;
+		rotation += dTheta;
 
 		resetImagePosition();
+		resetImageScaling();
 		repaint();
 	}
 
@@ -82,9 +80,12 @@ public class ImagePanel extends JComponent {
 	private void resetImageScaling() {
 		oldScale = 1;
 		scale = 1;
+
+		resizeImageToFitPanelOnNextRepaint = true;
 	}
 
 	private void resetRotation() {
+		invertSize = false;
 		rotation = 0;
 	}
 
@@ -142,8 +143,12 @@ public class ImagePanel extends JComponent {
 	private AffineTransform createTransformer() {
 		AffineTransform imageTransformer = new AffineTransform();
 
-		double centerOfPanelRelativeToImageAnchorX = (getWidth() - getScaledImageWidth()) / 2;
-		double centerOfPanelRelativeToImageAnchorY = (getHeight() - getScaledImageHeight()) / 2;
+		// We need the orignal images width and height here!
+		double scaledImageWidth = image.getWidth() * scale;
+		double scaledImageHeight = image.getHeight() * scale;
+
+		double centerOfPanelRelativeToImageAnchorX = (getWidth() - scaledImageWidth) / 2;
+		double centerOfPanelRelativeToImageAnchorY = (getHeight() - scaledImageHeight) / 2;
 
 		double distanceFromTopLeftX = imageOffsetX
 				+ centerOfPanelRelativeToImageAnchorX;
@@ -166,11 +171,15 @@ public class ImagePanel extends JComponent {
 	}
 
 	private void checkOffsetBoundaries() {
-		double topLimit = -getScaledImageHeight() / 2;
-		double leftLimit = -getScaledImageWidth() / 2;
+		// We need the rotated images width and height here!
+		double scaledImageWidth = getImageWidth() * scale;
+		double scaledImageHeight = getImageHeight() * scale;
 
-		double bottomLimit = getScaledImageHeight() / 2;
-		double rightLimit = getScaledImageWidth() / 2;
+		double topLimit = -scaledImageHeight / 2;
+		double leftLimit = -scaledImageWidth / 2;
+
+		double bottomLimit = scaledImageHeight / 2;
+		double rightLimit = scaledImageWidth / 2;
 
 		imageOffsetY = Math.max(topLimit, imageOffsetY);
 		imageOffsetX = Math.max(leftLimit, imageOffsetX);
@@ -185,14 +194,6 @@ public class ImagePanel extends JComponent {
 
 	private int getImageHeight() {
 		return invertSize ? image.getWidth() : image.getHeight();
-	}
-
-	private double getScaledImageWidth() {
-		return image.getWidth() * scale;
-	}
-
-	private double getScaledImageHeight() {
-		return image.getHeight() * scale;
 	}
 
 	private void setScale(double newScale) {
