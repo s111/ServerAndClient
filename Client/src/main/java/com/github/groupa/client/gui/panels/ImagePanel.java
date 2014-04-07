@@ -35,7 +35,7 @@ public class ImagePanel extends JComponent {
 	private int endOffsetX;
 	private int endOffsetY;
 
-	private boolean isSelecting = false;
+	private boolean isSelecting = true;
 	private boolean invertSize;
 	private boolean resizeImageToFitPanelOnNextRepaint;
 
@@ -78,7 +78,7 @@ public class ImagePanel extends JComponent {
 
 	private void resetImage() {
 		clearSelection();
-		
+
 		resetImagePosition();
 		resetImageScaling();
 		resetRotation();
@@ -267,7 +267,7 @@ public class ImagePanel extends JComponent {
 					* fractionOfDistanceTowardsCenterToMove);
 		}
 	}
-	
+
 	private void clearSelection() {
 		endOffsetX = startOffsetX;
 		endOffsetY = startOffsetY;
@@ -300,16 +300,23 @@ public class ImagePanel extends JComponent {
 
 			return offsetY;
 		}
-		
+
 		@Override
 		public void mouseReleased(MouseEvent event) {
 			super.mouseReleased(event);
+
+			double divisor = Math.abs((1 + scale) - 1);
+			
+			int x = (int) Math.ceil(((clip.x - leftBound) / divisor));
+			int y = (int) Math.ceil(((clip.y - topBound) / divisor));
+			int w = (int) Math.ceil((clip.width / divisor));
+			int h = (int) Math.ceil((clip.height / divisor));
 		}
 
 		@Override
 		public void mousePressed(MouseEvent event) {
 			super.mousePressed(event);
-			
+
 			int scaledImageWidth = (int) (getImageWidth() * scale);
 			int scaledImageHeight = (int) (getImageHeight() * scale);
 
@@ -354,7 +361,7 @@ public class ImagePanel extends JComponent {
 				imageOffsetX += newOffsetX;
 				imageOffsetY += newOffsetY;
 			}
-			
+
 			repaint();
 		}
 
@@ -375,7 +382,7 @@ public class ImagePanel extends JComponent {
 			super.componentResized(e);
 
 			resizeImageToFitPanelOnNextRepaint = true;
-			
+
 			clearSelection();
 			repaint();
 		}
