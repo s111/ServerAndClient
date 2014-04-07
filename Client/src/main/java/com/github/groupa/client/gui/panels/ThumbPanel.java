@@ -19,8 +19,9 @@ import javax.swing.border.Border;
 
 import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.Library;
-import com.github.groupa.client.events.LibraryAddEvent;
+import com.github.groupa.client.components.Thumb;
 import com.github.groupa.client.events.SwitchViewEvent;
+import com.github.groupa.client.events.LibrarySortEvent.LibraryAddEvent;
 import com.github.groupa.client.events.LibrarySortEvent.LibrarySortEvent;
 import com.github.groupa.client.views.View;
 import com.google.common.eventbus.EventBus;

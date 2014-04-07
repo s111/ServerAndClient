@@ -11,7 +11,7 @@ import com.github.groupa.client.Library;
 import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.LibraryConstraint;
 import com.github.groupa.client.LibrarySort;
-import com.github.groupa.client.events.LibraryAddEvent;
+import com.github.groupa.client.events.LibrarySortEvent.LibraryAddEvent;
 import com.github.groupa.client.helpers.MockImageObject;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;

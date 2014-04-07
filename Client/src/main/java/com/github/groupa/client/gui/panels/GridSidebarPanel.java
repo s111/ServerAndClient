@@ -21,6 +21,7 @@ import net.miginfocom.swing.MigLayout;
 import com.github.groupa.client.Library;
 import com.github.groupa.client.LibraryConstraint;
 import com.github.groupa.client.LibrarySort;
+import com.github.groupa.client.components.ZoomSlider;
 
 public class GridSidebarPanel implements SidebarPanel {
 	private JPanel panel = new JPanel();

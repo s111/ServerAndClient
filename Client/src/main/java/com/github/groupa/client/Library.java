@@ -8,8 +8,8 @@ import java.util.List;
 import java.util.Set;
 
 import com.github.groupa.client.events.ImageInfoChangedEvent;
-import com.github.groupa.client.events.LibraryAddEvent;
-import com.github.groupa.client.events.LibraryRemoveEvent;
+import com.github.groupa.client.events.LibrarySortEvent.LibraryAddEvent;
+import com.github.groupa.client.events.LibrarySortEvent.LibraryRemoveEvent;
 import com.github.groupa.client.events.LibrarySortEvent.LibrarySortEvent;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;

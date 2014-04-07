@@ -1,4 +1,4 @@
-package com.github.groupa.client.gui.panels;
+package com.github.groupa.client.components;
 
 import java.util.Hashtable;
 
@@ -8,6 +8,8 @@ import javax.swing.JSlider;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
 
+import com.github.groupa.client.gui.panels.Panel;
+import com.github.groupa.client.gui.panels.ThumbPanel;
 import com.google.inject.Inject;
 
 public class ZoomSlider implements Panel {

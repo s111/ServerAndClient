@@ -1,4 +1,4 @@
-package com.github.groupa.client.gui.panels;
+package com.github.groupa.client.components;
 
 import java.awt.Image;
 import java.awt.event.MouseEvent;
