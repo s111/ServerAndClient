@@ -1,4 +1,4 @@
-package com.github.groupa.client.events.LibrarySortEvent;
+package com.github.groupa.client.events;
 
 import com.github.groupa.client.Library;
 
