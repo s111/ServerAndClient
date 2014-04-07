@@ -47,6 +47,8 @@ public class GridSidebarPanel implements SidebarPanel {
 		setUpSortComponents();
 		setUpTagComponents();
 		setUpZoomComponents();
+		setUpEditMetadataComponent();
+
 	}
 
 	private void setUpZoomComponents() {
@@ -125,7 +127,23 @@ public class GridSidebarPanel implements SidebarPanel {
 			}
 		};
 	}
-
+	
+	private void setUpEditMetadataComponent() {
+		JButton editMetadataButton;
+		
+		editMetadataButton = new JButton("Edit Metadata");
+		
+		editMetadataButton.addActionListener(new ActionListener() {
+			
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+				// TODO Auto-generated method stub
+				
+			}
+		});
+		
+		panel.add(editMetadataButton);
+	}
 	@Override
 	public JPanel getPanel() {
 		return panel;
