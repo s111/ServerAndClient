@@ -4,22 +4,23 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.ButtonGroup;
+import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
-import javax.swing.JTable;
 import javax.swing.JTextField;
-import javax.swing.table.DefaultTableModel;
+import javax.swing.plaf.basic.BasicInternalFrameTitlePane.CloseAction;
 
 import net.miginfocom.swing.MigLayout;
 
 public class EditMetadataPanel {
 	private JPanel panel = new JPanel();
 
-	private JButton editButton;
-	private JButton cancelButton;
+	private JButton saveButton;
+	private JButton closeButton;
 
 	private ButtonGroup ratingButtonGroup;
 
@@ -27,9 +28,7 @@ public class EditMetadataPanel {
 
 	private JTextField descriptionField;
 
-	private JTable tagTable;
-
-	private DefaultTableModel tagTableModel;
+	private JList<String> tagList;
 
 	public EditMetadataPanel() {
 		MigLayout layout = new MigLayout();
@@ -38,61 +37,46 @@ public class EditMetadataPanel {
 
 		setUpDescriptionField();
 		setUpRatingButtons();
-		setUpTagTable();
-		setUpEditButton();
-		setUpCancelButton();
+		setUpTagList();
+		setUpCloseButton();
+		setUpSaveButton();
 	}
 
 	public JPanel getPanel() {
 		return panel;
 	}
 
-	private void setUpEditButton() {
-		editButton = new JButton("Edit");
+	private void setUpSaveButton() {
+		saveButton = new JButton("Save");
 
-		editButton.addActionListener(new ActionListener() {
+		saveButton.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				descriptionField.setEnabled(true);
-				tagTable.setEnabled(true);
 
-				for (int i = 0; i < 5; i++)
-					ratingButtons[i].setEnabled(true);
-				
-				cancelButton.setEnabled(true);
 			}
 		});
 
-		panel.add(editButton);
+		panel.add(saveButton, "wrap");
 	}
 
-	private void setUpCancelButton() {
-		cancelButton = new JButton("Cancel");
+	private void setUpCloseButton() {
+		closeButton = new JButton("Close");
 
-		cancelButton.addActionListener(new ActionListener() {
+		closeButton.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				descriptionField.setEnabled(false);
-				tagTable.setEnabled(false);
-
-				for (int i = 0; i < 5; i++)
-					ratingButtons[i].setEnabled(false);
-				cancelButton.setEnabled(false);
+				
 			}
 		});
 
-		cancelButton.setEnabled(false);
-
-		panel.add(cancelButton, "wrap");
+		panel.add(closeButton);
 	}
 
 	private void setUpDescriptionField() {
 		JLabel descriptionLabel = new JLabel("Description");
 		descriptionField = new JTextField();
-
-		descriptionField.setEnabled(false);
 
 		panel.add(descriptionLabel, "wrap");
 		panel.add(descriptionField, "span, growx, pushx, wmax 250");
@@ -109,7 +93,6 @@ public class EditMetadataPanel {
 		for (int i = 0; i < 5; i++) {
 			JLabel jLabel = new JLabel(Integer.toString(i + 1));
 			ratingButtons[i] = new JRadioButton();
-			ratingButtons[i].setEnabled(false);
 			ratingButtonGroup.add(ratingButtons[i]);
 
 			rater.add(ratingButtons[i]);
@@ -120,16 +103,15 @@ public class EditMetadataPanel {
 		panel.add(rater, "span");
 	}
 
-	private void setUpTagTable() {
-		tagTableModel = new DefaultTableModel();
-		tagTableModel.addColumn("Tags");
+	private void setUpTagList() {
+		JLabel tagLabel = new JLabel("Tags");
+		
+		DefaultListModel<String> tagListModel = new DefaultListModel<String>(); 
+		tagList = new JList<String>(tagListModel);
+		
+		JScrollPane scrollPane = new JScrollPane(tagList);
 
-		tagTable = new JTable(tagTableModel);
-
-		JScrollPane scrollPane = new JScrollPane(tagTable);
-
-		tagTable.setEnabled(false);
-
+		panel.add(tagLabel, "wrap");
 		panel.add(scrollPane, "span, wmax 250");
 	}
 }

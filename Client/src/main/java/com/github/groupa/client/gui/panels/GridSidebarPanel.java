@@ -30,6 +30,7 @@ public class GridSidebarPanel implements SidebarPanel {
 	private ThumbPanel thumbPanel;
 	private Library rootLibrary;
 	private ZoomSlider zoomSlider;
+	private JDialog dialog;
 
 	@Inject
 	public GridSidebarPanel(Library rootLibrary, ThumbPanel thumbPanel,
@@ -132,10 +133,10 @@ public class GridSidebarPanel implements SidebarPanel {
 	private void setUpMetadataDialog() {
 		EditMetadataPanel editPanel = new EditMetadataPanel();
 
-		JDialog dialog = new JDialog();
+		dialog = new JDialog();
 
 		dialog.add(editPanel.getPanel());
-		dialog.setSize(260, 460);
+		dialog.pack();
 		dialog.setModal(true);
 		dialog.setResizable(false);
 		dialog.setLocationRelativeTo(null);
@@ -161,5 +162,9 @@ public class GridSidebarPanel implements SidebarPanel {
 	@Override
 	public JPanel getPanel() {
 		return panel;
+	}
+	
+	public JDialog getDialog() {
+		return dialog;
 	}
 }
