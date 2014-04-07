@@ -3,42 +3,45 @@
 # ~~~~
 
 # Home page
-GET    /                            controllers.Application.index()
+GET    /                               controllers.Application.index()
 
 # Get image info by id
-GET    /api/images/:id              controllers.GetImage.info(id: Long)
+GET    /api/images/:id                 controllers.GetImage.info(id: Long)
 
 # Get raw image by id
-GET    /api/images/:id/raw          controllers.GetImage.file(id: Long)
+GET    /api/images/:id/raw             controllers.GetImage.file(id: Long)
 
 # Get thumbnails
-GET    /api/images/:id/xs           controllers.GetThumbnail.getXSmall(id: Long)
-GET    /api/images/:id/s            controllers.GetThumbnail.getSmall(id: Long)
-GET    /api/images/:id/m            controllers.GetThumbnail.getMedium(id: Long)
-GET    /api/images/:id/l            controllers.GetThumbnail.getLarge(id: Long)
-GET    /api/images/:id/xl           controllers.GetThumbnail.getXLarge(id: Long)
-GET    /api/images/:id/compressed   controllers.GetThumbnail.getCompressed(id: Long)
+GET    /api/images/:id/xs              controllers.GetThumbnail.getXSmall(id: Long)
+GET    /api/images/:id/s               controllers.GetThumbnail.getSmall(id: Long)
+GET    /api/images/:id/m               controllers.GetThumbnail.getMedium(id: Long)
+GET    /api/images/:id/l               controllers.GetThumbnail.getLarge(id: Long)
+GET    /api/images/:id/xl              controllers.GetThumbnail.getXLarge(id: Long)
+GET    /api/images/:id/compressed      controllers.GetThumbnail.getCompressed(id: Long)
 
 # Get list of images
-GET    /api/images                  controllers.ImageController.getImages(offset: Int ?= 0, limit: Int ?= 25)
+GET    /api/images                     controllers.ImageController.getImages(offset: Int ?= 0, limit: Int ?= 25)
 
 # Rate image
-POST   /api/images/:id/rate         controllers.ImageRater.rate(id: Long)
+POST   /api/images/:id/rate            controllers.ImageRater.rate(id: Long)
 
 # Set description for image
-POST   /api/images/:id/describe     controllers.ImageDescriber.describe(id: Long)
+POST   /api/images/:id/describe        controllers.ImageDescriber.describe(id: Long)
 
 # Tag image
-POST   /api/images/:id/tag          controllers.ImageTagger.tag(id: Long)
+POST   /api/images/:id/tag             controllers.ImageTagger.tag(id: Long)
+
+# Rotate image
+POST   /api/images/:id/rotate/:angle   controllers.ImageRotater.rotate(id: Long, angle: Int)
 
 # Describe, rate and tag multiple images
-POST   /api/images/update           controllers.ImageUpdateMultiple.update()
+POST   /api/images/update              controllers.ImageUpdateMultiple.update()
 
 # Upload image
-POST   /api/image                   controllers.ImageUploader.upload()
+POST   /api/image                      controllers.ImageUploader.upload()
 
 # Get images given tag
-GET    /api/tags/:tag               controllers.TagController.getImages(tag: String, offset: Int ?= 0, limit: Int ?= 25)
+GET    /api/tags/:tag                  controllers.TagController.getImages(tag: String, offset: Int ?= 0, limit: Int ?= 25)
 
 # Map static resources from the /public folder to the /assets URL path
-GET    /assets/*file                controllers.Assets.at(path="/public", file)
+GET    /assets/*file                   controllers.Assets.at(path="/public", file)

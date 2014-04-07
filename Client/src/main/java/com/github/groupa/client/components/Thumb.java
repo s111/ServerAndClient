@@ -4,6 +4,7 @@ import java.awt.Image;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -17,9 +18,11 @@ public abstract class Thumb implements MouseListener {
 	private ImageObject imageObject;
 	private HashMap<String, JLabel> labels = new HashMap<String, JLabel>();
 	private Border border = BorderFactory.createEmptyBorder(2, 2, 2, 2);
+	private String toolTipText;
 
 	public Thumb(ImageObject img) {
 		this.imageObject = img;
+		toolTipText = createToolTipText();
 	}
 
 	public ImageObject getImageObject() {
@@ -42,6 +45,8 @@ public abstract class Thumb implements MouseListener {
 			labels.put(size, label);
 			label.addMouseListener(this);
 			label.setBorder(border);
+			if (toolTipText.length() != 0)
+				label.setToolTipText(toolTipText);
 			imageObject.loadThumbWithCallback(new Callback<Image>() {
 				@Override
 				public void success(Image image) {
@@ -64,7 +69,8 @@ public abstract class Thumb implements MouseListener {
 
 	public abstract void doubleClick();
 
-	@Override
+	public abstract void rightClick(MouseEvent arg0);
+
 	public void mouseClicked(MouseEvent arg0) {
 		if (arg0.getButton() == MouseEvent.BUTTON1) {
 			if (arg0.getClickCount() == 1) {
@@ -78,6 +84,8 @@ public abstract class Thumb implements MouseListener {
 					doubleClick();
 				}
 			}
+		} else {
+			rightClick(arg0);
 		}
 	}
 
@@ -92,5 +100,20 @@ public abstract class Thumb implements MouseListener {
 
 	@Override
 	public void mouseReleased(MouseEvent arg0) {
+	}
+
+	private String createToolTipText() {
+		String toolTipText = "<html>";
+		String descr = imageObject.getDescription();
+		if (descr != null)
+			toolTipText += descr + "<br>";
+		List<String> tags = imageObject.getTags();
+		if (!tags.isEmpty()) {
+			for (String tag : tags) {
+				toolTipText += tag + "<br>";
+			}
+		}
+		toolTipText += "</html>";
+		return toolTipText;
 	}
 }

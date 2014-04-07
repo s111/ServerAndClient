@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Rectangle;
+import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -13,6 +14,7 @@ import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
+import javax.swing.JPopupMenu;
 import javax.swing.Scrollable;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
@@ -23,6 +25,7 @@ import com.github.groupa.client.components.Thumb;
 import com.github.groupa.client.events.LibraryAddEvent;
 import com.github.groupa.client.events.LibrarySortEvent;
 import com.github.groupa.client.events.SwitchViewEvent;
+import com.github.groupa.client.factories.ThumbMenuFactory;
 import com.github.groupa.client.views.View;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -124,7 +127,8 @@ public class ThumbPanel extends JPanel implements Scrollable {
 	}
 
 	public void setPanelThumbSize(String size) {
-		if (this.thumbSize.equals(size)) return;
+		if (this.thumbSize.equals(size))
+			return;
 		this.thumbSize = size;
 		reAddThumbsToPanel();
 		setColumnCount(roomForColumns());
@@ -183,11 +187,12 @@ public class ThumbPanel extends JPanel implements Scrollable {
 		int columns = (prevWidth - 20) / size;
 		return columns;
 	}
-	
+
 	private void setColumnCount(int columns) {
 		if (images.isEmpty())
 			return;
-		if (columns == layout.getColumns()) return;
+		if (columns == layout.getColumns())
+			return;
 		layout = new GridLayout(0, columns, 0, 0);
 		setLayout(layout);
 		revalidate();
@@ -208,7 +213,7 @@ public class ThumbPanel extends JPanel implements Scrollable {
 		}
 	}
 
-	private void addImage(ImageObject image) {
+	private void addImage(final ImageObject image) {
 		images.add(image);
 		Thumb thumb = new Thumb(image) {
 			@Override
@@ -236,6 +241,17 @@ public class ThumbPanel extends JPanel implements Scrollable {
 				eventBus.post(new SwitchViewEvent(View.IMAGE_VIEW,
 						getImageObject(), ThumbPanel.this.getLibrary()));
 			}
+
+			@Override
+			public void rightClick(MouseEvent event) {
+				if (!ThumbPanel.this.selectedImages.contains(getImageObject())) {
+					ThumbPanel.this.deselectImages();
+					ThumbPanel.this.setActiveImage(getImageObject());
+				}
+				JPopupMenu menu = ThumbMenuFactory.getMenu(eventBus, image,
+						getLibrary(), selectedImages);
+				menu.show(this.getThumb(thumbSize), event.getX(), event.getY());
+			}
 		};
 		thumbs.put(image, thumb);
 		add(thumb.getThumb(thumbSize));
@@ -258,5 +274,8 @@ public class ThumbPanel extends JPanel implements Scrollable {
 	private void selectImage(ImageObject image) {
 		thumbs.get(image).setBorder(selectedThumbBorder);
 		selectedImages.add(image);
+		Comparator<ImageObject> cmp = library.getComparator();
+		if (cmp != null)
+			Collections.sort(selectedImages, cmp);
 	}
 }

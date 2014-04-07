@@ -38,6 +38,11 @@ public class Library {
 		tryAddImages(parent.getImages());
 	}
 
+	public Library(EventBus eventBus, List<ImageObject> initialImages) {
+		this.eventBus = eventBus;
+		images.addAll(initialImages);
+	}
+
 	public Library addConstraint(LibraryConstraint constraint) {
 		constraints.add(constraint);
 		ArrayList<ImageObject> list = new ArrayList<>();
