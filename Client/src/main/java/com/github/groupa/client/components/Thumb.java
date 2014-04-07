@@ -64,7 +64,8 @@ public abstract class Thumb implements MouseListener {
 
 	public abstract void doubleClick();
 
-	@Override
+	public abstract void rightClick(MouseEvent arg0);
+	
 	public void mouseClicked(MouseEvent arg0) {
 		if (arg0.getButton() == MouseEvent.BUTTON1) {
 			if (arg0.getClickCount() == 1) {
@@ -78,6 +79,8 @@ public abstract class Thumb implements MouseListener {
 					doubleClick();
 				}
 			}
+		} else {
+			rightClick(arg0);
 		}
 	}
 
