@@ -8,6 +8,7 @@ import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -127,23 +128,35 @@ public class GridSidebarPanel implements SidebarPanel {
 			}
 		};
 	}
-	
+
+	private void setUpMetadataDialog() {
+		EditMetadataPanel editPanel = new EditMetadataPanel();
+
+		JDialog dialog = new JDialog();
+
+		dialog.setModal(true);
+		dialog.add(editPanel.getPanel());
+		dialog.setLocationRelativeTo(null);
+		dialog.setSize(600, 600);
+		dialog.setVisible(true);
+	}
+
 	private void setUpEditMetadataComponent() {
 		JButton editMetadataButton;
-		
+
 		editMetadataButton = new JButton("Edit Metadata");
-		
+
 		editMetadataButton.addActionListener(new ActionListener() {
-			
+
 			@Override
-			public void actionPerformed(ActionEvent arg0) {
-				// TODO Auto-generated method stub
-				
+			public void actionPerformed(ActionEvent event) {
+				setUpMetadataDialog();
 			}
 		});
-		
+
 		panel.add(editMetadataButton);
 	}
+
 	@Override
 	public JPanel getPanel() {
 		return panel;
