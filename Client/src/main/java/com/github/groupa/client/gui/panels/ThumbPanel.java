@@ -94,7 +94,6 @@ public class ThumbPanel extends JPanel implements Scrollable {
 	public void widthChanged(int width) {
 		if (images.isEmpty())
 			return;
-		System.out.println("width = " + width + " : prev = " + prevWidth + " : this=" + getWidth());
 		this.prevWidth = width;
 		setColumnCount(roomForColumns());
 	}
