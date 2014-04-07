@@ -25,6 +25,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.inject.assistedinject.Assisted;
 
 public class ImageObject {
+	public Map<String, Integer> thumbSize = new HashMap<>();
 	private static final Logger logger = LoggerFactory
 			.getLogger(ImageObject.class);
 
@@ -42,7 +43,6 @@ public class ImageObject {
 
 	private EventBus eventBus;
 
-	private Map<String, Integer> thumbSize = new HashMap<>();
 	private Map<String, Image> thumbs = new HashMap<>();
 
 	@Inject

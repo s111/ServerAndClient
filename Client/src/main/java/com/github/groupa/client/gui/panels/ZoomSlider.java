@@ -14,7 +14,7 @@ public class ZoomSlider implements Panel {
 	private int currentLevel = 1;
 	private ThumbPanel thumbPanel;
 	private JPanel panel = new JPanel();
-	
+
 	@Inject
 	public ZoomSlider(ThumbPanel thumbPanel) {
 		this.thumbPanel = thumbPanel;
@@ -32,16 +32,19 @@ public class ZoomSlider implements Panel {
 		zoomSlider.setLabelTable(table);
 		zoomSlider.setPaintLabels(true);
 		zoomSlider.setSnapToTicks(true);
+		zoomSlider.setMajorTickSpacing(1);
+		zoomSlider.setMinorTickSpacing(1);
 		panel.add(zoomSlider);
-		
+
 		zoomSlider.addChangeListener(new ChangeListener() {
 			public void stateChanged(ChangeEvent arg0) {
-				JSlider source = (JSlider)arg0.getSource();
+				JSlider source = (JSlider) arg0.getSource();
 				if (!source.getValueIsAdjusting()) {
 					int value = source.getValue();
 					if (value != currentLevel) {
 						currentLevel = value;
-						thumbPanel.setPanelThumbSize(table.get(value).getText());
+						thumbPanel
+								.setPanelThumbSize(table.get(value).getText());
 					}
 				}
 			}

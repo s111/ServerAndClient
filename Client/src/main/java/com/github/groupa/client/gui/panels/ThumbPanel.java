@@ -44,13 +44,13 @@ public class ThumbPanel extends JPanel implements Scrollable {
 	private Border defaultThumbBorder = BorderFactory.createEmptyBorder(2, 2,
 			2, 2);
 
-	private String size = "m";
+	private String thumbSize = "m";
 
 	private EventBus eventBus;
 	private Library library;
 	private ImageObject activeImage = null;
 
-	private int prevWidth = 0;
+	private int prevWidth = 333; // Hacky but it works (atm)
 
 	@Inject
 	public ThumbPanel(EventBus eventBus, Library library) {
@@ -94,18 +94,9 @@ public class ThumbPanel extends JPanel implements Scrollable {
 	public void widthChanged(int width) {
 		if (images.isEmpty())
 			return;
-		this.prevWidth  = width;
-		int currentColumns = layout.getColumns();
-		int thumbSize = thumbs.get(images.get(0)).getThumb(size).getWidth() + 3;
-		int wantedColumns = width / thumbSize;
-		int spare = width - wantedColumns * thumbSize;
-		if (currentColumns < wantedColumns && spare > 5
-				|| currentColumns > wantedColumns
-				|| currentColumns == wantedColumns && spare < 5) {
-			layout = new GridLayout(0, wantedColumns, 0, 0);
-			setLayout(layout);
-		}
-		revalidate();
+		System.out.println("width = " + width + " : prev = " + prevWidth + " : this=" + getWidth());
+		this.prevWidth = width;
+		setColumnCount(roomForColumns());
 	}
 
 	public List<ImageObject> getSelectedImages() {
@@ -133,10 +124,10 @@ public class ThumbPanel extends JPanel implements Scrollable {
 	}
 
 	public void setPanelThumbSize(String size) {
-		if (this.size.equals(size)) return;
-		this.size = size;
+		if (this.thumbSize.equals(size)) return;
+		this.thumbSize = size;
 		reAddThumbsToPanel();
-		widthChanged(prevWidth);
+		setColumnCount(roomForColumns());
 	}
 
 	public void setLibrary(Library library) {
@@ -187,11 +178,26 @@ public class ThumbPanel extends JPanel implements Scrollable {
 		}
 	}
 
+	private int roomForColumns() {
+		int size = images.get(0).thumbSize.get(this.thumbSize) + 4;
+		int columns = (prevWidth - 20) / size;
+		return columns;
+	}
+	
+	private void setColumnCount(int columns) {
+		if (images.isEmpty())
+			return;
+		if (columns == layout.getColumns()) return;
+		layout = new GridLayout(0, columns, 0, 0);
+		setLayout(layout);
+		revalidate();
+	}
+
 	private void reAddThumbsToPanel() {
 		removeAll();
 		for (ImageObject image : images) {
 			Thumb thumb = thumbs.get(image);
-			add(thumb.getThumb(size));
+			add(thumb.getThumb(thumbSize));
 		}
 		revalidate();
 	}
@@ -232,7 +238,7 @@ public class ThumbPanel extends JPanel implements Scrollable {
 			}
 		};
 		thumbs.put(image, thumb);
-		add(thumb.getThumb(size));
+		add(thumb.getThumb(thumbSize));
 		revalidate();
 	}
 
