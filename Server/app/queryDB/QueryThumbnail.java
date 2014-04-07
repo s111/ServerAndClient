@@ -1,5 +1,7 @@
 package queryDB;
 
+import java.util.List;
+
 import models.Image;
 import models.Thumbnail;
 
@@ -51,5 +53,21 @@ public class QueryThumbnail {
 		return (Thumbnail) session.createCriteria(Thumbnail.class)
 				.add(Restrictions.eq("image.id", id))
 				.add(Restrictions.eq("size", size)).uniqueResult();
+	}
+
+	public void deleteAllThumbnails(long id) {
+		Session session = sessionFactory.getCurrentSession();
+		session.beginTransaction();
+
+		@SuppressWarnings("unchecked")
+		List<Thumbnail> thumbnails = (List<Thumbnail>) session
+				.createCriteria(Thumbnail.class)
+				.add(Restrictions.eq("image.id", id)).list();
+
+		for (Thumbnail thumbnail : thumbnails) {
+			session.delete(thumbnail);
+		}
+
+		session.getTransaction().commit();
 	}
 }

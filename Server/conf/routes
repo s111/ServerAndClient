@@ -32,7 +32,7 @@ POST   /api/images/:id/describe        controllers.ImageDescriber.describe(id: L
 POST   /api/images/:id/tag             controllers.ImageTagger.tag(id: Long)
 
 # Rotate image
-POST   /api/images/:id/rotate/:angle   controllers.ImageRotater.rotate(id: Long, angle: Int)
+GET    /api/images/:id/rotate/:angle   controllers.ImageRotater.rotate(id: Long, angle: Int)
 
 # Describe, rate and tag multiple images
 POST   /api/images/update              controllers.ImageUpdateMultiple.update()
