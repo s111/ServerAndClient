@@ -134,10 +134,11 @@ public class GridSidebarPanel implements SidebarPanel {
 
 		JDialog dialog = new JDialog();
 
-		dialog.setModal(true);
 		dialog.add(editPanel.getPanel());
+		dialog.setSize(260, 460);
+		dialog.setModal(true);
+		dialog.setResizable(false);
 		dialog.setLocationRelativeTo(null);
-		dialog.setSize(600, 600);
 		dialog.setVisible(true);
 	}
 
