@@ -1,7 +1,9 @@
 package com.github.groupa.client.gui.panels;
 
+import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.event.ComponentAdapter;
 import java.awt.event.ComponentEvent;
 import java.awt.event.MouseAdapter;
@@ -28,8 +30,16 @@ public class ImagePanel extends JComponent {
 
 	private int rotation;
 
+	private int startOffsetX;
+	private int startOffsetY;
+	private int endOffsetX;
+	private int endOffsetY;
+
+	private boolean isSelecting = false;
 	private boolean invertSize;
 	private boolean resizeImageToFitPanelOnNextRepaint;
+
+	private Rectangle clip = new Rectangle();
 
 	public ImagePanel() {
 		ImageMouseListener imageMouseListener = new ImageMouseListener();
@@ -67,6 +77,8 @@ public class ImagePanel extends JComponent {
 	}
 
 	private void resetImage() {
+		clearSelection();
+		
 		resetImagePosition();
 		resetImageScaling();
 		resetRotation();
@@ -111,6 +123,29 @@ public class ImagePanel extends JComponent {
 
 		Graphics2D graphics2d = (Graphics2D) graphics;
 		graphics2d.drawImage(image, imageTransformer, null);
+
+		if (isSelecting) {
+			int dx = endOffsetX - startOffsetX;
+			int dy = endOffsetY - startOffsetY;
+			int width = Math.abs(dx);
+			int height = Math.abs(dy);
+
+			clip.setSize(width, height);
+
+			if (dx < 0 && dy < 0) {
+				clip.setLocation(startOffsetX - width, startOffsetY - height);
+			} else if (dx < 0 && dy > 0) {
+				clip.setLocation(startOffsetX - width, startOffsetY);
+			} else if (dx > 0 && dy < 0) {
+				clip.setLocation(startOffsetX, startOffsetY - height);
+			} else if (dx > 0 && dy > 0) {
+				clip.setLocation(startOffsetX, startOffsetY);
+			}
+
+			Color transparentBlue = new Color(0, 0, 200, 128);
+			graphics2d.setColor(transparentBlue);
+			graphics2d.fillRect(clip.x, clip.y, clip.width, clip.height);
+		}
 	}
 
 	/**
@@ -119,7 +154,7 @@ public class ImagePanel extends JComponent {
 	private void resizeToPanel() {
 		if (getImageWidth() > getWidth() || getImageHeight() > getHeight()) {
 			// Scale the image down to just below panel size
-			setScale(scaleWhereImageWillBeOutOfBounds * 0.99);
+			setScale(scaleWhereImageWillBeOutOfBounds * 0.95);
 		} else {
 			resetImageScaling();
 		}
@@ -232,40 +267,94 @@ public class ImagePanel extends JComponent {
 					* fractionOfDistanceTowardsCenterToMove);
 		}
 	}
+	
+	private void clearSelection() {
+		endOffsetX = startOffsetX;
+		endOffsetY = startOffsetY;
+	}
 
 	private class ImageMouseListener extends MouseAdapter {
 		private static final double SCALE_TICK = 0.1;
 
-		private int startOffsetX;
-		private int startOffsetY;
+		private int leftBound;
+		private int topBound;
+		private int rightBound;
+		private int bottomBound;
+
+		public int getRestrainedOffsetX(int offsetX) {
+			if (offsetX < leftBound) {
+				offsetX = leftBound;
+			} else if (offsetX > rightBound) {
+				offsetX = rightBound;
+			}
+
+			return offsetX;
+		}
+
+		public int getRestrainedOffsetY(int offsetY) {
+			if (offsetY < topBound) {
+				offsetY = topBound;
+			} else if (offsetY > bottomBound) {
+				offsetY = bottomBound;
+			}
+
+			return offsetY;
+		}
+		
+		@Override
+		public void mouseReleased(MouseEvent event) {
+			super.mouseReleased(event);
+		}
 
 		@Override
 		public void mousePressed(MouseEvent event) {
 			super.mousePressed(event);
+			
+			int scaledImageWidth = (int) (getImageWidth() * scale);
+			int scaledImageHeight = (int) (getImageHeight() * scale);
+
+			leftBound = (getWidth() - scaledImageWidth) / 2;
+			topBound = (getHeight() - scaledImageHeight) / 2;
+			rightBound = leftBound + scaledImageWidth;
+			bottomBound = topBound + scaledImageHeight;
 
 			startOffsetX = event.getX();
 			startOffsetY = event.getY();
+
+			if (isSelecting) {
+				startOffsetX = getRestrainedOffsetX(startOffsetX);
+				startOffsetY = getRestrainedOffsetY(startOffsetY);
+
+				clearSelection();
+			}
+
+			repaint();
 		}
 
 		@Override
 		public void mouseDragged(MouseEvent event) {
 			super.mouseDragged(event);
 
-			boolean imageIsWithinBounds = scale < scaleWhereImageWillBeOutOfBounds;
+			if (isSelecting) {
+				endOffsetX = getRestrainedOffsetX(event.getX());
+				endOffsetY = getRestrainedOffsetY(event.getY());
+			} else {
+				boolean imageIsWithinBounds = scale < scaleWhereImageWillBeOutOfBounds;
 
-			if (imageIsWithinBounds) {
-				return;
+				if (imageIsWithinBounds) {
+					return;
+				}
+
+				int newOffsetX = event.getX() - startOffsetX;
+				int newOffsetY = event.getY() - startOffsetY;
+
+				startOffsetX += newOffsetX;
+				startOffsetY += newOffsetY;
+
+				imageOffsetX += newOffsetX;
+				imageOffsetY += newOffsetY;
 			}
-
-			int newOffsetX = event.getX() - startOffsetX;
-			int newOffsetY = event.getY() - startOffsetY;
-
-			startOffsetX += newOffsetX;
-			startOffsetY += newOffsetY;
-
-			imageOffsetX += newOffsetX;
-			imageOffsetY += newOffsetY;
-
+			
 			repaint();
 		}
 
@@ -286,7 +375,8 @@ public class ImagePanel extends JComponent {
 			super.componentResized(e);
 
 			resizeImageToFitPanelOnNextRepaint = true;
-
+			
+			clearSelection();
 			repaint();
 		}
 	}
