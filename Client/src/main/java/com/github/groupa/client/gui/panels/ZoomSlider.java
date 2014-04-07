@@ -11,7 +11,7 @@ import javax.swing.event.ChangeListener;
 import com.google.inject.Inject;
 
 public class ZoomSlider implements Panel {
-	private int currentLevel = 2;
+	private int currentLevel = 1;
 	private ThumbPanel thumbPanel;
 	private JPanel panel = new JPanel();
 	

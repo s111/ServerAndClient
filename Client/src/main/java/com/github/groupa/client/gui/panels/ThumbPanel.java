@@ -50,6 +50,8 @@ public class ThumbPanel extends JPanel implements Scrollable {
 	private Library library;
 	private ImageObject activeImage = null;
 
+	private int prevWidth = 0;
+
 	@Inject
 	public ThumbPanel(EventBus eventBus, Library library) {
 		super();
@@ -92,6 +94,7 @@ public class ThumbPanel extends JPanel implements Scrollable {
 	public void widthChanged(int width) {
 		if (images.isEmpty())
 			return;
+		this.prevWidth  = width;
 		int currentColumns = layout.getColumns();
 		int thumbSize = thumbs.get(images.get(0)).getThumb(size).getWidth() + 3;
 		int wantedColumns = width / thumbSize;
@@ -120,18 +123,20 @@ public class ThumbPanel extends JPanel implements Scrollable {
 			return;
 		if (activeImage != null) {
 			if (selectedImages.contains(activeImage)) {
-				setBorder(thumbs.get(activeImage), selectedThumbBorder);
+				thumbs.get(activeImage).setBorder(selectedThumbBorder);
 			} else {
-				setBorder(thumbs.get(activeImage), defaultThumbBorder);
+				thumbs.get(activeImage).setBorder(defaultThumbBorder);
 			}
 		}
 		activeImage = image;
-		setBorder(thumbs.get(image), activeThumbBorder);
+		thumbs.get(activeImage).setBorder(activeThumbBorder);
 	}
 
 	public void setPanelThumbSize(String size) {
+		if (this.size.equals(size)) return;
 		this.size = size;
 		reAddThumbsToPanel();
+		widthChanged(prevWidth);
 	}
 
 	public void setLibrary(Library library) {
@@ -227,13 +232,8 @@ public class ThumbPanel extends JPanel implements Scrollable {
 			}
 		};
 		thumbs.put(image, thumb);
-		setBorder(thumb, defaultThumbBorder);
 		add(thumb.getThumb(size));
 		revalidate();
-	}
-
-	private void setBorder(Thumb thumb, Border border) {
-		thumb.getThumb(size).setBorder(border);
 	}
 
 	private void deselectImages() {
@@ -245,12 +245,12 @@ public class ThumbPanel extends JPanel implements Scrollable {
 	}
 
 	private void deselectImage(ImageObject image) {
-		setBorder(thumbs.get(image), defaultThumbBorder);
+		thumbs.get(image).setBorder(defaultThumbBorder);
 		selectedImages.remove(image);
 	}
 
 	private void selectImage(ImageObject image) {
-		setBorder(thumbs.get(image), selectedThumbBorder);
+		thumbs.get(image).setBorder(selectedThumbBorder);
 		selectedImages.add(image);
 	}
 }

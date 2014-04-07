@@ -5,8 +5,10 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.util.HashMap;
 
+import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
+import javax.swing.border.Border;
 
 import com.github.groupa.client.Callback;
 import com.github.groupa.client.ImageObject;
@@ -14,6 +16,7 @@ import com.github.groupa.client.ImageObject;
 public abstract class Thumb implements MouseListener {
 	private ImageObject imageObject;
 	private HashMap<String, JLabel> labels = new HashMap<String, JLabel>();
+	private Border border = BorderFactory.createEmptyBorder(2, 2, 2, 2);
 
 	public Thumb(ImageObject img) {
 		this.imageObject = img;
@@ -21,6 +24,13 @@ public abstract class Thumb implements MouseListener {
 
 	public ImageObject getImageObject() {
 		return imageObject;
+	}
+
+	public void setBorder(Border border) {
+		this.border = border;
+		for (JLabel label : labels.values()) {
+			label.setBorder(border);
+		}
 	}
 
 	public JLabel getThumb(String size) {
@@ -31,6 +41,7 @@ public abstract class Thumb implements MouseListener {
 			label = newLabel;
 			labels.put(size, label);
 			label.addMouseListener(this);
+			label.setBorder(border);
 			imageObject.loadThumbWithCallback(new Callback<Image>() {
 				@Override
 				public void success(Image image) {
