@@ -80,4 +80,8 @@ public interface RESTService {
 	@POST("/images/update")
 	public Response updateMultipleImages(@Body JsonObject json)
 			throws ConnectException;
+
+	@GET("/images/{id}/rotate/{angle}")
+	public Response rotateImage(@Path("id") long id, @Path("angle") int angle)
+			throws ConnectException;
 }
