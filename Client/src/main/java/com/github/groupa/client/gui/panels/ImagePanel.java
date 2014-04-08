@@ -35,7 +35,7 @@ public class ImagePanel extends JComponent {
 	private int endOffsetX;
 	private int endOffsetY;
 
-	private boolean isSelecting = true;
+	private boolean isSelecting;
 	private boolean invertSize;
 	private boolean resizeImageToFitPanelOnNextRepaint;
 
@@ -64,6 +64,13 @@ public class ImagePanel extends JComponent {
 
 	public void rotateCCW() {
 		rotate(-90);
+	}
+	
+	public void setSelectionEnabled(boolean isSelecting) {
+		this.isSelecting = isSelecting;
+		
+		resetImage();
+		repaint();
 	}
 
 	private void rotate(int dTheta) {
