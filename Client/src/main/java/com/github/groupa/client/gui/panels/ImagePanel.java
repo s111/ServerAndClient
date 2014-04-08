@@ -66,8 +66,8 @@ public class ImagePanel extends JComponent {
 		rotate(-90);
 	}
 	
-	public void setSelectionEnabled(boolean isSelecting) {
-		this.isSelecting = isSelecting;
+	public void toggleSelection() {
+		isSelecting = !isSelecting;
 		
 		resetImage();
 		repaint();
@@ -85,7 +85,7 @@ public class ImagePanel extends JComponent {
 
 	private void resetImage() {
 		clearSelection();
-
+		
 		resetImagePosition();
 		resetImageScaling();
 		resetRotation();
@@ -375,7 +375,11 @@ public class ImagePanel extends JComponent {
 		@Override
 		public void mouseWheelMoved(MouseWheelEvent event) {
 			super.mouseWheelMoved(event);
-
+			
+			if (isSelecting){
+				return;
+			}
+			
 			double newScale = scale - (SCALE_TICK * event.getWheelRotation());
 
 			setScale(newScale);

@@ -43,7 +43,7 @@ public class MenuBar {
 
 		setUpFetchImages();
 		setUpUploadImage();
-		setEnableCropping();
+		setUpEnableCropping();
 
 		fileMenu = new JMenu("File");
 		fileMenu.add(fetchImagesItem);
@@ -99,12 +99,12 @@ public class MenuBar {
 		});
 	}
 	
-	private void setEnableCropping() {
-		cropImage = new JMenuItem("Enable cropping");
+	private void setUpEnableCropping() {
+		cropImage = new JMenuItem("Toggle cropping");
 		cropImage.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				imagePanel.setSelectionEnabled(true);
+				imagePanel.toggleSelection();
 			}
 		});
 	}
