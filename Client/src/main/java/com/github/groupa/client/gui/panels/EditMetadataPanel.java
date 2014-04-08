@@ -12,7 +12,6 @@ import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JScrollPane;
 import javax.swing.JTextField;
-import javax.swing.plaf.basic.BasicInternalFrameTitlePane.CloseAction;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -21,12 +20,15 @@ public class EditMetadataPanel {
 
 	private JButton saveButton;
 	private JButton closeButton;
+	private JButton deleteTagButton;
+	private JButton addTagButton;
 
 	private ButtonGroup ratingButtonGroup;
 
 	private JRadioButton ratingButtons[];
 
 	private JTextField descriptionField;
+	private JTextField tagTextField;
 
 	private JList<String> tagList;
 
@@ -37,9 +39,12 @@ public class EditMetadataPanel {
 
 		setUpDescriptionField();
 		setUpRatingButtons();
+		setUpTagTextField();
+		setUpAddTagButton();
+		setUpDeleteTagButton();
 		setUpTagList();
-		setUpCloseButton();
 		setUpSaveButton();
+		setUpCloseButton();
 	}
 
 	public JPanel getPanel() {
@@ -57,7 +62,7 @@ public class EditMetadataPanel {
 			}
 		});
 
-		panel.add(saveButton, "wrap");
+		panel.add(saveButton);
 	}
 
 	private void setUpCloseButton() {
@@ -67,11 +72,11 @@ public class EditMetadataPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				
+
 			}
 		});
 
-		panel.add(closeButton);
+		panel.add(closeButton, "skip 2, wrap");
 	}
 
 	private void setUpDescriptionField() {
@@ -79,7 +84,7 @@ public class EditMetadataPanel {
 		descriptionField = new JTextField();
 
 		panel.add(descriptionLabel, "wrap");
-		panel.add(descriptionField, "span, growx, pushx, wmax 250");
+		panel.add(descriptionField, "span, growx");
 	}
 
 	private void setUpRatingButtons() {
@@ -100,18 +105,54 @@ public class EditMetadataPanel {
 		}
 
 		panel.add(ratingLabel, "wrap");
-		panel.add(rater, "span");
+		panel.add(rater, "span, growx");
+	}
+
+	private void setUpTagTextField() {
+		JLabel tagLabel = new JLabel("Tags");
+		tagTextField = new JTextField();
+
+		panel.add(tagLabel, "wrap");
+		panel.add(tagTextField, "span 2, growx, pushx");
+
+	}
+
+	private void setUpAddTagButton() {
+		addTagButton = new JButton("Add Tag");
+
+		addTagButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+
+			}
+		});
+
+		panel.add(addTagButton);
+	}
+
+	private void setUpDeleteTagButton() {
+		deleteTagButton = new JButton("Delete Tag");
+
+		deleteTagButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent arg0) {
+
+			}
+		});
+
+		panel.add(deleteTagButton, "wrap");
 	}
 
 	private void setUpTagList() {
-		JLabel tagLabel = new JLabel("Tags");
-		
-		DefaultListModel<String> tagListModel = new DefaultListModel<String>(); 
+		DefaultListModel<String> tagListModel = new DefaultListModel<String>();
 		tagList = new JList<String>(tagListModel);
-		
+
 		JScrollPane scrollPane = new JScrollPane(tagList);
 
-		panel.add(tagLabel, "wrap");
-		panel.add(scrollPane, "span, wmax 250");
+		panel.add(scrollPane, "span, growx");
 	}
+
 }
