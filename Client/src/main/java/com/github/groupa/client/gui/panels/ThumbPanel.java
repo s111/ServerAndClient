@@ -183,7 +183,7 @@ public class ThumbPanel extends JPanel implements Scrollable {
 	}
 
 	private int roomForColumns() {
-		int size = images.get(0).thumbSize.get(this.thumbSize) + 4;
+		int size = ImageObject.thumbSize.get(this.thumbSize) + 4;
 		int columns = (prevWidth - 20) / size;
 		return columns;
 	}

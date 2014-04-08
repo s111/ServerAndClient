@@ -1,5 +1,6 @@
 package com.github.groupa.client.jsonobjects;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ImageFull {
@@ -7,11 +8,11 @@ public class ImageFull {
 
 	private List<Long> ids;
 
-	private int rating;
+	private int rating = 0;
 
-	private String description;
+	private String description = "";
 
-	private List<String> tags;
+	private List<String> tags = new ArrayList<>();
 
 	public long getId() {
 		return id;

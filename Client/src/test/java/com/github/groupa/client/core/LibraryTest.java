@@ -48,7 +48,7 @@ public class LibraryTest {
 		assertNull(rootLibrary.getImage(-1));
 		assertNull(rootLibrary.getImage(0));
 		for (int i = 1; i <= 3; i++) {
-			ImageObject img = MockImageObject.get(i, null, null, null, null, 0);
+			ImageObject img = MockImageObject.get(i, null, null, null, 0);
 			rootLibrary.add(img);
 			assertEquals(i, rootLibrary.imageCount());
 			assertEquals(img, rootLibrary.getImage(i - 1));
@@ -75,10 +75,10 @@ public class LibraryTest {
 		tag1.add("tag1");
 		ArrayList<String> tag2 = new ArrayList<>();
 		tag2.add("tag2");
-		subLibrary.add(MockImageObject.get(1, "tagged image", null, tag1, null, 0));
-		subLibrary.add(MockImageObject.get(2, "tagged image 2", null, tag2, null, 0));
-		subLibrary.add(MockImageObject.get(3, "described image", null, null, null, 0));
-		subLibrary.add(MockImageObject.get(4, null, null, null, null, 0));
+		subLibrary.add(MockImageObject.get(1, "tagged image", tag1, null, 0));
+		subLibrary.add(MockImageObject.get(2, "tagged image 2", tag2, null, 0));
+		subLibrary.add(MockImageObject.get(3, "described image", null, null, 0));
+		subLibrary.add(MockImageObject.get(4, null, null, null, 0));
 
 		assertEquals(4, rootLibrary.imageCount());
 		assertEquals(4, subLibrary.imageCount());
@@ -99,17 +99,17 @@ public class LibraryTest {
 
 		subLibrary.sort(LibrarySort.SORT_RATING_ASC);
 		subLibrary.add(MockImageObject
-				.get(1, null, null, null, null, 0));
+				.get(1, null, null, null, 0));
 		subLibrary.add(MockImageObject
-				.get(2, null, null, null, null, 3));
+				.get(2, null, null, null, 3));
 		subLibrary.add(MockImageObject
-				.get(3, null, null, null, null, 2));
+				.get(3, null, null, null, 2));
 		subLibrary.add(MockImageObject
-				.get(4, null, null, null, null, 3));
+				.get(4, null, null, null, 3));
 		subLibrary.add(MockImageObject
-				.get(5, null, null, null, null, 5));
+				.get(5, null, null, null, 5));
 		subLibrary.add(MockImageObject
-				.get(6, null, null, null, null, 1));
+				.get(6, null, null, null, 1));
 
 		assertEquals(6, subLibrary.imageCount());
 		assertEquals(1, subLibrary.getImage(0).getId());
@@ -133,7 +133,7 @@ public class LibraryTest {
 
 	private void testEventBusAdd(Library lib) {
 		for (int i = 1; i <= 3; i++) {
-			test.expectedImage = MockImageObject.get(i, null, null, null, null,
+			test.expectedImage = MockImageObject.get(i, null, null, null,
 					0);
 			lib.add(expectedImage);
 		}

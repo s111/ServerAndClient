@@ -1,56 +1,24 @@
 package com.github.groupa.client;
 
-import java.awt.Image;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.ConnectException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.imageio.ImageIO;
 import javax.inject.Inject;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import retrofit.client.Response;
-
 import com.github.groupa.client.events.ImageInfoChangedEvent;
-import com.github.groupa.client.jsonobjects.ImageFull;
 import com.github.groupa.client.jsonobjects.ImageInfo;
-import com.github.groupa.client.servercommunication.RESTService;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.assistedinject.Assisted;
 
 public class ImageObject {
-	public Map<String, Integer> thumbSize = new HashMap<>();
-	private static final Logger logger = LoggerFactory
-			.getLogger(ImageObject.class);
-
-	private static final Object staticLock = new Object();
-
-	private RESTService restService;
-
-	private long id;
-
-	private BufferedImage imageRaw;
-
-	private ImageInfo imageInfo;
-
-	private ImageFull imageFull;
-
-	private EventBus eventBus;
-
-	private Map<String, Image> thumbs = new HashMap<>();
-
-	@Inject
-	public ImageObject(EventBus eventBus, RESTService restService,
-			@Assisted long id) {
-		this.eventBus = eventBus;
-		this.restService = restService;
-		this.id = id;
+	public static Map<String, Integer> thumbSize = new HashMap<>();
+	static {
 		thumbSize.put("xs", 40);
 		thumbSize.put("s", 80);
 		thumbSize.put("m", 140);
@@ -58,175 +26,185 @@ public class ImageObject {
 		thumbSize.put("xl", 260);
 	}
 
-	public boolean hasImageRaw() {
-		return imageRaw != null;
-	}
+	private static final Logger logger = LoggerFactory
+			.getLogger(ImageObject.class);
 
-	public boolean hasImageInfo() {
-		return imageInfo != null;
-	}
+	private EventBus eventBus;
+	private ServerConnection serverConnection;
+	private long id;
 
-	public Image getImageRaw() {
-		if (!hasImageRaw()) {
-			loadImage();
-		}
+	private ImageInfo imageInfo;
+	private Map<String, BufferedImage> images = new HashMap<>();
 
-		return imageRaw;
-	}
-
-	public void loadImageWithCallback(final Callback<BufferedImage> callback) {
-		new Thread(new Runnable() {
-			@Override
-			public void run() {
-				if (!hasImageRaw()) {
-					loadImage();
-				}
-
-				callback.success(imageRaw);
-			}
-		}).start();
-	}
-
-	private void downloadThumb(String size) {
-		if (!hasImageRaw()) {
-			loadImage();
-		}
-		if (hasImageRaw()) {
-			thumbs.put(size, imageRaw.getScaledInstance(thumbSize.get(size),
-					-1, Image.SCALE_FAST));
-		}
-	}
-
-	public void loadThumbWithCallback(final Callback<Image> callback,
-			final String size) {
-		new Thread(new Runnable() { // This should use actual thumbs from server
-									// later on
-					@Override
-					public void run() {
-						Image image = thumbs.get(size);
-						if (image == null) {
-							downloadThumb(size);
-							image = thumbs.get(size);
-							if (image == null) {
-								callback.failure();
-								return;
-							}
-						}
-						callback.success(image);
-					}
-				}).start();
-	}
-
-	public ImageInfo getImageInfo() {
-		// We need to check with the server for actual changes, for now just
-		// always load image info
-		loadImageInfo();
-
-		return imageInfo;
-	}
-
-	private void loadImage() {
-		Response imageRawResponse = null;
-
-		try {
-			imageRawResponse = restService.getImageRaw(id);
-		} catch (ConnectException e) {
-			logger.warn("Could not get raw image for id: " + id);
-		}
-
-		if (imageRawResponse == null) {
-			return;
-		}
-
-		try {
-			InputStream imageRawStream = imageRawResponse.getBody().in();
-
-			synchronized (staticLock) {
-				imageRaw = ImageIO.read(imageRawStream);
-			}
-
-			imageRawStream.close();
-		} catch (IOException exception) {
-			logger.warn("Failed to load image: " + exception.getMessage());
-		}
-	}
-
-	private void loadImageInfo() {
-		try {
-			imageInfo = restService.getImageInfo(id);
-		} catch (ConnectException e) {
-			logger.warn("Could not load image info for image with id: " + id);
-		}
-
-		imageFull = imageInfo.getImage();
+	@Inject
+	public ImageObject(EventBus eventBus, ServerConnection serverConnection,
+			@Assisted long id) {
+		this.eventBus = eventBus;
+		this.serverConnection = serverConnection;
+		this.id = id;
 	}
 
 	public long getId() {
 		return id;
 	}
 
-	public int getRating() {
-		loadImageInfo();
-
-		return imageFull.getRating();
+	public boolean hasDescription() {
+		if (loadImage())
+			return imageInfo.getImage().getDescription().length() > 0;
+		return false;
 	}
 
 	public String getDescription() {
-		loadImageInfo();
+		if (loadImage())
+			return imageInfo.getImage().getDescription();
+		return "";
+	}
 
-		return imageFull.getDescription();
+	public boolean hasRating() {
+		if (loadImage())
+			return imageInfo.getImage().getRating() != 0;
+		return false;
+	}
+
+	public int getRating() {
+		if (loadImage())
+			return imageInfo.getImage().getRating();
+		return 0;
 	}
 
 	public List<String> getTags() {
-		loadImageInfo();
-
-		return imageFull.getTags();
-	}
-
-	/**
-	 * @param rating
-	 *            0 < rating <= 5
-	 */
-	public void rate(int rating) {
-		try {
-			restService.rateImage(id, rating);
-
-			eventBus.post(new ImageInfoChangedEvent(this));
-		} catch (ConnectException e) {
-			logger.warn("Could not connect to server and rate image");
-		}
-	}
-
-	public void describe(String description) {
-		try {
-			restService.describeImage(id, description);
-
-			eventBus.post(new ImageInfoChangedEvent(this));
-		} catch (ConnectException e) {
-			logger.warn("Could not connect to server and describe image");
-		}
-	}
-
-	public void addTag(String tag) {
-		try {
-			restService.tagImage(id, tag);
-
-			eventBus.post(new ImageInfoChangedEvent(this));
-		} catch (ConnectException e) {
-			logger.warn("Could not connect to server and tag image");
-		}
+		if (loadImage())
+			return imageInfo.getImage().getTags();
+		return new ArrayList<String>();
 	}
 
 	public boolean hasTag(String tag) {
-		loadImageInfo();
-
-		return imageFull.getTags().contains(tag);
+		if (loadImage())
+			return imageInfo.getImage().getTags().contains(tag);
+		return false;
 	}
 
-	public boolean hasTags(List<String> tags) {
-		loadImageInfo();
+	public void addTag(String tag) {
+		if (tag.length() == 0 || tag.contains(","))
+			error("Invalid tag: " + tag);
+		_addTag(tag);
+	}
 
-		return imageFull.getTags().containsAll(tags);
+	public void rate(int rating) {
+		if (rating < 0 || rating > 5)
+			error("Invalid rating: " + rating);
+		_setRating(rating);
+	}
+
+	public void describe(String description) {
+		_setDescription(description);
+	}
+
+	public boolean hasImageRaw() {
+		return _hasImage("raw");
+	}
+
+	public BufferedImage getImageRaw() {
+		return _getImage("raw");
+	}
+
+	public boolean hasImage() {
+		return _hasImage("compressed") || _hasImage("raw");
+	}
+
+	public BufferedImage getImage() {
+		if (_hasImage("raw"))
+			return _getImage("raw");
+		return _getImage("compressed");
+	}
+
+	public boolean hasThumb(String size) {
+		return _hasImage(size);
+	}
+
+	public BufferedImage getThumb(String size) {
+		return _getImage(size);
+	}
+
+	public void loadImage(final Callback<BufferedImage> callback,
+			final String size) {
+		if (_hasImage(size)) {
+			callback.success(_getImage(size));
+		} else {
+			new Thread(new Runnable() {
+				public void run() {
+					BufferedImage image = serverConnection.getImage(id, size);
+					if (image != null) {
+						ImageObject.this.images.put(size, image);
+						callback.success(image);
+					} else
+						callback.failure();
+					// TODO: Send event
+				}
+			}).start();
+		}
+	}
+
+	private boolean _hasImage(String img) {
+		return images.containsKey(img);
+	}
+
+	private BufferedImage _getImage(String img) {
+		return images.get(img);
+	}
+
+	private void _addTag(final String tag) {
+		new Thread(new Runnable() {
+			public void run() {
+				if (serverConnection.addTag(id, tag)) {
+					if (imageInfo == null)
+						loadImage();
+					else
+						imageInfo.getImage().getTags().add(tag);
+					eventBus.post(new ImageInfoChangedEvent(ImageObject.this));
+				}
+			}
+		}).start();
+	}
+
+	private void _setRating(final int rating) {
+		new Thread(new Runnable() {
+			public void run() {
+				if (serverConnection.rate(id, rating)) {
+					if (imageInfo == null)
+						loadImage();
+					else
+						imageInfo.getImage().setRating(rating);
+					eventBus.post(new ImageInfoChangedEvent(ImageObject.this));
+				}
+			}
+		}).start();
+	}
+
+	private void _setDescription(final String description) {
+		new Thread(new Runnable() {
+			public void run() {
+				if (serverConnection.describe(id, description)) {
+					if (imageInfo == null)
+						loadImage();
+					else
+						imageInfo.getImage().setDescription(description);
+					eventBus.post(new ImageInfoChangedEvent(ImageObject.this));
+				}
+			}
+		}).start();
+	}
+
+	private boolean loadImage() {
+		if (imageInfo != null)
+			return true;
+		imageInfo = serverConnection.getImageInfo(id);
+		return imageInfo != null;
+	}
+
+	private void error(String string) {
+		logger.error(string);
+		throw new RuntimeException(string);
 	}
 
 	public boolean equals(Object o) {

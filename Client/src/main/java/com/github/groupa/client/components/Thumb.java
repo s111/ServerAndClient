@@ -1,8 +1,8 @@
 package com.github.groupa.client.components;
 
-import java.awt.Image;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.List;
 
@@ -47,9 +47,9 @@ public abstract class Thumb implements MouseListener {
 			label.setBorder(border);
 			if (toolTipText.length() != 0)
 				label.setToolTipText(toolTipText);
-			imageObject.loadThumbWithCallback(new Callback<Image>() {
+			imageObject.loadImage(new Callback<BufferedImage>() {
 				@Override
-				public void success(Image image) {
+				public void success(BufferedImage image) {
 					newLabel.setText("");
 					newLabel.setIcon(new ImageIcon(image));
 				}

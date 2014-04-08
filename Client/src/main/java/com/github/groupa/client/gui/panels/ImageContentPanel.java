@@ -176,7 +176,7 @@ public class ImageContentPanel implements ContentPanel {
 		final ImageObject activeImageObject = library
 				.getImage(currentImageIndex);
 
-		activeImageObject.loadImageWithCallback(new Callback<BufferedImage>() {
+		activeImageObject.loadImage(new Callback<BufferedImage>() {
 			@Override
 			public void success(BufferedImage image) {
 				imagePanel.setImage(image);
@@ -187,7 +187,7 @@ public class ImageContentPanel implements ContentPanel {
 			@Override
 			public void failure() {
 			}
-		});
+		}, "compressed");
 	}
 
 	@Override
