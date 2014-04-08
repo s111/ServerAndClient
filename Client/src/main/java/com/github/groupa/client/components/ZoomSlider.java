@@ -46,7 +46,7 @@ public class ZoomSlider implements Panel {
 					if (value != currentLevel) {
 						currentLevel = value;
 						thumbPanel
-								.setPanelThumbSize(table.get(value).getText());
+								.setPanelThumbSize(table.get(value).getText().toLowerCase());
 					}
 				}
 			}
