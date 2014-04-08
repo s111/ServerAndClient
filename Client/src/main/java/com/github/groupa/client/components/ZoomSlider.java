@@ -27,10 +27,10 @@ public class ZoomSlider implements Panel {
 	private void setUpZoomSlider() {
 		JSlider zoomSlider = new JSlider(JSlider.HORIZONTAL, 0, 3, currentLevel);
 		final Hashtable<Integer, JLabel> table = new Hashtable<Integer, JLabel>();
-		table.put(0, new JLabel("s"));
-		table.put(1, new JLabel("m"));
-		table.put(2, new JLabel("l"));
-		table.put(3, new JLabel("xl"));
+		table.put(0, new JLabel("S"));
+		table.put(1, new JLabel("M"));
+		table.put(2, new JLabel("L"));
+		table.put(3, new JLabel("XL"));
 		zoomSlider.setLabelTable(table);
 		zoomSlider.setPaintLabels(true);
 		zoomSlider.setSnapToTicks(true);
