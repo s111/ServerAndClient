@@ -30,6 +30,10 @@ public class EditMetadataPanel {
 	private JTextField descriptionField;
 	private JTextField tagTextField;
 
+	private String tagText = null;
+	
+	private DefaultListModel<String> tagListModel = new DefaultListModel<String>();
+
 	private JList<String> tagList;
 
 	public EditMetadataPanel() {
@@ -49,34 +53,6 @@ public class EditMetadataPanel {
 
 	public JPanel getPanel() {
 		return panel;
-	}
-
-	private void setUpSaveButton() {
-		saveButton = new JButton("Save");
-
-		saveButton.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-
-			}
-		});
-
-		panel.add(saveButton);
-	}
-
-	private void setUpCloseButton() {
-		closeButton = new JButton("Close");
-
-		closeButton.addActionListener(new ActionListener() {
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-
-			}
-		});
-
-		panel.add(closeButton, "skip 2, wrap");
 	}
 
 	private void setUpDescriptionField() {
@@ -114,7 +90,6 @@ public class EditMetadataPanel {
 
 		panel.add(tagLabel, "wrap");
 		panel.add(tagTextField, "span 2, growx, pushx");
-
 	}
 
 	private void setUpAddTagButton() {
@@ -124,12 +99,16 @@ public class EditMetadataPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
 
+				if (!tagTextField.getText().isEmpty()) {
+					tagText = tagTextField.getText();
+					tagListModel.addElement(tagText);
+					tagTextField.setText(null);
+				}
 			}
 		});
 
-		panel.add(addTagButton);
+		panel.add(addTagButton, "split 2, cell 3 5");
 	}
 
 	private void setUpDeleteTagButton() {
@@ -139,7 +118,7 @@ public class EditMetadataPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-
+				
 			}
 		});
 
@@ -147,7 +126,6 @@ public class EditMetadataPanel {
 	}
 
 	private void setUpTagList() {
-		DefaultListModel<String> tagListModel = new DefaultListModel<String>();
 		tagList = new JList<String>(tagListModel);
 
 		JScrollPane scrollPane = new JScrollPane(tagList);
@@ -155,4 +133,30 @@ public class EditMetadataPanel {
 		panel.add(scrollPane, "span, growx");
 	}
 
+	private void setUpSaveButton() {
+		saveButton = new JButton("Save");
+
+		saveButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+
+			}
+		});
+
+		panel.add(saveButton, "split 2, cell 3 7, gapleft 42");
+	}
+
+	private void setUpCloseButton() {
+		closeButton = new JButton("Close");
+
+		closeButton.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+			}
+		});
+
+		panel.add(closeButton);
+	}
 }
