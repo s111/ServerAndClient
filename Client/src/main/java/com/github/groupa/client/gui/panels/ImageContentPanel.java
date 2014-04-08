@@ -4,6 +4,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
+import java.net.ConnectException;
 
 import javax.inject.Inject;
 import javax.swing.AbstractAction;
@@ -17,20 +18,29 @@ import javax.swing.border.EtchedBorder;
 
 import net.miginfocom.swing.MigLayout;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.github.groupa.client.ActiveImage;
 import com.github.groupa.client.Callback;
 import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.Library;
 import com.github.groupa.client.events.ActiveImageChangedEvent;
 import com.github.groupa.client.events.SwitchViewEvent;
+import com.github.groupa.client.servercommunication.RESTService;
 import com.github.groupa.client.views.View;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
 public class ImageContentPanel implements ContentPanel {
+	private static final Logger logger = LoggerFactory
+			.getLogger(ImageContentPanel.class);
+
 	private JPanel panel = new JPanel();
 
 	private Library library;
+
+	private RESTService restService;
 
 	private EventBus eventBus;
 
@@ -41,9 +51,10 @@ public class ImageContentPanel implements ContentPanel {
 	private int currentImageIndex = -1;
 
 	@Inject
-	public ImageContentPanel(Library library, EventBus eventBus,
-			ActiveImage activeImage, ImagePanel imagePanel) {
+	public ImageContentPanel(Library library, RESTService restService,
+			EventBus eventBus, ActiveImage activeImage, ImagePanel imagePanel) {
 		this.library = library;
+		this.restService = restService;
 		this.eventBus = eventBus;
 		this.activeImage = activeImage;
 		this.imagePanel = imagePanel;
@@ -84,6 +95,15 @@ public class ImageContentPanel implements ContentPanel {
 			@Override
 			public void actionPerformed(ActionEvent event) {
 				ImageContentPanel.this.imagePanel.rotateCW();
+
+				try {
+					ImageContentPanel.this.restService.rotateImage(
+							ImageContentPanel.this.activeImage.getImage()
+									.getId(), 90);
+				} catch (ConnectException exception) {
+					logger.warn("Could not connect to the server and rotate image: "
+							+ exception.getMessage());
+				}
 			}
 		});
 
@@ -91,6 +111,15 @@ public class ImageContentPanel implements ContentPanel {
 			@Override
 			public void actionPerformed(ActionEvent event) {
 				ImageContentPanel.this.imagePanel.rotateCCW();
+
+				try {
+					ImageContentPanel.this.restService.rotateImage(
+							ImageContentPanel.this.activeImage.getImage()
+									.getId(), -90);
+				} catch (ConnectException exception) {
+					logger.warn("Could not connect to the server and rotate image: "
+							+ exception.getMessage());
+				}
 			}
 		});
 
