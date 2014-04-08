@@ -54,7 +54,7 @@ public class GridSidebarPanel implements SidebarPanel {
 	}
 
 	private void setUpZoomComponents() {
-		panel.add(zoomSlider.getPanel(), "align center");
+		panel.add(zoomSlider.getPanel(), "align center, wrap");
 	}
 
 	private void setUpTagComponents() {
