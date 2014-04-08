@@ -54,6 +54,8 @@ public class ImagePanel extends JComponent {
 	public void setImage(BufferedImage image) {
 		this.image = image;
 
+		isSelecting = false;
+
 		resetImage();
 		repaint();
 	}
@@ -65,10 +67,10 @@ public class ImagePanel extends JComponent {
 	public void rotateCCW() {
 		rotate(-90);
 	}
-	
+
 	public void toggleSelection() {
 		isSelecting = !isSelecting;
-		
+
 		resetImage();
 		repaint();
 	}
@@ -85,7 +87,7 @@ public class ImagePanel extends JComponent {
 
 	private void resetImage() {
 		clearSelection();
-		
+
 		resetImagePosition();
 		resetImageScaling();
 		resetRotation();
@@ -313,7 +315,7 @@ public class ImagePanel extends JComponent {
 			super.mouseReleased(event);
 
 			double divisor = Math.abs((1 + scale) - 1);
-			
+
 			int x = (int) Math.ceil(((clip.x - leftBound) / divisor));
 			int y = (int) Math.ceil(((clip.y - topBound) / divisor));
 			int w = (int) Math.ceil((clip.width / divisor));
@@ -375,11 +377,11 @@ public class ImagePanel extends JComponent {
 		@Override
 		public void mouseWheelMoved(MouseWheelEvent event) {
 			super.mouseWheelMoved(event);
-			
-			if (isSelecting){
+
+			if (isSelecting) {
 				return;
 			}
-			
+
 			double newScale = scale - (SCALE_TICK * event.getWheelRotation());
 
 			setScale(newScale);
