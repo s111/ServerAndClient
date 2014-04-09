@@ -1,6 +1,10 @@
 package com.github.groupa.client.gui.panels;
 
+import java.awt.AlphaComposite;
 import java.awt.Color;
+import java.awt.Composite;
+import java.awt.Font;
+import java.awt.FontMetrics;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
@@ -57,10 +61,17 @@ public class ImagePanel extends JComponent {
 
 	private ImageObject imageObject;
 
+	private long lastZoomPaint;
+
+	private ZoomThread zoomThread;
+	private float alpha = 0.0f;
+
 	@Inject
 	public ImagePanel(ModifyImage modifyImage) {
 		this.modifyImage = modifyImage;
+	}
 
+	public ImagePanel() {
 		ImageMouseListener imageMouseListener = new ImageMouseListener();
 		ImagePanelListener imageComponentListener = new ImagePanelListener();
 
@@ -173,6 +184,29 @@ public class ImagePanel extends JComponent {
 
 		Graphics2D graphics2d = (Graphics2D) graphics;
 		graphics2d.drawImage(image, imageTransformer, null);
+
+		// Zoom Percentage
+
+		if (System.nanoTime() < lastZoomPaint) {
+			if (!(alpha < 0.05)) {
+				alpha -= 0.05f;
+			}
+
+			Graphics2D zoomText = (Graphics2D) graphics;
+
+			Composite c = AlphaComposite.getInstance(AlphaComposite.SRC_OVER,
+					alpha);
+			zoomText.setComposite(c);
+
+			zoomText.setFont(new Font("default", Font.BOLD, 12));
+			FontMetrics fm = zoomText.getFontMetrics();
+
+			String scalePercentage = (int) (scale * 100) + "%";
+
+			zoomText.drawString(scalePercentage,
+					getWidth() - fm.stringWidth(scalePercentage),
+					fm.getHeight());
+		}
 
 		if (isSelecting) {
 			int dx = endOffsetX - startOffsetX;
@@ -325,6 +359,29 @@ public class ImagePanel extends JComponent {
 		endOffsetY = startOffsetY;
 	}
 
+	private class ZoomThread extends Thread {
+		private long stopTime;
+
+		public ZoomThread(long stopTime) {
+			super();
+			this.stopTime = stopTime;
+		}
+
+		public void run() {
+			try {
+				while (System.nanoTime() < stopTime) {
+					Thread.sleep(100);
+					repaint();
+				}
+			} catch (InterruptedException e) {
+			}
+		}
+
+		public void setStopTime(long time) {
+			stopTime = time;
+		}
+	}
+
 	private class ImageMouseListener extends MouseAdapter {
 		private static final double SCALE_TICK = 0.1;
 
@@ -427,6 +484,16 @@ public class ImagePanel extends JComponent {
 
 			if (isSelecting) {
 				return;
+			}
+
+			alpha = 1.0f;
+
+			lastZoomPaint = System.nanoTime() + 2000000000;
+			if (zoomThread == null || !zoomThread.isAlive()) {
+				zoomThread = new ZoomThread(lastZoomPaint);
+				zoomThread.start();
+			} else {
+				zoomThread.setStopTime(lastZoomPaint);
 			}
 
 			double newScale = scale - (SCALE_TICK * event.getWheelRotation());
