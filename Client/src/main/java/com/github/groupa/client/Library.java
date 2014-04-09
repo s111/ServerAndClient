@@ -2,6 +2,7 @@ package com.github.groupa.client;
 
 import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -120,13 +121,28 @@ public class Library {
 			tryAddImage(img);
 		}
 	}
+	
+	@Subscribe
+	public void libaryRemoveListener(LibraryRemoveEvent event) {
+		if (parent == null || !event.getLibrary().equals(parent))
+			return;
+		ImageObject img = event.getImage();
+		if (img == null) {
+			tryRemoveImages(event.getImages());
+		} else {
+			tryRemoveImage(img);
+		}
+	}
 
 	private void tryAddImages(List<ImageObject> list) {
 		List<ImageObject> newImages = new ArrayList<>();
-		for (ImageObject img : list) {
-			if (!images.contains(img)
-					&& LibraryConstraint.satisfied(constraints, img)) {
-				newImages.add(img);
+		newImages.addAll(list);
+		Iterator<ImageObject> itr = newImages.iterator();
+		while (itr.hasNext()) {
+			ImageObject img = itr.next();
+			if (images.contains(img)
+					|| !LibraryConstraint.satisfied(constraints, img)) {
+				itr.remove();
 			}
 		}
 		if (newImages.size() > 0) {
@@ -140,7 +156,8 @@ public class Library {
 	private void tryAddImage(ImageObject img) {
 		boolean success = false;
 		synchronized (images) {
-			if (!images.contains(img) && LibraryConstraint.satisfied(constraints, img)) {
+			if (!images.contains(img)
+					&& LibraryConstraint.satisfied(constraints, img)) {
 				success = images.add(img);
 			}
 		}
@@ -150,18 +167,26 @@ public class Library {
 	}
 
 	private void tryRemoveImage(ImageObject img) {
+		boolean success = false;
 		synchronized (images) {
-			if (images.contains(img)) {
+			if ((success = images.contains(img))) {
 				images.remove(img);
 			}
 		}
-		eventBus.post(new LibraryRemoveEvent(this, img));
+		if (success) {
+			eventBus.post(new LibraryRemoveEvent(this, img));
+		}
 	}
 
 	private void tryRemoveImages(List<ImageObject> list) {
+		List<ImageObject> retainedList = new ArrayList<>(list.size());
+		retainedList.addAll(list);
+		retainedList.retainAll(images);
 		synchronized (images) {
 			images.removeAll(list);
 		}
-		eventBus.post(new LibraryRemoveEvent(this, list));
+		if (!retainedList.isEmpty()) {
+			eventBus.post(new LibraryRemoveEvent(this, retainedList));
+		}
 	}
 }
