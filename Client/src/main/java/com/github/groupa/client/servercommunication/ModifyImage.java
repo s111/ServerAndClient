@@ -30,6 +30,7 @@ public class ModifyImage {
 					if (response.getStatus() == 202) {
 						image.refreshImage();
 						callback.success(image);
+						return;
 					}
 				} catch (ConnectException e) {
 					logger.warn("Could not connect to server to rate image");
