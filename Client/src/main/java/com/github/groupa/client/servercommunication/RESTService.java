@@ -86,7 +86,7 @@ public interface RESTService {
 			throws ConnectException;
 
 	@FormUrlEncoded
-	@POST("/image/{id}/crop")
+	@POST("/images/{id}/crop")
 	public Response cropImage(@Path("id") long id, @Field("x") int x,
 			@Field("y") int y, @Field("width") int width,
 			@Field("height") int height) throws ConnectException;
