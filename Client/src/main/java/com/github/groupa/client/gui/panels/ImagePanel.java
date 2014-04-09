@@ -68,6 +68,7 @@ public class ImagePanel extends JComponent {
 		addMouseMotionListener(imageMouseListener);
 		addMouseWheelListener(imageMouseListener);
 		addComponentListener(imageComponentListener);
+
 	}
 
 	private void setImage(BufferedImage image) {
@@ -173,6 +174,8 @@ public class ImagePanel extends JComponent {
 
 		Graphics2D graphics2d = (Graphics2D) graphics;
 		graphics2d.drawImage(image, imageTransformer, null);
+
+		graphics2d.drawString((int) (scale * 100) + "%", getWidth() - 35, 10);
 
 		if (isSelecting) {
 			int dx = endOffsetX - startOffsetX;
