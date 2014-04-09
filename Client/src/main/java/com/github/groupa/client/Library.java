@@ -65,10 +65,6 @@ public class Library {
 		return list;
 	}
 
-	public void clear() {
-		images.clear();
-	}
-
 	public void add(ImageObject img) {
 		if (parent == null) {
 			tryAddImage(img);
@@ -121,11 +117,13 @@ public class Library {
 			tryAddImage(img);
 		}
 	}
-	
+
 	@Subscribe
 	public void libaryRemoveListener(LibraryRemoveEvent event) {
-		if (parent == null || !event.getLibrary().equals(parent))
+		if (parent == null && !event.getLibrary().equals(parent)
+				&& !event.getLibrary().equals(this)) {
 			return;
+		}
 		ImageObject img = event.getImage();
 		if (img == null) {
 			tryRemoveImages(event.getImages());

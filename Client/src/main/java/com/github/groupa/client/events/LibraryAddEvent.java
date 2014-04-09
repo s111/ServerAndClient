@@ -9,7 +9,7 @@ public class LibraryAddEvent {
 	private Library library;
 	private ImageObject image = null;
 	private List<ImageObject> images = null;
-	
+
 	public LibraryAddEvent(Library library, ImageObject image) {
 		this.library = library;
 		this.image = image;
@@ -23,12 +23,16 @@ public class LibraryAddEvent {
 	public ImageObject getImage() {
 		return image;
 	}
-	
+
 	public List<ImageObject> getImages() {
 		return images;
 	}
-	
+
 	public Library getLibrary() {
 		return library;
+	}
+
+	public String toString() {
+		return (image == null) ? ("" + images.size() + " images") : "1 image";
 	}
 }
