@@ -4,7 +4,6 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
-import java.net.ConnectException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +29,6 @@ import com.github.groupa.client.events.ImageModifiedEvent;
 import com.github.groupa.client.events.LibraryAddEvent;
 import com.github.groupa.client.events.SwitchViewEvent;
 import com.github.groupa.client.servercommunication.ModifyImage;
-import com.github.groupa.client.servercommunication.RESTService;
 import com.github.groupa.client.views.View;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -180,7 +178,7 @@ public class ImageContentPanel implements ContentPanel {
 		activeImageObject.loadImage(new Callback<BufferedImage>() {
 			@Override
 			public void success(BufferedImage image) {
-				imagePanel.setImage(image);
+				imagePanel.setImage(activeImageObject);
 				imageSidebarPanel.setImage(activeImageObject);
 			}
 

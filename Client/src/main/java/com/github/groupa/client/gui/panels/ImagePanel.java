@@ -14,12 +14,25 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.JComponent;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.github.groupa.client.Callback;
+import com.github.groupa.client.ImageObject;
+import com.github.groupa.client.servercommunication.ModifyImage;
+import com.google.inject.Inject;
+
 @SuppressWarnings("serial")
 public class ImagePanel extends JComponent {
+	private static final Logger logger = LoggerFactory
+			.getLogger(ImagePanel.class);
+
 	private static final double SCALE_MAX = 2.8;
 	private static final double SCALE_MIN = 0.1;
 
 	private BufferedImage image;
+
+	private ModifyImage modifyImage;
 
 	private double imageOffsetX;
 	private double imageOffsetY;
@@ -42,7 +55,12 @@ public class ImagePanel extends JComponent {
 	private Rectangle relativeClip = new Rectangle();
 	private Rectangle absoluteClip = new Rectangle();
 
-	public ImagePanel() {
+	private ImageObject imageObject;
+
+	@Inject
+	public ImagePanel(ModifyImage modifyImage) {
+		this.modifyImage = modifyImage;
+
 		ImageMouseListener imageMouseListener = new ImageMouseListener();
 		ImagePanelListener imageComponentListener = new ImagePanelListener();
 
@@ -52,7 +70,7 @@ public class ImagePanel extends JComponent {
 		addComponentListener(imageComponentListener);
 	}
 
-	public void setImage(BufferedImage image) {
+	private void setImage(BufferedImage image) {
 		this.image = image;
 
 		isSelecting = false;
@@ -92,7 +110,20 @@ public class ImagePanel extends JComponent {
 			return;
 		}
 
-		// call the cropImage method in RESTService
+		modifyImage.crop(new Callback<ImageObject>() {
+			public void success(ImageObject t) {
+			}
+
+			public void failure() {
+				logger.warn("could not crop image");
+			}
+
+		}, imageObject, absoluteClip);
+	}
+
+	public void setImage(ImageObject image) {
+		imageObject = image;
+		setImage(image.getImage());
 	}
 
 	private void resetImage() {
