@@ -39,7 +39,8 @@ public class ImagePanel extends JComponent {
 	private boolean invertSize;
 	private boolean resizeImageToFitPanelOnNextRepaint;
 
-	private Rectangle clip = new Rectangle();
+	private Rectangle relativeClip = new Rectangle();
+	private Rectangle absoluteClip = new Rectangle();
 
 	public ImagePanel() {
 		ImageMouseListener imageMouseListener = new ImageMouseListener();
@@ -83,6 +84,15 @@ public class ImagePanel extends JComponent {
 		resetImagePosition();
 		resetImageScaling();
 		repaint();
+	}
+
+	public void crop() {
+		if (absoluteClip.x < 0 || absoluteClip.y < 0 || absoluteClip.width <= 0
+				|| absoluteClip.height <= 0) {
+			return;
+		}
+
+		// call the cropImage method in RESTService
 	}
 
 	private void resetImage() {
@@ -139,21 +149,23 @@ public class ImagePanel extends JComponent {
 			int width = Math.abs(dx);
 			int height = Math.abs(dy);
 
-			clip.setSize(width, height);
+			relativeClip.setSize(width, height);
 
 			if (dx < 0 && dy < 0) {
-				clip.setLocation(startOffsetX - width, startOffsetY - height);
+				relativeClip.setLocation(startOffsetX - width, startOffsetY
+						- height);
 			} else if (dx < 0 && dy > 0) {
-				clip.setLocation(startOffsetX - width, startOffsetY);
+				relativeClip.setLocation(startOffsetX - width, startOffsetY);
 			} else if (dx > 0 && dy < 0) {
-				clip.setLocation(startOffsetX, startOffsetY - height);
+				relativeClip.setLocation(startOffsetX, startOffsetY - height);
 			} else if (dx > 0 && dy > 0) {
-				clip.setLocation(startOffsetX, startOffsetY);
+				relativeClip.setLocation(startOffsetX, startOffsetY);
 			}
 
 			Color transparentBlue = new Color(0, 0, 200, 128);
 			graphics2d.setColor(transparentBlue);
-			graphics2d.fillRect(clip.x, clip.y, clip.width, clip.height);
+			graphics2d.fillRect(relativeClip.x, relativeClip.y,
+					relativeClip.width, relativeClip.height);
 		}
 	}
 
@@ -316,12 +328,14 @@ public class ImagePanel extends JComponent {
 
 			double divisor = Math.abs((1 + scale) - 1);
 
-			int x = (int) Math.ceil(((clip.x - leftBound) / divisor));
-			int y = (int) Math.ceil(((clip.y - topBound) / divisor));
-			int w = (int) Math.ceil((clip.width / divisor));
-			int h = (int) Math.ceil((clip.height / divisor));
-
-			System.out.println(x + " " + y + " " + w + " " + h);
+			absoluteClip.x = (int) Math
+					.ceil(((relativeClip.x - leftBound) / divisor));
+			absoluteClip.y = (int) Math
+					.ceil(((relativeClip.y - topBound) / divisor));
+			absoluteClip.width = (int) Math
+					.ceil((relativeClip.width / divisor));
+			absoluteClip.height = (int) Math
+					.ceil((relativeClip.height / divisor));
 		}
 
 		@Override

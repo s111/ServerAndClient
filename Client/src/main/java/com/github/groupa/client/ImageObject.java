@@ -217,9 +217,9 @@ public class ImageObject {
 			return false;
 		return ((ImageObject) o).getId() == getId();
 	}
-	
+
 	public int hashCode() {
-		return (int)(this.id^(this.id>>>32));
+		return (int) (this.id ^ (this.id >>> 32));
 	}
 
 	public void refreshImage() {

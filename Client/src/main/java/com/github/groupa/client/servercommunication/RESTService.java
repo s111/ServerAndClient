@@ -84,4 +84,10 @@ public interface RESTService {
 	@GET("/images/{id}/rotate/{angle}")
 	public Response rotateImage(@Path("id") long id, @Path("angle") int angle)
 			throws ConnectException;
+
+	@FormUrlEncoded
+	@POST("/image/{id}/crop")
+	public Response cropImage(@Path("id") long id, @Field("x") int x,
+			@Field("y") int y, @Field("width") int width,
+			@Field("height") int height) throws ConnectException;
 }
