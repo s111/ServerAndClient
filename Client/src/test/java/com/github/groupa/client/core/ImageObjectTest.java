@@ -13,11 +13,11 @@ import org.junit.Test;
 
 import com.github.groupa.client.Callback;
 import com.github.groupa.client.ImageObject;
-import com.github.groupa.client.ServerConnection;
 import com.github.groupa.client.helpers.MockImageInfo;
 import com.github.groupa.client.helpers.MockServerConnection;
 import com.github.groupa.client.jsonobjects.ImageFull;
 import com.github.groupa.client.jsonobjects.ImageInfo;
+import com.github.groupa.client.servercommunication.ServerConnection;
 import com.google.common.eventbus.EventBus;
 
 public class ImageObjectTest {

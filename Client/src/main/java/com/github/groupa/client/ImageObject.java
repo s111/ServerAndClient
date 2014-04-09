@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.inject.Inject;
 
@@ -12,7 +13,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.groupa.client.events.ImageInfoChangedEvent;
+import com.github.groupa.client.events.ImageModifiedEvent;
 import com.github.groupa.client.jsonobjects.ImageInfo;
+import com.github.groupa.client.servercommunication.ServerConnection;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.assistedinject.Assisted;
 
@@ -35,6 +38,8 @@ public class ImageObject {
 
 	private ImageInfo imageInfo;
 	private Map<String, BufferedImage> images = new HashMap<>();
+
+	private boolean valid = true;
 
 	@Inject
 	public ImageObject(EventBus eventBus, ServerConnection serverConnection,
@@ -215,5 +220,27 @@ public class ImageObject {
 	
 	public int hashCode() {
 		return (int)(this.id^(this.id>>>32));
+	}
+
+	public void refreshImage() {
+		valid = false;
+		Set<String> sizes = images.keySet();
+		images.clear();
+		Map<String, BufferedImage> newImages = new HashMap<>();
+		for (String size : sizes) {
+			BufferedImage image = serverConnection.getImage(id, size);
+			if (image != null) {
+				newImages.put(size, image);
+			} else {
+				logger.warn("Error refreshing images");
+			}
+		}
+		images.putAll(newImages);
+		valid = true;
+		eventBus.post(new ImageModifiedEvent(this));
+	}
+
+	public boolean isValid() {
+		return valid;
 	}
 }

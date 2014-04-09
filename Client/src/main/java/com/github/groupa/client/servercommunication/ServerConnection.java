@@ -1,4 +1,4 @@
-package com.github.groupa.client;
+package com.github.groupa.client.servercommunication;
 
 import java.awt.image.BufferedImage;
 import java.io.IOException;
@@ -13,7 +13,6 @@ import org.slf4j.LoggerFactory;
 import retrofit.client.Response;
 
 import com.github.groupa.client.jsonobjects.ImageInfo;
-import com.github.groupa.client.servercommunication.RESTService;
 import com.google.inject.Inject;
 
 public class ServerConnection {
