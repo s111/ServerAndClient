@@ -5,13 +5,13 @@ import javax.swing.JMenuBar;
 
 import retrofit.RestAdapter;
 
-import com.github.groupa.client.ActiveImage;
 import com.github.groupa.client.Library;
 import com.github.groupa.client.RESTErrorHandler;
 import com.github.groupa.client.components.ZoomSlider;
 import com.github.groupa.client.factories.ImageObjectFactory;
 import com.github.groupa.client.gui.MenuBar;
 import com.github.groupa.client.gui.panels.ImagePanel;
+import com.github.groupa.client.gui.panels.ImageSidebarPanel;
 import com.github.groupa.client.gui.panels.MainPanel;
 import com.github.groupa.client.gui.panels.RootPanel;
 import com.github.groupa.client.gui.panels.ThumbPanel;
@@ -29,10 +29,10 @@ public class DIModule extends AbstractModule {
 		bind(Library.class).in(Singleton.class);
 		bind(EventBus.class).in(Singleton.class);
 		bind(ThumbPanel.class).in(Singleton.class);
-		bind(ActiveImage.class).in(Singleton.class);
 		bind(ZoomSlider.class).in(Singleton.class);
 		bind(RootPanel.class).to(MainPanel.class);
 		bind(ImagePanel.class).in(Singleton.class);
+		bind(ImageSidebarPanel.class).in(Singleton.class);
 
 		install(new FactoryModuleBuilder().build(ImageObjectFactory.class));
 	}

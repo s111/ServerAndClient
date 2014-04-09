@@ -34,7 +34,7 @@ public class LibrarySort {
 			return ComparisonChain
 					.start()
 					.compare(i2.getRating(), i1.getRating())
-					.compare(i2.getId(), i1.getId(),
+					.compare(i1.getId(), i2.getId(),
 							Ordering.natural().nullsLast()).result();
 		}
 	};

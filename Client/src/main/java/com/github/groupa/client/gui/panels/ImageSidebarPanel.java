@@ -22,9 +22,7 @@ import javax.swing.table.DefaultTableModel;
 
 import net.miginfocom.swing.MigLayout;
 
-import com.github.groupa.client.ActiveImage;
 import com.github.groupa.client.ImageObject;
-import com.github.groupa.client.events.ActiveImageChangedEvent;
 import com.github.groupa.client.events.ImageInfoChangedEvent;
 import com.github.groupa.client.gui.TableCellListener;
 import com.google.common.eventbus.Subscribe;
@@ -32,7 +30,7 @@ import com.google.common.eventbus.Subscribe;
 public class ImageSidebarPanel implements SidebarPanel {
 	private JPanel panel = new JPanel();
 
-	private ActiveImage activeImage;
+	private ImageObject activeImage;
 
 	private JTextField descriptionField;
 
@@ -50,9 +48,7 @@ public class ImageSidebarPanel implements SidebarPanel {
 	private boolean savingRating = false;
 
 	@Inject
-	public ImageSidebarPanel(ActiveImage activeImage) {
-		this.activeImage = activeImage;
-
+	public ImageSidebarPanel() {
 		setUpPanel();
 		setUpDescriptionField();
 		setUpRatingButtons();
@@ -98,7 +94,7 @@ public class ImageSidebarPanel implements SidebarPanel {
 						Object[] emptyRow = {};
 						tagTableModel.addRow(emptyRow);
 
-						activeImage.getImage().addTag(newValue);
+						activeImage.addTag(newValue);
 					}
 				}
 				// You are editing a tag
@@ -154,9 +150,8 @@ public class ImageSidebarPanel implements SidebarPanel {
 		ActionListener actionListener = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				ImageObject image = activeImage.getImage();
 
-				if (image == null) {
+				if (activeImage == null) {
 					return;
 				}
 
@@ -164,7 +159,7 @@ public class ImageSidebarPanel implements SidebarPanel {
 					int selected = setRatingSaveMode();
 
 					if (selected != -1) {
-						image.rate(selected + 1);
+						activeImage.rate(selected + 1);
 					}
 				} else {
 					setRatingEditMode();
@@ -201,16 +196,14 @@ public class ImageSidebarPanel implements SidebarPanel {
 		ActionListener actionListener = new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				ImageObject image = activeImage.getImage();
-
-				if (image == null) {
+				if (activeImage == null) {
 					return;
 				}
 
 				if (savingDescription) {
 					setDescriptionSaveMode();
 
-					image.describe(descriptionField.getText());
+					activeImage.describe(descriptionField.getText());
 				} else {
 					setDescriptionEditMode();
 				}
@@ -229,15 +222,14 @@ public class ImageSidebarPanel implements SidebarPanel {
 	@Subscribe
 	public void imageInfoChanged(ImageInfoChangedEvent event) {
 		ImageObject image = event.getImageObject();
-		if (image.equals(activeImage.getImage())) {
+		if (image.equals(activeImage)) {
 			updateFields(image);
 		}
 	}
 
-	@Subscribe
-	public void activeImageChangedListener(ActiveImageChangedEvent event) {
-		ImageObject image = event.getImageObject();
-
+	public void setImage(ImageObject image) {
+		this.activeImage = image;
+		
 		setRatingSaveMode();
 		setDescriptionSaveMode();
 		updateFields(image);

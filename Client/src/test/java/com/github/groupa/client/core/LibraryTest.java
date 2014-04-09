@@ -10,7 +10,6 @@ import org.junit.Test;
 import com.github.groupa.client.Library;
 import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.LibraryConstraint;
-import com.github.groupa.client.LibrarySort;
 import com.github.groupa.client.events.LibraryAddEvent;
 import com.github.groupa.client.helpers.MockImageObject;
 import com.google.common.eventbus.EventBus;
@@ -44,16 +43,13 @@ public class LibraryTest {
 	@Test
 	public void testAddAndSize() {
 		test.cleanup();
-		assertEquals(0, rootLibrary.imageCount());
-		assertNull(rootLibrary.getImage(-1));
-		assertNull(rootLibrary.getImage(0));
+		assertEquals(0, rootLibrary.size());
 		for (int i = 1; i <= 3; i++) {
 			ImageObject img = MockImageObject.get(i, null, null, null, 0);
 			rootLibrary.add(img);
-			assertEquals(i, rootLibrary.imageCount());
-			assertEquals(img, rootLibrary.getImage(i - 1));
+			assertEquals(i, rootLibrary.size());
+			assertTrue(rootLibrary.hasImage(img));
 		}
-		assertNull(rootLibrary.getImage(3));
 		test.cleanup();
 	}
 
@@ -80,55 +76,15 @@ public class LibraryTest {
 		subLibrary.add(MockImageObject.get(3, "described image", null, null, 0));
 		subLibrary.add(MockImageObject.get(4, null, null, null, 0));
 
-		assertEquals(4, rootLibrary.imageCount());
-		assertEquals(4, subLibrary.imageCount());
+		assertEquals(4, rootLibrary.size());
+		assertEquals(4, subLibrary.size());
 		subLibrary.addConstraint(new LibraryConstraint(LibraryConstraint.HAS_DESCRIPTION));
-		assertEquals(4, rootLibrary.imageCount());
-		assertEquals(3, subLibrary.imageCount());
+		assertEquals(4, rootLibrary.size());
+		assertEquals(3, subLibrary.size());
 		subLibrary.addConstraint(new LibraryConstraint(LibraryConstraint.HAS_TAG, "tag2"));
-		assertEquals(4, rootLibrary.imageCount());
-		assertEquals(1, subLibrary.imageCount());
-		assertEquals(2, subLibrary.getImage(0).getId());
+		assertEquals(4, rootLibrary.size());
+		assertEquals(1, subLibrary.size());
 
-	}
-
-	@Test
-	public void testSortedLibrary() {
-		test.cleanup();
-		test.setupSubLibrary();
-
-		subLibrary.sort(LibrarySort.SORT_RATING_ASC);
-		subLibrary.add(MockImageObject
-				.get(1, null, null, null, 0));
-		subLibrary.add(MockImageObject
-				.get(2, null, null, null, 3));
-		subLibrary.add(MockImageObject
-				.get(3, null, null, null, 2));
-		subLibrary.add(MockImageObject
-				.get(4, null, null, null, 3));
-		subLibrary.add(MockImageObject
-				.get(5, null, null, null, 5));
-		subLibrary.add(MockImageObject
-				.get(6, null, null, null, 1));
-
-		assertEquals(6, subLibrary.imageCount());
-		assertEquals(1, subLibrary.getImage(0).getId());
-		assertEquals(6, subLibrary.getImage(1).getId());
-		assertEquals(3, subLibrary.getImage(2).getId());
-		assertEquals(2, subLibrary.getImage(3).getId());
-		assertEquals(4, subLibrary.getImage(4).getId());
-		assertEquals(5, subLibrary.getImage(5).getId());
-
-		subLibrary.sort(LibrarySort.SORT_RATING_DESC);
-
-		assertEquals(5, subLibrary.getImage(0).getId());
-		assertEquals(2, subLibrary.getImage(1).getId());
-		assertEquals(4, subLibrary.getImage(2).getId());
-		assertEquals(3, subLibrary.getImage(3).getId());
-		assertEquals(6, subLibrary.getImage(4).getId());
-		assertEquals(1, subLibrary.getImage(5).getId());
-
-		test.cleanup();
 	}
 
 	private void testEventBusAdd(Library lib) {

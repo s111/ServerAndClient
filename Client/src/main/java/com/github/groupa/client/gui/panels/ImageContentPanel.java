@@ -5,6 +5,8 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.net.ConnectException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.swing.AbstractAction;
@@ -21,11 +23,10 @@ import net.miginfocom.swing.MigLayout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.groupa.client.ActiveImage;
 import com.github.groupa.client.Callback;
 import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.Library;
-import com.github.groupa.client.events.ActiveImageChangedEvent;
+import com.github.groupa.client.events.LibraryAddEvent;
 import com.github.groupa.client.events.SwitchViewEvent;
 import com.github.groupa.client.servercommunication.RESTService;
 import com.github.groupa.client.views.View;
@@ -38,26 +39,27 @@ public class ImageContentPanel implements ContentPanel {
 
 	private JPanel panel = new JPanel();
 
-	private Library library;
-
 	private RESTService restService;
 
 	private EventBus eventBus;
-
-	private ActiveImage activeImage;
 
 	private ImagePanel imagePanel;
 
 	private int currentImageIndex = -1;
 
+	private List<ImageObject> images = new ArrayList<>();
+
+	private ImageSidebarPanel imageSidebarPanel;
+
+	private Library library;
+
 	@Inject
-	public ImageContentPanel(Library library, RESTService restService,
-			EventBus eventBus, ActiveImage activeImage, ImagePanel imagePanel) {
-		this.library = library;
+	public ImageContentPanel(RESTService restService,
+			EventBus eventBus, ImagePanel imagePanel, ImageSidebarPanel imageSidebarPanel) {
 		this.restService = restService;
 		this.eventBus = eventBus;
-		this.activeImage = activeImage;
 		this.imagePanel = imagePanel;
+		this.imageSidebarPanel = imageSidebarPanel;
 
 		MigLayout layout = new MigLayout();
 
@@ -98,8 +100,8 @@ public class ImageContentPanel implements ContentPanel {
 
 				try {
 					ImageContentPanel.this.restService.rotateImage(
-							ImageContentPanel.this.activeImage.getImage()
-									.getId(), 90);
+							ImageContentPanel.this.images
+									.get(currentImageIndex).getId(), 90);
 				} catch (ConnectException exception) {
 					logger.warn("Could not connect to the server and rotate image: "
 							+ exception.getMessage());
@@ -114,8 +116,8 @@ public class ImageContentPanel implements ContentPanel {
 
 				try {
 					ImageContentPanel.this.restService.rotateImage(
-							ImageContentPanel.this.activeImage.getImage()
-									.getId(), -90);
+							ImageContentPanel.this.images
+									.get(currentImageIndex).getId(), -90);
 				} catch (ConnectException exception) {
 					logger.warn("Could not connect to the server and rotate image: "
 							+ exception.getMessage());
@@ -163,7 +165,7 @@ public class ImageContentPanel implements ContentPanel {
 	}
 
 	private void setImage(int index) {
-		int count = library.imageCount();
+		int count = images.size();
 
 		if (count == 0) {
 			return;
@@ -171,17 +173,13 @@ public class ImageContentPanel implements ContentPanel {
 
 		currentImageIndex = (count + index) % count;
 
-		activeImage.setCurrentImageIndex(currentImageIndex);
-
-		final ImageObject activeImageObject = library
-				.getImage(currentImageIndex);
-
+		final ImageObject activeImageObject = images.get(currentImageIndex);
+		if (activeImageObject == null) return;
 		activeImageObject.loadImage(new Callback<BufferedImage>() {
 			@Override
 			public void success(BufferedImage image) {
 				imagePanel.setImage(image);
-
-				eventBus.post(new ActiveImageChangedEvent(activeImageObject));
+				imageSidebarPanel.setImage(activeImageObject);
 			}
 
 			@Override
@@ -199,18 +197,35 @@ public class ImageContentPanel implements ContentPanel {
 	public void switchViewListener(SwitchViewEvent event) {
 		if (event.hasSwitched() && View.IMAGE_VIEW.equals(event.getView())) {
 			ImageObject img = event.getImageObject();
+			Library lib = event.getLibrary();
+			if (lib != null)
+				setLibrary(lib);
 			if (img != null) {
-				Library lib = event.getLibrary();
-				if (lib != null)
-					library = lib;
-				if (library == null)
-					return;
-				int idx = library.indexOf(img);
-				if (idx < 0)
-					return;
-				currentImageIndex = idx;
+				currentImageIndex = images.indexOf(img);
 			}
 			setImage(currentImageIndex);
 		}
+	}
+
+	@Subscribe
+	public void libraryAddImageListener(LibraryAddEvent event) {
+		if (event.getLibrary().equals(library)) {
+			ImageObject image = event.getImage();
+			if (image == null) {
+				images.addAll(event.getImages());
+			} else {
+				images.add(image);
+			}
+		}
+	}
+
+	private void setLibrary(Library lib) {
+		this.library = lib;
+		ImageObject prevImg = null;
+		if (currentImageIndex >= 0 && images.contains(currentImageIndex))
+			prevImg = images.get(currentImageIndex);
+		images.clear();
+		images.addAll(lib.getImages());
+		setImage(images.indexOf(prevImg));
 	}
 }
