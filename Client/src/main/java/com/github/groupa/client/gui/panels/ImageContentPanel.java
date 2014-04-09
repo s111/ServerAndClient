@@ -26,8 +26,10 @@ import org.slf4j.LoggerFactory;
 import com.github.groupa.client.Callback;
 import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.Library;
+import com.github.groupa.client.events.ImageModifiedEvent;
 import com.github.groupa.client.events.LibraryAddEvent;
 import com.github.groupa.client.events.SwitchViewEvent;
+import com.github.groupa.client.servercommunication.ModifyImage;
 import com.github.groupa.client.servercommunication.RESTService;
 import com.github.groupa.client.views.View;
 import com.google.common.eventbus.EventBus;
@@ -38,8 +40,6 @@ public class ImageContentPanel implements ContentPanel {
 			.getLogger(ImageContentPanel.class);
 
 	private JPanel panel = new JPanel();
-
-	private RESTService restService;
 
 	private EventBus eventBus;
 
@@ -53,10 +53,12 @@ public class ImageContentPanel implements ContentPanel {
 
 	private Library library;
 
+	private ModifyImage modifyImage;
+
 	@Inject
-	public ImageContentPanel(RESTService restService, EventBus eventBus,
+	public ImageContentPanel(ModifyImage modifyImage, EventBus eventBus,
 			ImagePanel imagePanel, ImageSidebarPanel imageSidebarPanel) {
-		this.restService = restService;
+		this.modifyImage = modifyImage;
 		this.eventBus = eventBus;
 		this.imagePanel = imagePanel;
 		this.imageSidebarPanel = imageSidebarPanel;
@@ -96,38 +98,37 @@ public class ImageContentPanel implements ContentPanel {
 		navigationPanel.setCWAction(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				ImageContentPanel.this.imagePanel.rotateCW();
-
-				try {
-					ImageContentPanel.this.restService.rotateImage(
-							ImageContentPanel.this.images
-									.get(currentImageIndex).getId(), 90);
-				} catch (ConnectException exception) {
-					logger.warn("Could not connect to the server and rotate image: "
-							+ exception.getMessage());
-				}
+				rotateImage(images.get(currentImageIndex), 90);
 			}
 		});
 
 		navigationPanel.setCCWAction(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				ImageContentPanel.this.imagePanel.rotateCCW();
-
-				try {
-					ImageContentPanel.this.restService.rotateImage(
-							ImageContentPanel.this.images
-									.get(currentImageIndex).getId(), -90);
-				} catch (ConnectException exception) {
-					logger.warn("Could not connect to the server and rotate image: "
-							+ exception.getMessage());
-				}
+				rotateImage(images.get(currentImageIndex), -90);
 			}
 		});
 
 		panel.add(navigationPanel.getPanel(), "growx");
 
 		addKeyBindings();
+	}
+
+	private void rotateImage(ImageObject image, int angle) {
+		modifyImage.rotate(new Callback<ImageObject>() {
+
+			@Override
+			public void success(ImageObject t) {
+
+			}
+
+			@Override
+			public void failure() {
+				logger.warn("Error rotating image");
+			}
+
+		}, image, angle);
+
 	}
 
 	@SuppressWarnings("serial")
@@ -217,6 +218,13 @@ public class ImageContentPanel implements ContentPanel {
 			} else {
 				images.add(image);
 			}
+		}
+	}
+
+	@Subscribe
+	public void imageModifiedListener(ImageModifiedEvent event) {
+		if (images.indexOf(event.getImageObject()) == currentImageIndex) {
+			setImage(currentImageIndex);
 		}
 	}
 

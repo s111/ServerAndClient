@@ -27,7 +27,7 @@ public class ModifyImage {
 				Response response = null;
 				try {
 					response = restService.rotateImage(image.getId(), angle);
-					if (response.getStatus() == 202) {
+					if (response.getStatus() == 200) {
 						image.refreshImage();
 						callback.success(image);
 						return;
