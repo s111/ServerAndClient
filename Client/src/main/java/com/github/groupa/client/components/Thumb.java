@@ -5,6 +5,7 @@ import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -39,26 +40,30 @@ public abstract class Thumb implements MouseListener {
 	public JLabel getThumb(String size) {
 		JLabel label = labels.get(size);
 		if (label == null) {
-			final JLabel newLabel = new JLabel();
-			newLabel.setText("Not loaded");
-			label = newLabel;
+			label = new JLabel();
+			if (imageObject.hasThumb(size)) {
+				label.setIcon(new ImageIcon(imageObject.getThumb(size)));
+			} else {
+				final JLabel newLabel = label;
+				newLabel.setText("Not loaded");
+				imageObject.loadImage(new Callback<BufferedImage>() {
+					@Override
+					public void success(BufferedImage image) {
+						newLabel.setText("");
+						newLabel.setIcon(new ImageIcon(image));
+					}
+
+					@Override
+					public void failure() {
+						newLabel.setText("Error loading image");
+					}
+				}, size);
+			}
 			labels.put(size, label);
 			label.addMouseListener(this);
 			label.setBorder(border);
 			if (toolTipText.length() != 0)
 				label.setToolTipText(toolTipText);
-			imageObject.loadImage(new Callback<BufferedImage>() {
-				@Override
-				public void success(BufferedImage image) {
-					newLabel.setText("");
-					newLabel.setIcon(new ImageIcon(image));
-				}
-
-				@Override
-				public void failure() {
-					newLabel.setText("Error loading image");
-				}
-			}, size);
 		}
 		return label;
 	}
@@ -115,5 +120,29 @@ public abstract class Thumb implements MouseListener {
 		}
 		toolTipText += "</html>";
 		return toolTipText;
+	}
+
+	public void refreshImage() {
+		for (Map.Entry<String, JLabel> entry : labels.entrySet()) {
+			String key = entry.getKey();
+			if (imageObject.hasThumb(key)) {
+				entry.getValue().setIcon(
+						new ImageIcon(imageObject.getThumb(key)));
+			} else {
+				final JLabel label = entry.getValue();
+				imageObject.loadImage(new Callback<BufferedImage>() {
+					@Override
+					public void success(BufferedImage image) {
+						label.setText("");
+						label.setIcon(new ImageIcon(image));
+					}
+
+					@Override
+					public void failure() {
+						label.setText("Error loading image");
+					}
+				}, key);
+			}
+		}
 	}
 }

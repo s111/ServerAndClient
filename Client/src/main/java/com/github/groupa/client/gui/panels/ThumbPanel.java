@@ -22,6 +22,7 @@ import javax.swing.border.Border;
 import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.Library;
 import com.github.groupa.client.components.Thumb;
+import com.github.groupa.client.events.ImageModifiedEvent;
 import com.github.groupa.client.events.LibraryAddEvent;
 import com.github.groupa.client.events.SwitchViewEvent;
 import com.github.groupa.client.factories.ThumbMenuFactory;
@@ -170,6 +171,14 @@ public class ThumbPanel extends JPanel implements Scrollable {
 		}
 	}
 
+	@Subscribe
+	public void imageModifiedListener(ImageModifiedEvent event) {
+		ImageObject img = event.getImageObject();
+		if (images.contains(img)) {
+			thumbs.get(img).refreshImage();
+		}
+	}
+	
 	private int roomForColumns() {
 		int size = ImageObject.thumbSize.get(this.thumbSize) + 4;
 		int columns = (prevWidth - 20) / size;
