@@ -8,7 +8,6 @@ import javax.swing.BorderFactory;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
-import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -30,8 +29,6 @@ public class GridSidebarPanel implements SidebarPanel {
 	private ThumbPanel thumbPanel;
 	private Library rootLibrary;
 	private ZoomSlider zoomSlider;
-	private JDialog dialog;
-
 	@Inject
 	public GridSidebarPanel(Library rootLibrary, ThumbPanel thumbPanel,
 			ZoomSlider zoomSlider) {
@@ -80,11 +77,9 @@ public class GridSidebarPanel implements SidebarPanel {
 				SwingUtilities.invokeLater(new Runnable() {
 					public void run() {
 						if (comboBox.getSelectedIndex() == 0) {
-							thumbPanel.sort(
-									LibrarySort.SORT_RATING_DESC);
+							thumbPanel.sort(LibrarySort.SORT_RATING_DESC);
 						} else if (comboBox.getSelectedIndex() == 1) {
-							thumbPanel.sort(
-									LibrarySort.SORT_RATING_ASC);
+							thumbPanel.sort(LibrarySort.SORT_RATING_ASC);
 						}
 					}
 				});
@@ -130,19 +125,6 @@ public class GridSidebarPanel implements SidebarPanel {
 		};
 	}
 
-	private void setUpMetadataDialog() {
-		EditMetadataPanel editPanel = new EditMetadataPanel();
-
-		dialog = new JDialog();
-
-		dialog.add(editPanel.getPanel());
-		dialog.pack();
-		dialog.setModal(true);
-		dialog.setResizable(false);
-		dialog.setLocationRelativeTo(null);
-		dialog.setVisible(true);
-	}
-
 	private void setUpEditMetadataComponent() {
 		JButton editMetadataButton;
 
@@ -152,7 +134,7 @@ public class GridSidebarPanel implements SidebarPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				setUpMetadataDialog();
+				new EditMetadataWindow();
 			}
 		});
 
@@ -162,9 +144,5 @@ public class GridSidebarPanel implements SidebarPanel {
 	@Override
 	public JPanel getPanel() {
 		return panel;
-	}
-	
-	public JDialog getDialog() {
-		return dialog;
 	}
 }

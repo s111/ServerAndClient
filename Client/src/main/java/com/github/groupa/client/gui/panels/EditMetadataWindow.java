@@ -6,6 +6,7 @@ import java.awt.event.ActionListener;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
+import javax.swing.JDialog;
 import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
@@ -15,9 +16,11 @@ import javax.swing.JTextField;
 
 import net.miginfocom.swing.MigLayout;
 
-public class EditMetadataPanel {
+public class EditMetadataWindow {
 	private JPanel panel = new JPanel();
-
+	
+	private JDialog dialog;
+	
 	private JButton saveButton;
 	private JButton closeButton;
 	private JButton deleteTagButton;
@@ -36,7 +39,7 @@ public class EditMetadataPanel {
 
 	private JList<String> tagList;
 
-	public EditMetadataPanel() {
+	public EditMetadataWindow() {
 		MigLayout layout = new MigLayout();
 
 		panel.setLayout(layout);
@@ -49,10 +52,27 @@ public class EditMetadataPanel {
 		setUpTagList();
 		setUpSaveButton();
 		setUpCloseButton();
+		
+		setUpMetadataDialog();
 	}
 
 	public JPanel getPanel() {
 		return panel;
+	}
+	
+	public JDialog getDialog() {
+		return dialog;
+	}
+	
+	private void setUpMetadataDialog() {
+		dialog = new JDialog();
+
+		dialog.add(panel);
+		dialog.pack();
+		dialog.setModal(true);
+		dialog.setResizable(false);
+		dialog.setLocationRelativeTo(null);
+		dialog.setVisible(true);
 	}
 
 	private void setUpDescriptionField() {
@@ -154,6 +174,7 @@ public class EditMetadataPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
+				dialog.setVisible(false);
 			}
 		});
 
