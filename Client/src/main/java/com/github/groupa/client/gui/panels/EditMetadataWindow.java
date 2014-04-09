@@ -18,9 +18,9 @@ import net.miginfocom.swing.MigLayout;
 
 public class EditMetadataWindow {
 	private JPanel panel = new JPanel();
-	
+
 	private JDialog dialog;
-	
+
 	private JButton saveButton;
 	private JButton closeButton;
 	private JButton deleteTagButton;
@@ -33,8 +33,11 @@ public class EditMetadataWindow {
 	private JTextField descriptionField;
 	private JTextField tagTextField;
 
+	private int selectedTagIndex;
+	private int selectedRating;
+
 	private String tagText = null;
-	
+
 	private DefaultListModel<String> tagListModel = new DefaultListModel<String>();
 
 	private JList<String> tagList;
@@ -52,18 +55,18 @@ public class EditMetadataWindow {
 		setUpTagList();
 		setUpSaveButton();
 		setUpCloseButton();
-		
+
 		setUpMetadataDialog();
 	}
 
 	public JPanel getPanel() {
 		return panel;
 	}
-	
+
 	public JDialog getDialog() {
 		return dialog;
 	}
-	
+
 	private void setUpMetadataDialog() {
 		dialog = new JDialog();
 
@@ -138,7 +141,9 @@ public class EditMetadataWindow {
 
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
-				
+				selectedTagIndex = tagList.getSelectedIndex();
+				if (selectedTagIndex >= 0)
+					tagListModel.remove(selectedTagIndex);
 			}
 		});
 
@@ -147,7 +152,6 @@ public class EditMetadataWindow {
 
 	private void setUpTagList() {
 		tagList = new JList<String>(tagListModel);
-
 		JScrollPane scrollPane = new JScrollPane(tagList);
 
 		panel.add(scrollPane, "span, growx");
@@ -160,7 +164,7 @@ public class EditMetadataWindow {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-
+			//TODO save the data to the images.
 			}
 		});
 
@@ -179,5 +183,18 @@ public class EditMetadataWindow {
 		});
 
 		panel.add(closeButton);
+	}
+
+	@SuppressWarnings("unused")
+	private int getSelectedRating() {
+		selectedRating = 0;
+
+		for (int i = 0; i < 5; i++) {
+			if (ratingButtons[i].isSelected()) {
+				selectedRating = i + 1;
+			}
+		}
+
+		return selectedRating;
 	}
 }

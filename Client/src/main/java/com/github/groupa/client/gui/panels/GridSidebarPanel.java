@@ -29,6 +29,7 @@ public class GridSidebarPanel implements SidebarPanel {
 	private ThumbPanel thumbPanel;
 	private Library rootLibrary;
 	private ZoomSlider zoomSlider;
+
 	@Inject
 	public GridSidebarPanel(Library rootLibrary, ThumbPanel thumbPanel,
 			ZoomSlider zoomSlider) {
