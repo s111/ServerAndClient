@@ -69,9 +69,7 @@ public class ImagePanel extends JComponent {
 	@Inject
 	public ImagePanel(ModifyImage modifyImage) {
 		this.modifyImage = modifyImage;
-	}
 
-	public ImagePanel() {
 		ImageMouseListener imageMouseListener = new ImageMouseListener();
 		ImagePanelListener imageComponentListener = new ImagePanelListener();
 
