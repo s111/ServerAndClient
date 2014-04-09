@@ -54,8 +54,8 @@ public class ImageContentPanel implements ContentPanel {
 	private Library library;
 
 	@Inject
-	public ImageContentPanel(RESTService restService,
-			EventBus eventBus, ImagePanel imagePanel, ImageSidebarPanel imageSidebarPanel) {
+	public ImageContentPanel(RESTService restService, EventBus eventBus,
+			ImagePanel imagePanel, ImageSidebarPanel imageSidebarPanel) {
 		this.restService = restService;
 		this.eventBus = eventBus;
 		this.imagePanel = imagePanel;
@@ -174,7 +174,8 @@ public class ImageContentPanel implements ContentPanel {
 		currentImageIndex = (count + index) % count;
 
 		final ImageObject activeImageObject = images.get(currentImageIndex);
-		if (activeImageObject == null) return;
+		if (activeImageObject == null)
+			return;
 		activeImageObject.loadImage(new Callback<BufferedImage>() {
 			@Override
 			public void success(BufferedImage image) {

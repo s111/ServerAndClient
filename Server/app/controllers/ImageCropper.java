@@ -38,7 +38,7 @@ public class ImageCropper extends Controller {
 
 		Image image = queryImage.getImage(id);
 
-		if (x < 0 || y < 0 || (width < 0 && height < 0) || image == null) {
+		if (x < 0 || y < 0 || width <= 0 || height <= 0 || image == null) {
 			return badRequest();
 		}
 

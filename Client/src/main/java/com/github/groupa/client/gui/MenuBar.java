@@ -13,10 +13,10 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import com.github.groupa.client.ImageListFetcher;
 import com.github.groupa.client.events.SwitchViewEvent;
 import com.github.groupa.client.events.UploadImageEvent;
+import com.github.groupa.client.gui.panels.ImagePanel;
 import com.github.groupa.client.main.Main;
 import com.github.groupa.client.servercommunication.RESTService;
 import com.github.groupa.client.views.View;
-import com.github.groupa.client.gui.panels.ImagePanel;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
@@ -25,9 +25,10 @@ public class MenuBar {
 
 	private EventBus eventBus;
 
-	private JMenuItem fetchImagesItem;
-	private JMenuItem uploadImageItem;
-	private JMenuItem cropImage;
+	private JMenuItem fetchImagesItem = new JMenuItem("Fetch images");
+	private JMenuItem uploadImageItem = new JMenuItem("Upload image");
+	private JMenuItem cropImage = new JMenuItem("Toggle cropping");
+	private JMenuItem crop = new JMenuItem("Crop Image");
 
 	private ImagePanel imagePanel;
 
@@ -38,27 +39,28 @@ public class MenuBar {
 	public MenuBar(EventBus eventBus, ImagePanel imagePanel) {
 		this.eventBus = eventBus;
 		this.imagePanel = imagePanel;
-		
+
 		eventBus.register(this);
 
 		setUpFetchImages();
 		setUpUploadImage();
-		setUpEnableCropping();
+		setUpToggleCropping();
+		setUpCrop();
 
 		fileMenu = new JMenu("File");
 		fileMenu.add(fetchImagesItem);
 		fileMenu.add(uploadImageItem);
-		
+
 		edit = new JMenu("Edit");
 		edit.setEnabled(false);
 		edit.add(cropImage);
-		
+		edit.add(crop);
+
 		menuBar.add(fileMenu);
 		menuBar.add(edit);
 	}
 
 	private void setUpUploadImage() {
-		uploadImageItem = new JMenuItem("Upload image");
 		uploadImageItem.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent action) {
 				JFileChooser chooser = new JFileChooser();
@@ -79,7 +81,6 @@ public class MenuBar {
 	}
 
 	private void setUpFetchImages() {
-		fetchImagesItem = new JMenuItem("Fetch images");
 		fetchImagesItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
@@ -98,9 +99,8 @@ public class MenuBar {
 			}
 		});
 	}
-	
-	private void setUpEnableCropping() {
-		cropImage = new JMenuItem("Toggle cropping");
+
+	private void setUpToggleCropping() {
 		cropImage.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
@@ -109,10 +109,19 @@ public class MenuBar {
 		});
 	}
 
+	private void setUpCrop() {
+		crop.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent event) {
+				imagePanel.crop();
+			}
+		});
+	}
+
 	public JMenuBar getMenuBar() {
 		return menuBar;
 	}
-	
+
 	@Subscribe
 	public void switchViewListener(SwitchViewEvent event) {
 		edit.setEnabled(event.getView().equals(View.IMAGE_VIEW));
