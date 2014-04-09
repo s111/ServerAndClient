@@ -153,7 +153,7 @@ public class TableCellListener implements PropertyChangeListener, Runnable {
 	 */
 	private void processEditingStopped() {
 		newValue = table.getModel().getValueAt(row, column);
-
+		if (newValue == null) return;
 		// The data has changed, invoke the supplied Action
 
 		if (!newValue.equals(oldValue)) {
