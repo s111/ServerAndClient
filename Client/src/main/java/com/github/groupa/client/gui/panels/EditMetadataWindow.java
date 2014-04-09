@@ -164,7 +164,7 @@ public class EditMetadataWindow {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-			//TODO save the data to the images.
+				// TODO save the data to the images.
 			}
 		});
 
