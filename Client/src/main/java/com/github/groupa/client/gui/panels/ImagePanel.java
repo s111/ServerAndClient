@@ -320,6 +320,8 @@ public class ImagePanel extends JComponent {
 			int y = (int) Math.ceil(((clip.y - topBound) / divisor));
 			int w = (int) Math.ceil((clip.width / divisor));
 			int h = (int) Math.ceil((clip.height / divisor));
+
+			System.out.println(x + " " + y + " " + w + " " + h);
 		}
 
 		@Override

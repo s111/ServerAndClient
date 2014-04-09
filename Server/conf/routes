@@ -34,6 +34,9 @@ POST   /api/images/:id/tag             controllers.ImageTagger.tag(id: Long)
 # Rotate image
 GET    /api/images/:id/rotate/:angle   controllers.ImageRotater.rotate(id: Long, angle: Int)
 
+# Crop image
+POST   /api/images/:id/crop            controllers.ImageCropper.crop(id: Long)
+
 # Describe, rate and tag multiple images
 POST   /api/images/update              controllers.ImageUpdateMultiple.update()
 
