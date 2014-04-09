@@ -21,7 +21,7 @@ public class LibrarySort {
 			return ComparisonChain
 					.start()
 					.compare(i1.getRating(), i2.getRating())
-					.compare(i1.getId(), i1.getId(),
+					.compare(i1.getId(), i2.getId(),
 							Ordering.natural().nullsLast()).result();
 		}
 	};
@@ -34,7 +34,7 @@ public class LibrarySort {
 			return ComparisonChain
 					.start()
 					.compare(i2.getRating(), i1.getRating())
-					.compare(i1.getId(), i1.getId(),
+					.compare(i2.getId(), i1.getId(),
 							Ordering.natural().nullsLast()).result();
 		}
 	};

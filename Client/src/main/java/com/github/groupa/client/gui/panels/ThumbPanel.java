@@ -23,7 +23,6 @@ import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.Library;
 import com.github.groupa.client.components.Thumb;
 import com.github.groupa.client.events.LibraryAddEvent;
-import com.github.groupa.client.events.LibrarySortEvent;
 import com.github.groupa.client.events.SwitchViewEvent;
 import com.github.groupa.client.factories.ThumbMenuFactory;
 import com.github.groupa.client.views.View;
@@ -53,6 +52,7 @@ public class ThumbPanel extends JPanel implements Scrollable {
 	private EventBus eventBus;
 	private Library library;
 	private ImageObject activeImage = null;
+	private Comparator<ImageObject> comparator = null;
 
 	private int prevWidth = 333; // Hacky but it works (atm)
 
@@ -166,19 +166,7 @@ public class ThumbPanel extends JPanel implements Scrollable {
 			} else {
 				addImage(image);
 			}
-			Comparator<ImageObject> cmp = library.getComparator();
-			if (cmp != null) {
-				Collections.sort(images, cmp);
-				reAddThumbsToPanel();
-			}
-		}
-	}
-
-	@Subscribe
-	public void LibrarySortListener(LibrarySortEvent event) {
-		if (event.getLibrary().equals(library)) {
-			Collections.sort(images, library.getComparator());
-			reAddThumbsToPanel();
+			sort();
 		}
 	}
 
@@ -274,8 +262,19 @@ public class ThumbPanel extends JPanel implements Scrollable {
 	private void selectImage(ImageObject image) {
 		thumbs.get(image).setBorder(selectedThumbBorder);
 		selectedImages.add(image);
-		Comparator<ImageObject> cmp = library.getComparator();
-		if (cmp != null)
-			Collections.sort(selectedImages, cmp);
+		if (comparator != null)
+			Collections.sort(selectedImages, comparator);
+	}
+
+	public void sort(Comparator<ImageObject> comparator) {
+		this.comparator = comparator;
+		sort();
+	}
+
+	private void sort() {
+		if (comparator == null)
+			return;
+		Collections.sort(images, comparator);
+		reAddThumbsToPanel();
 	}
 }

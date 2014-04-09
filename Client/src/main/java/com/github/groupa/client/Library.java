@@ -1,8 +1,6 @@
 package com.github.groupa.client;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -10,18 +8,15 @@ import java.util.Set;
 import com.github.groupa.client.events.ImageInfoChangedEvent;
 import com.github.groupa.client.events.LibraryAddEvent;
 import com.github.groupa.client.events.LibraryRemoveEvent;
-import com.github.groupa.client.events.LibrarySortEvent;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 
 public class Library {
-	private Comparator<ImageObject> comparator = null;
 	private Library parent = null;
 	private EventBus eventBus;
 
-	private List<ImageObject> images = Collections
-			.synchronizedList(new ArrayList<ImageObject>());
+	private Set<ImageObject> images = new HashSet<>();
 
 	private Set<LibraryConstraint> constraints = new HashSet<>();
 
@@ -59,17 +54,8 @@ public class Library {
 		return this;
 	}
 
-	public void sort(Comparator<ImageObject> cmp) {
-		this.comparator = cmp;
-		sort();
-	}
-
 	public EventBus getEventBus() {
 		return eventBus;
-	}
-
-	public Comparator<ImageObject> getComparator() {
-		return comparator;
 	}
 
 	public List<ImageObject> getImages() {
@@ -98,22 +84,12 @@ public class Library {
 		}
 	}
 
-	public int imageCount() {
+	public int size() {
 		return images.size();
-	}
-
-	public ImageObject getImage(int idx) {
-		if (idx < 0 || idx >= imageCount())
-			return null;
-		return images.get(idx);
 	}
 
 	public boolean hasImage(ImageObject image) {
 		return images.contains(image);
-	}
-
-	public int indexOf(ImageObject img) {
-		return images.indexOf(img);
 	}
 
 	@Subscribe
@@ -158,7 +134,6 @@ public class Library {
 				images.addAll(newImages);
 			}
 			eventBus.post(new LibraryAddEvent(this, newImages));
-			sort();
 		}
 	}
 
@@ -171,7 +146,6 @@ public class Library {
 		}
 		if (success) {
 			eventBus.post(new LibraryAddEvent(this, img));
-			sort();
 		}
 	}
 
@@ -189,12 +163,5 @@ public class Library {
 			images.removeAll(list);
 		}
 		eventBus.post(new LibraryRemoveEvent(this, list));
-	}
-
-	private synchronized void sort() {
-		if (comparator != null) {
-			Collections.sort(images, comparator);
-			eventBus.post(new LibrarySortEvent(this));
-		}
 	}
 }

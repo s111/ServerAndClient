@@ -76,10 +76,10 @@ public class GridSidebarPanel implements SidebarPanel {
 				SwingUtilities.invokeLater(new Runnable() {
 					public void run() {
 						if (comboBox.getSelectedIndex() == 0) {
-							thumbPanel.getLibrary().sort(
+							thumbPanel.sort(
 									LibrarySort.SORT_RATING_DESC);
 						} else if (comboBox.getSelectedIndex() == 1) {
-							thumbPanel.getLibrary().sort(
+							thumbPanel.sort(
 									LibrarySort.SORT_RATING_ASC);
 						}
 					}
