@@ -1,5 +1,6 @@
 package com.github.groupa.client.servercommunication;
 
+import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
@@ -51,7 +52,11 @@ public class ServerConnection {
 				throw new RuntimeException(err);
 			}
 		} catch (ConnectException e) {
-			logger.warn("Could not get " + size + " image for id: " + id);
+			logger.warn("Could not connect to server to get image(" + id
+					+ "): " + e.getMessage());
+		} catch (Exception e) {
+			logger.warn("Unknown server error when getting image(" + id
+					+ ") of size " + size + " : " + e.getMessage());
 		}
 
 		if (response != null) {
@@ -72,37 +77,81 @@ public class ServerConnection {
 	}
 
 	public boolean rate(long id, int rating) {
-		Response response = null;
 		try {
-			response = restService.rateImage(id, rating);
+			Response response = restService.rateImage(id, rating);
 			if (response.getStatus() == 202)
 				return true;
 		} catch (ConnectException e) {
-			logger.warn("Could not connect to server to rate image");
+			logger.warn("Could not connect to server to rate image(" + id
+					+ "): " + e.getMessage());
+		} catch (Exception e) {
+			logger.warn("Unknown server error when rating image(" + id
+					+ "): " + e.getMessage());
 		}
 		return false;
 	}
 
 	public boolean addTag(long id, String tag) {
-		Response response = null;
 		try {
-			response = restService.tagImage(id, tag);
+			Response response = restService.tagImage(id, tag);
 			if (response.getStatus() == 202)
 				return true;
-		} catch (ConnectException e) {
-			logger.warn("Could not connect to server to rate image");
+		}  catch (ConnectException e) {
+			logger.warn("Could not connect to server to tag image(" + id
+					+ "): " + e.getMessage());
+		} catch (Exception e) {
+			logger.warn("Unknown server error when tagging image(" + id
+					+ "): " + e.getMessage());
 		}
 		return false;
 	}
 
 	public boolean describe(long id, String description) {
-		Response response = null;
 		try {
-			response = restService.describeImage(id, description);
+			Response response = restService.describeImage(id, description);
 			if (response.getStatus() == 202)
 				return true;
 		} catch (ConnectException e) {
-			logger.warn("Could not connect to server to rate image");
+			logger.warn("Could not connect to server to describe image(" + id
+					+ "): " + e.getMessage());
+		} catch (Exception e) {
+			logger.warn("Unknown server error when describing image(" + id
+					+ "): " + e.getMessage());
+		}
+		return false;
+	}
+
+	public boolean crop(long id, Rectangle rectangle) {
+		try {
+			Response response = restService.cropImage(id, rectangle.x,
+					rectangle.y, rectangle.width, rectangle.height);
+
+			if (response != null && response.getStatus() == 200) {
+				return true;
+			}
+		} catch (ConnectException e) {
+			logger.warn("Could not connect to server to crop image(" + id
+					+ "): " + e.getMessage());
+		} catch (Exception e) {
+			logger.warn("Unknown server error when cropping image(" + id
+					+ "): " + e.getMessage());
+		}
+		return false;
+	}
+
+	public boolean rotate(long id, int angle) {
+		try {
+			Response response = restService.rotateImage(id, angle);
+
+			if (response != null && response.getStatus() == 200) {
+				return true;
+			}
+		} catch (ConnectException e) {
+			logger.warn("Could not connect to server to crop image(" + id
+					+ "): " + e.getMessage());
+		} catch (Exception e) {
+			logger.warn("Unknown server error when cropping image(" + id
+					+ "): " + e.getMessage());
 		}
 		return false;
 	}
@@ -111,9 +160,13 @@ public class ServerConnection {
 		try {
 			return restService.getImageInfo(id);
 		} catch (ConnectException e) {
-			logger.warn("Could not load image info for image with id: " + id);
+			logger.warn("Could not connect to server to get image info(" + id
+					+ "): " + e.getMessage());
+		} catch (Exception e) {
+			logger.warn("Unknown server error when getting image info(" + id
+					+ "): " + e.getMessage());
 		}
-		
+
 		return null;
 	}
 }

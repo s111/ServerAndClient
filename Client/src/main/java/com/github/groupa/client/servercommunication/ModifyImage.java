@@ -1,34 +1,25 @@
 package com.github.groupa.client.servercommunication;
 
 import java.awt.Rectangle;
-import java.net.ConnectException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import retrofit.client.Response;
 
 import com.github.groupa.client.Callback;
 import com.github.groupa.client.ImageObject;
 import com.google.inject.Inject;
 
 public class ModifyImage {
-	private static final Logger logger = LoggerFactory
-			.getLogger(ModifyImage.class);
-	private RESTService restService;
+	private ServerConnection serverConnection;
 
 	@Inject
-	public ModifyImage(RESTService restService) {
-		this.restService = restService;
+	public ModifyImage(ServerConnection serverConnection) {
+		this.serverConnection = serverConnection;
 	}
 
 	public void rotate(final Callback<ImageObject> callback,
 			final ImageObject image, final int angle) {
-		Job job = new Job("rotate image " + image.getId()) {
-			public void run() throws ConnectException {
-				Response response = restService.rotateImage(image.getId(),
-						angle);
-				if (response != null && response.getStatus() == 200)
+		Job job = new Job() {
+			
+			public void run() {
+				if (serverConnection.rotate(image.getId(), angle))
 					success = true;
 			}
 
@@ -41,15 +32,11 @@ public class ModifyImage {
 
 	public void crop(final Callback<ImageObject> callback,
 			final ImageObject image, final Rectangle rectangle) {
-		Job job = new Job("crop image " + image.getId()) {
-			public void run() throws ConnectException {
-				Response response = restService.cropImage(image.getId(),
-						rectangle.x, rectangle.y, rectangle.width,
-						rectangle.height);
-
-				if (response != null && response.getStatus() == 200) {
+		Job job = new Job() {
+			
+			public void run() {
+				if (serverConnection.crop(image.getId(), rectangle))
 					success = true;
-				}
 			}
 
 			public void success() {
@@ -77,15 +64,7 @@ public class ModifyImage {
 		}
 
 		public void run() {
-			try {
-				job.run();
-			} catch (ConnectException e) {
-				logger.warn("Could not connect to server(" + job.jobType + ") "
-						+ e.getMessage());
-			} catch (Exception e) {
-				logger.warn("Unknown server error(" + job.jobType + ") "
-						+ e.getMessage());
-			}
+			job.run();
 			if (job.success) {
 				job.success();
 				if (callback != null) {
@@ -101,13 +80,8 @@ public class ModifyImage {
 
 	private class Job {
 		public boolean success = false;
-		public String jobType;
 
-		public Job(String jobType) {
-			this.jobType = jobType;
-		}
-
-		public void run() throws Exception {
+		public void run() {
 		}
 
 		public void success() {
