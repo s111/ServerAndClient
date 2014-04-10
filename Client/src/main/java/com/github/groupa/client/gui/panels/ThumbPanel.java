@@ -21,6 +21,7 @@ import javax.swing.border.Border;
 
 import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.Library;
+import com.github.groupa.client.LibrarySort;
 import com.github.groupa.client.components.Thumb;
 import com.github.groupa.client.events.ImageModifiedEvent;
 import com.github.groupa.client.events.LibraryAddEvent;
@@ -53,7 +54,7 @@ public class ThumbPanel extends JPanel implements Scrollable {
 	private EventBus eventBus;
 	private Library library;
 	private ImageObject activeImage = null;
-	private Comparator<ImageObject> comparator = null;
+	private Comparator<ImageObject> comparator = LibrarySort.SORT_ID_ASC;
 
 	private int prevWidth = 333; // Hacky but it works (atm)
 
@@ -176,6 +177,7 @@ public class ThumbPanel extends JPanel implements Scrollable {
 		ImageObject img = event.getImageObject();
 		if (images.contains(img)) {
 			thumbs.get(img).refreshImage();
+			sort();
 		}
 	}
 	
@@ -205,7 +207,7 @@ public class ThumbPanel extends JPanel implements Scrollable {
 	}
 
 	private void addImages(List<ImageObject> list) {
-		for (ImageObject img : list) { // TODO: Make thread safe
+		for (ImageObject img : list) {
 			addImage(img);
 		}
 	}
@@ -236,7 +238,7 @@ public class ThumbPanel extends JPanel implements Scrollable {
 			@Override
 			public void doubleClick() {
 				eventBus.post(new SwitchViewEvent(View.IMAGE_VIEW,
-						getImageObject(), ThumbPanel.this.getLibrary()));
+						getImageObject(), ThumbPanel.this.getLibrary(), ThumbPanel.this.comparator));
 			}
 
 			@Override
@@ -281,9 +283,8 @@ public class ThumbPanel extends JPanel implements Scrollable {
 	}
 
 	private void sort() {
-		if (comparator == null)
-			return;
-		Collections.sort(images, comparator);
-		reAddThumbsToPanel();
+		if (LibrarySort.sort(images, comparator)) {
+			reAddThumbsToPanel();
+		}
 	}
 }

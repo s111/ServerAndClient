@@ -5,6 +5,7 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -25,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import com.github.groupa.client.Callback;
 import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.Library;
+import com.github.groupa.client.LibrarySort;
 import com.github.groupa.client.events.ImageModifiedEvent;
 import com.github.groupa.client.events.LibraryAddEvent;
 import com.github.groupa.client.events.SwitchViewEvent;
@@ -43,7 +45,7 @@ public class ImageContentPanel implements ContentPanel {
 
 	private ImagePanel imagePanel;
 
-	private int currentImageIndex = -1;
+	private int currentImageIndex = 0;
 
 	private List<ImageObject> images = new ArrayList<>();
 
@@ -52,6 +54,8 @@ public class ImageContentPanel implements ContentPanel {
 	private Library library;
 
 	private ModifyImage modifyImage;
+
+	private Comparator<ImageObject> comparator = LibrarySort.SORT_ID_ASC;
 
 	@Inject
 	public ImageContentPanel(ModifyImage modifyImage, EventBus eventBus,
@@ -163,15 +167,13 @@ public class ImageContentPanel implements ContentPanel {
 		});
 	}
 
-	private void setImage(int index) {
+	private void setImage(final int index) {
 		int count = images.size();
-
 		if (count == 0) {
 			return;
 		}
 
 		currentImageIndex = (count + index) % count;
-
 		final ImageObject activeImageObject = images.get(currentImageIndex);
 		if (activeImageObject == null)
 			return;
@@ -195,15 +197,21 @@ public class ImageContentPanel implements ContentPanel {
 
 	@Subscribe
 	public void switchViewListener(SwitchViewEvent event) {
-		if (event.hasSwitched() && View.IMAGE_VIEW.equals(event.getView())) {
-			ImageObject img = event.getImageObject();
-			Library lib = event.getLibrary();
-			if (lib != null)
-				setLibrary(lib);
-			if (img != null) {
-				currentImageIndex = images.indexOf(img);
+		try {
+			if (event.hasSwitched() && View.IMAGE_VIEW.equals(event.getView())) {
+				ImageObject img = event.getImageObject();
+				Library lib = event.getLibrary();
+				Comparator<ImageObject> cmp = event.getComparator();
+				if (cmp != null)
+					comparator = cmp;
+				if (lib != null)
+					setLibrary(lib);
+				if (img != null) {
+					setImage(images.indexOf(img));
+				} else setImage(currentImageIndex);
 			}
-			setImage(currentImageIndex);
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
 	}
 
@@ -212,9 +220,9 @@ public class ImageContentPanel implements ContentPanel {
 		if (event.getLibrary().equals(library)) {
 			ImageObject image = event.getImage();
 			if (image == null) {
-				images.addAll(event.getImages());
+				addImages(event.getImages());
 			} else {
-				images.add(image);
+				addImage(image);
 			}
 		}
 	}
@@ -223,16 +231,40 @@ public class ImageContentPanel implements ContentPanel {
 	public void imageModifiedListener(ImageModifiedEvent event) {
 		if (images.indexOf(event.getImageObject()) == currentImageIndex) {
 			setImage(currentImageIndex);
+			sort();
 		}
 	}
 
 	private void setLibrary(Library lib) {
 		this.library = lib;
 		ImageObject prevImg = null;
-		if (currentImageIndex >= 0 && images.contains(currentImageIndex))
+		if (currentImageIndex < images.size())
 			prevImg = images.get(currentImageIndex);
 		images.clear();
-		images.addAll(lib.getImages());
-		setImage(images.indexOf(prevImg));
+		addImages(lib.getImages());
+		if (prevImg != null && images.contains(prevImg))
+			setImage(images.indexOf(prevImg));
+		else setImage(0);
+	}
+
+	private void addImage(ImageObject img) {
+		images.add(img);
+		sort();
+	}
+
+	private void addImages(List<ImageObject> images) {
+		this.images.addAll(images);
+		sort();
+	}
+
+	private void sort() {
+		if (currentImageIndex >= images.size()) {
+			LibrarySort.sort(images, comparator);
+		} else {
+			int oldIndex = currentImageIndex;
+			ImageObject prevImg = images.get(oldIndex);
+			if (LibrarySort.sort(images, comparator) && prevImg != null)
+				currentImageIndex = images.indexOf(prevImg);
+		}
 	}
 }
