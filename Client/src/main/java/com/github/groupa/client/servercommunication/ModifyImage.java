@@ -24,43 +24,96 @@ public class ModifyImage {
 
 	public void rotate(final Callback<ImageObject> callback,
 			final ImageObject image, final int angle) {
-		new Thread(new Runnable() {
-			public void run() {
-				Response response = null;
-				try {
-					response = restService.rotateImage(image.getId(), angle);
-					if (response.getStatus() == 200) {
-						image.refreshImage();
-						callback.success(image);
-						return;
-					}
-				} catch (ConnectException e) {
-					logger.warn("Could not connect to server to rotate image");
-				}
-				callback.failure();
+		Job job = new Job("rotate image " + image.getId()) {
+			public void run() throws ConnectException {
+				Response response = restService.rotateImage(image.getId(),
+						angle);
+				if (response != null && response.getStatus() == 200)
+					success = true;
 			}
-		}).start();
+
+			public void success() {
+				image.refreshImage();
+			}
+		};
+		addJob(callback, image, job);
 	}
 
 	public void crop(final Callback<ImageObject> callback,
 			final ImageObject image, final Rectangle rectangle) {
-		new Thread(new Runnable() {
-			public void run() {
-				Response response = null;
-				try {
-					response = restService.cropImage(image.getId(),
-							rectangle.x, rectangle.y, rectangle.width,
-							rectangle.height);
-					if (response.getStatus() == 200) {
-						image.refreshImage();
-						callback.success(image);
-						return;
-					}
-				} catch (ConnectException e) {
-					logger.warn("Could not connect to server to crop image");
+		Job job = new Job("crop image " + image.getId()) {
+			public void run() throws ConnectException {
+				Response response = restService.cropImage(image.getId(),
+						rectangle.x, rectangle.y, rectangle.width,
+						rectangle.height);
+
+				if (response != null && response.getStatus() == 200) {
+					success = true;
 				}
-				callback.failure();
 			}
-		}).start();
+
+			public void success() {
+				image.refreshImage();
+			}
+		};
+		addJob(callback, image, job);
+	}
+
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	private <T> void addJob(Callback<T> callback, ImageObject image, Job job) {
+		Thread workerThread = new WorkerThread(callback, image, job);
+		workerThread.start();
+	}
+
+	private class WorkerThread<T> extends Thread {
+		private Callback<T> callback;
+		private T param;
+		private Job job;
+
+		public WorkerThread(Callback<T> callback, T param, Job job) {
+			this.callback = callback;
+			this.param = param;
+			this.job = job;
+		}
+
+		public void run() {
+			try {
+				job.run();
+			} catch (ConnectException e) {
+				logger.warn("Could not connect to server(" + job.jobType + ") "
+						+ e.getMessage());
+			} catch (Exception e) {
+				logger.warn("Unknown server error(" + job.jobType + ") "
+						+ e.getMessage());
+			}
+			if (job.success) {
+				job.success();
+				if (callback != null) {
+					callback.success(param);
+				}
+			} else {
+				job.failure();
+				if (callback != null)
+					callback.failure();
+			}
+		}
+	}
+
+	private class Job {
+		public boolean success = false;
+		public String jobType;
+
+		public Job(String jobType) {
+			this.jobType = jobType;
+		}
+
+		public void run() throws Exception {
+		}
+
+		public void success() {
+		}
+
+		public void failure() {
+		}
 	}
 }
