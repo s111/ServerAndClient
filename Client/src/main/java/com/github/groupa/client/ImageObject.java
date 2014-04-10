@@ -89,12 +89,6 @@ public class ImageObject {
 		return false;
 	}
 
-	public void addTag(String tag) {
-		if (tag.length() == 0 || tag.contains(","))
-			error("Invalid tag: " + tag);
-		_addTag(tag);
-	}
-
 	public boolean hasImageRaw() {
 		return _hasImage("raw");
 	}
@@ -140,7 +134,6 @@ public class ImageObject {
 		}
 	}
 
-	
 	public void rate(final int rating) {
 		if (imageInfo == null)
 			loadImage();
@@ -155,9 +148,15 @@ public class ImageObject {
 		else
 			imageInfo.getImage().setDescription(description);
 		eventBus.post(new ImageInfoChangedEvent(ImageObject.this));
-
 	}
-	
+
+	public void addTag(final String tag) {
+		if (imageInfo == null)
+			loadImage();
+		else
+			imageInfo.getImage().getTags().add(tag);
+		eventBus.post(new ImageInfoChangedEvent(ImageObject.this));
+	}
 
 	private boolean _hasImage(String img) {
 		return images.containsKey(img);
@@ -167,30 +166,11 @@ public class ImageObject {
 		return images.get(img);
 	}
 
-	private void _addTag(final String tag) {
-		new Thread(new Runnable() {
-			public void run() {
-				if (serverConnection.addTag(id, tag)) {
-					if (imageInfo == null)
-						loadImage();
-					else
-						imageInfo.getImage().getTags().add(tag);
-					eventBus.post(new ImageInfoChangedEvent(ImageObject.this));
-				}
-			}
-		}).start();
-	}
-
 	private boolean loadImage() {
 		if (imageInfo != null)
 			return true;
 		imageInfo = serverConnection.getImageInfo(id);
 		return imageInfo != null;
-	}
-
-	private void error(String string) {
-		logger.error(string);
-		throw new RuntimeException(string);
 	}
 
 	public boolean equals(Object o) {

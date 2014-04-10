@@ -62,16 +62,31 @@ public class ModifyImage {
 		addJob(callback, image, job);
 	}
 
-	public void describe(final Callback<ImageObject> callback, final ImageObject image, final String text) {
+	public void describe(final Callback<ImageObject> callback, final ImageObject image, final String description) {
 		Job job = new Job() {
 
 			public void run() {
-				if (serverConnection.describe(image.getId(), text))
+				if (serverConnection.describe(image.getId(), description))
 					success = true;
 			}
 
 			public void success() {
-				image.describe(text);
+				image.describe(description);
+			}
+		};
+		addJob(callback, image, job);
+	}
+
+	public void addTag(final Callback<ImageObject> callback, final ImageObject image, final String tag) {
+		Job job = new Job() {
+
+			public void run() {
+				if (serverConnection.addTag(image.getId(), tag))
+					success = true;
+			}
+
+			public void success() {
+				image.addTag(tag);
 			}
 		};
 		addJob(callback, image, job);

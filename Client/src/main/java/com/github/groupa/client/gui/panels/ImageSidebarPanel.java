@@ -98,7 +98,7 @@ public class ImageSidebarPanel implements SidebarPanel {
 						Object[] emptyRow = {};
 						tagTableModel.addRow(emptyRow);
 
-						activeImage.addTag(newValue);
+						modifyImage.addTag(null, activeImage, newValue);
 					}
 				}
 				// You are editing a tag
