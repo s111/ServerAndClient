@@ -95,16 +95,6 @@ public class ImageObject {
 		_addTag(tag);
 	}
 
-	public void rate(int rating) {
-		if (rating < 0 || rating > 5)
-			error("Invalid rating: " + rating);
-		_setRating(rating);
-	}
-
-	public void describe(String description) {
-		_setDescription(description);
-	}
-
 	public boolean hasImageRaw() {
 		return _hasImage("raw");
 	}
@@ -150,6 +140,25 @@ public class ImageObject {
 		}
 	}
 
+	
+	public void rate(final int rating) {
+		if (imageInfo == null)
+			loadImage();
+		else
+			imageInfo.getImage().setRating(rating);
+		eventBus.post(new ImageInfoChangedEvent(ImageObject.this));
+	}
+
+	public void describe(final String description) {
+		if (imageInfo == null)
+			loadImage();
+		else
+			imageInfo.getImage().setDescription(description);
+		eventBus.post(new ImageInfoChangedEvent(ImageObject.this));
+
+	}
+	
+
 	private boolean _hasImage(String img) {
 		return images.containsKey(img);
 	}
@@ -166,34 +175,6 @@ public class ImageObject {
 						loadImage();
 					else
 						imageInfo.getImage().getTags().add(tag);
-					eventBus.post(new ImageInfoChangedEvent(ImageObject.this));
-				}
-			}
-		}).start();
-	}
-
-	private void _setRating(final int rating) {
-		new Thread(new Runnable() {
-			public void run() {
-				if (serverConnection.rate(id, rating)) {
-					if (imageInfo == null)
-						loadImage();
-					else
-						imageInfo.getImage().setRating(rating);
-					eventBus.post(new ImageInfoChangedEvent(ImageObject.this));
-				}
-			}
-		}).start();
-	}
-
-	private void _setDescription(final String description) {
-		new Thread(new Runnable() {
-			public void run() {
-				if (serverConnection.describe(id, description)) {
-					if (imageInfo == null)
-						loadImage();
-					else
-						imageInfo.getImage().setDescription(description);
 					eventBus.post(new ImageInfoChangedEvent(ImageObject.this));
 				}
 			}

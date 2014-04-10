@@ -25,6 +25,7 @@ import net.miginfocom.swing.MigLayout;
 import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.events.ImageInfoChangedEvent;
 import com.github.groupa.client.gui.TableCellListener;
+import com.github.groupa.client.servercommunication.ModifyImage;
 import com.google.common.eventbus.Subscribe;
 
 public class ImageSidebarPanel implements SidebarPanel {
@@ -47,8 +48,11 @@ public class ImageSidebarPanel implements SidebarPanel {
 	private boolean savingDescription = false;
 	private boolean savingRating = false;
 
+	private ModifyImage modifyImage;
+
 	@Inject
-	public ImageSidebarPanel() {
+	public ImageSidebarPanel(ModifyImage modifyImage) {
+		this.modifyImage = modifyImage;
 		setUpPanel();
 		setUpDescriptionField();
 		setUpRatingButtons();
@@ -159,7 +163,7 @@ public class ImageSidebarPanel implements SidebarPanel {
 					int selected = setRatingSaveMode();
 
 					if (selected != -1) {
-						activeImage.rate(selected + 1);
+						modifyImage.rate(null, activeImage, selected + 1);
 					}
 				} else {
 					setRatingEditMode();
@@ -202,8 +206,7 @@ public class ImageSidebarPanel implements SidebarPanel {
 
 				if (savingDescription) {
 					setDescriptionSaveMode();
-
-					activeImage.describe(descriptionField.getText());
+					modifyImage.describe(null, activeImage, descriptionField.getText());
 				} else {
 					setDescriptionEditMode();
 				}
@@ -229,7 +232,7 @@ public class ImageSidebarPanel implements SidebarPanel {
 
 	public void setImage(ImageObject image) {
 		this.activeImage = image;
-		
+
 		setRatingSaveMode();
 		setDescriptionSaveMode();
 		updateFields(image);

@@ -17,7 +17,7 @@ public class ModifyImage {
 	public void rotate(final Callback<ImageObject> callback,
 			final ImageObject image, final int angle) {
 		Job job = new Job() {
-			
+
 			public void run() {
 				if (serverConnection.rotate(image.getId(), angle))
 					success = true;
@@ -33,7 +33,7 @@ public class ModifyImage {
 	public void crop(final Callback<ImageObject> callback,
 			final ImageObject image, final Rectangle rectangle) {
 		Job job = new Job() {
-			
+
 			public void run() {
 				if (serverConnection.crop(image.getId(), rectangle))
 					success = true;
@@ -41,6 +41,37 @@ public class ModifyImage {
 
 			public void success() {
 				image.refreshImage();
+			}
+		};
+		addJob(callback, image, job);
+	}
+
+	public void rate(final Callback<ImageObject> callback,
+			final ImageObject image, final int rating) {
+		Job job = new Job() {
+
+			public void run() {
+				if (serverConnection.rate(image.getId(), rating))
+					success = true;
+			}
+
+			public void success() {
+				image.rate(rating);
+			}
+		};
+		addJob(callback, image, job);
+	}
+
+	public void describe(final Callback<ImageObject> callback, final ImageObject image, final String text) {
+		Job job = new Job() {
+
+			public void run() {
+				if (serverConnection.describe(image.getId(), text))
+					success = true;
+			}
+
+			public void success() {
+				image.describe(text);
 			}
 		};
 		addJob(callback, image, job);
