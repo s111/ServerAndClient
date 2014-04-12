@@ -4,14 +4,17 @@ import java.awt.Rectangle;
 
 import com.github.groupa.client.Callback;
 import com.github.groupa.client.ImageObject;
+import com.github.groupa.client.ThreadPool;
 import com.google.inject.Inject;
 
 public class ModifyImage {
 	private ServerConnection serverConnection;
+	private ThreadPool threadPool;
 
 	@Inject
-	public ModifyImage(ServerConnection serverConnection) {
+	public ModifyImage(ServerConnection serverConnection, ThreadPool threadPool) {
 		this.serverConnection = serverConnection;
+		this.threadPool = threadPool;
 	}
 
 	public void rotate(final Callback<ImageObject> callback,
@@ -27,7 +30,7 @@ public class ModifyImage {
 				image.refreshImage();
 			}
 		};
-		addJob(callback, image, job);
+		threadPool.add(new WorkerThread<ImageObject>(callback, image, job));
 	}
 
 	public void crop(final Callback<ImageObject> callback,
@@ -43,7 +46,7 @@ public class ModifyImage {
 				image.refreshImage();
 			}
 		};
-		addJob(callback, image, job);
+		threadPool.add(new WorkerThread<ImageObject>(callback, image, job));
 	}
 
 	public void rate(final Callback<ImageObject> callback,
@@ -59,10 +62,11 @@ public class ModifyImage {
 				image.rate(rating);
 			}
 		};
-		addJob(callback, image, job);
+		threadPool.add(new WorkerThread<ImageObject>(callback, image, job));
 	}
 
-	public void describe(final Callback<ImageObject> callback, final ImageObject image, final String description) {
+	public void describe(final Callback<ImageObject> callback,
+			final ImageObject image, final String description) {
 		Job job = new Job() {
 
 			public void run() {
@@ -74,10 +78,11 @@ public class ModifyImage {
 				image.describe(description);
 			}
 		};
-		addJob(callback, image, job);
+		threadPool.add(new WorkerThread<ImageObject>(callback, image, job));
 	}
 
-	public void addTag(final Callback<ImageObject> callback, final ImageObject image, final String tag) {
+	public void addTag(final Callback<ImageObject> callback,
+			final ImageObject image, final String tag) {
 		Job job = new Job() {
 
 			public void run() {
@@ -89,16 +94,10 @@ public class ModifyImage {
 				image.addTag(tag);
 			}
 		};
-		addJob(callback, image, job);
+		threadPool.add(new WorkerThread<ImageObject>(callback, image, job));
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private <T> void addJob(Callback<T> callback, ImageObject image, Job job) {
-		Thread workerThread = new WorkerThread(callback, image, job);
-		workerThread.start();
-	}
-
-	private class WorkerThread<T> extends Thread {
+	private class WorkerThread<T> implements Runnable {
 		private Callback<T> callback;
 		private T param;
 		private Job job;

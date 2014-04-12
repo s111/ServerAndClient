@@ -7,6 +7,7 @@ import retrofit.RestAdapter;
 
 import com.github.groupa.client.Library;
 import com.github.groupa.client.RESTErrorHandler;
+import com.github.groupa.client.ThreadPool;
 import com.github.groupa.client.components.ZoomSlider;
 import com.github.groupa.client.factories.ImageObjectFactory;
 import com.github.groupa.client.gui.MenuBar;
@@ -17,7 +18,9 @@ import com.github.groupa.client.gui.panels.RootPanel;
 import com.github.groupa.client.gui.panels.ThumbPanel;
 import com.github.groupa.client.main.Application;
 import com.github.groupa.client.main.Main;
+import com.github.groupa.client.servercommunication.ModifyImage;
 import com.github.groupa.client.servercommunication.RESTService;
+import com.github.groupa.client.servercommunication.ServerConnection;
 import com.google.common.eventbus.EventBus;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
@@ -33,7 +36,9 @@ public class DIModule extends AbstractModule {
 		bind(RootPanel.class).to(MainPanel.class);
 		bind(ImagePanel.class).in(Singleton.class);
 		bind(ImageSidebarPanel.class).in(Singleton.class);
-
+		bind(ThreadPool.class).in(Singleton.class);
+		bind(ServerConnection.class).in(Singleton.class);
+		bind(ModifyImage.class).in(Singleton.class);
 		install(new FactoryModuleBuilder().build(ImageObjectFactory.class));
 	}
 
