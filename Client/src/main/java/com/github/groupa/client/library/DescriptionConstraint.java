@@ -12,4 +12,9 @@ public class DescriptionConstraint extends LibraryConstraint {
 	public boolean satisfied(ImageObject image) {
 		return hasDescription == image.hasDescription();
 	}
+	
+	public String toString() {
+		if (hasDescription) return "Has description";
+		return "Does not have description";
+	}
 }

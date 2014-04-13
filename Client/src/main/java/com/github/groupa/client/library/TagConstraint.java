@@ -18,4 +18,9 @@ public class TagConstraint extends LibraryConstraint {
 	public boolean satisfied(ImageObject image) {
 		return invert != image.hasTag(tag);
 	}
+	
+	public String toString() {
+		if (invert) return "Is not tagged " + tag;
+		return "Is tagged " + tag;
+	}
 }

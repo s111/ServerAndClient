@@ -12,4 +12,9 @@ public class ImageConstraint extends LibraryConstraint {
 	public boolean satisfied(ImageObject image) {
 		return hasImage == image.hasImage();
 	}
+	
+	public String toString() {
+		if (hasImage) return "Has image";
+		return "Does not have image";
+	}
 }

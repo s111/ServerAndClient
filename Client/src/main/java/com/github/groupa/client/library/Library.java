@@ -55,6 +55,12 @@ public class Library {
 		tryRemoveImages(list);
 		return this;
 	}
+	
+	public Set<LibraryConstraint> getConstraints() {
+		Set<LibraryConstraint> set = new HashSet<>();
+		set.addAll(constraints);
+		return set;
+	}
 
 	public EventBus getEventBus() {
 		return eventBus;
