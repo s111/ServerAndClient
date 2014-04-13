@@ -1,7 +1,7 @@
 package com.github.groupa.client.components;
 
+import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.util.HashMap;
 import java.util.List;
@@ -14,8 +14,11 @@ import javax.swing.border.Border;
 
 import com.github.groupa.client.Callback;
 import com.github.groupa.client.ImageObject;
+import com.github.groupa.client.events.ImageInfoChangedEvent;
+import com.github.groupa.client.events.ImageModifiedEvent;
+import com.google.common.eventbus.Subscribe;
 
-public abstract class Thumb implements MouseListener {
+public abstract class Thumb extends MouseAdapter {
 	private ImageObject imageObject;
 	private HashMap<String, JLabel> labels = new HashMap<String, JLabel>();
 	private Border border = BorderFactory.createEmptyBorder(2, 2, 2, 2);
@@ -41,29 +44,12 @@ public abstract class Thumb implements MouseListener {
 		JLabel label = labels.get(size);
 		if (label == null) {
 			label = new JLabel();
-			if (imageObject.hasThumb(size)) {
-				label.setIcon(new ImageIcon(imageObject.getThumb(size)));
-			} else {
-				final JLabel newLabel = label;
-				newLabel.setText("Not loaded");
-				imageObject.loadImage(new Callback<BufferedImage>() {
-					@Override
-					public void success(BufferedImage image) {
-						newLabel.setText("");
-						newLabel.setIcon(new ImageIcon(image));
-					}
-
-					@Override
-					public void failure() {
-						newLabel.setText("Error loading image");
-					}
-				}, size);
-			}
-			labels.put(size, label);
+			label.setText("Not loaded");
+			setIcon(label, size);
 			label.addMouseListener(this);
 			label.setBorder(border);
-			if (toolTipText.length() != 0)
-				label.setToolTipText(toolTipText);
+			label.setToolTipText(toolTipText);
+			labels.put(size, label);
 		}
 		return label;
 	}
@@ -94,17 +80,50 @@ public abstract class Thumb implements MouseListener {
 		}
 	}
 
-	public void mouseEntered(MouseEvent arg0) {
+	private void refreshImages() {
+		synchronized (this) {
+			for (Map.Entry<String, JLabel> entry : labels.entrySet()) {
+				setIcon(entry.getValue(), entry.getKey());
+			}
+		}
 	}
 
-	public void mouseExited(MouseEvent arg0) {
+	@Subscribe
+	public void modifyImageListener(ImageModifiedEvent event) {
+		ImageObject img = event.getImageObject();
+		if (img.equals(imageObject)) {
+			refreshImages();
+		}
+	}
+	
+	@Subscribe
+	private void imageChangeListener(ImageInfoChangedEvent event) {
+		toolTipText = createToolTipText();
+		synchronized (this) {
+			for (JLabel label : labels.values()) {
+				label.setToolTipText(toolTipText);
+			}
+		}
 	}
 
-	public void mousePressed(MouseEvent arg0) {
-	}
+	private void setIcon(final JLabel label, String size) {
+		BufferedImage img = imageObject.getThumb(size);
+		if (img != null) {
+			label.setIcon(new ImageIcon(img));
+		} else {
+			imageObject.loadImage(new Callback<BufferedImage>() {
+				@Override
+				public void success(BufferedImage image) {
+					label.setText("");
+					label.setIcon(new ImageIcon(image));
+				}
 
-	@Override
-	public void mouseReleased(MouseEvent arg0) {
+				@Override
+				public void failure() {
+					label.setText("Error loading image");
+				}
+			}, size);
+		}
 	}
 
 	private String createToolTipText() {
@@ -118,31 +137,10 @@ public abstract class Thumb implements MouseListener {
 				toolTipText += tag + "<br>";
 			}
 		}
+		int rating = imageObject.getRating();
+		if (rating != 0)
+			toolTipText += "Rating: " + Integer.toString(rating) + "<br>";
 		toolTipText += "</html>";
 		return toolTipText;
-	}
-
-	public void refreshImage() {
-		for (Map.Entry<String, JLabel> entry : labels.entrySet()) {
-			String key = entry.getKey();
-			if (imageObject.hasThumb(key)) {
-				entry.getValue().setIcon(
-						new ImageIcon(imageObject.getThumb(key)));
-			} else {
-				final JLabel label = entry.getValue();
-				imageObject.loadImage(new Callback<BufferedImage>() {
-					@Override
-					public void success(BufferedImage image) {
-						label.setText("");
-						label.setIcon(new ImageIcon(image));
-					}
-
-					@Override
-					public void failure() {
-						label.setText("Error loading image");
-					}
-				}, key);
-			}
-		}
 	}
 }

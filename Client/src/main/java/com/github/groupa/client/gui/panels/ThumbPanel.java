@@ -23,7 +23,6 @@ import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.Library;
 import com.github.groupa.client.LibrarySort;
 import com.github.groupa.client.components.Thumb;
-import com.github.groupa.client.events.ImageModifiedEvent;
 import com.github.groupa.client.events.LibraryAddEvent;
 import com.github.groupa.client.events.SwitchViewEvent;
 import com.github.groupa.client.factories.ThumbMenuFactory;
@@ -171,15 +170,6 @@ public class ThumbPanel extends JPanel implements Scrollable {
 			sort();
 		}
 	}
-
-	@Subscribe
-	public void imageModifiedListener(ImageModifiedEvent event) {
-		ImageObject img = event.getImageObject();
-		if (images.contains(img)) {
-			thumbs.get(img).refreshImage();
-			sort();
-		}
-	}
 	
 	private int roomForColumns() {
 		int size = ImageObject.thumbSize.get(this.thumbSize) + 4;
@@ -252,6 +242,7 @@ public class ThumbPanel extends JPanel implements Scrollable {
 				menu.show(this.getThumb(thumbSize), event.getX(), event.getY());
 			}
 		};
+		eventBus.register(thumb);
 		thumbs.put(image, thumb);
 		add(thumb.getThumb(thumbSize));
 		revalidate();
