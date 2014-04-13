@@ -2,6 +2,7 @@ package com.github.groupa.client;
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -55,6 +56,12 @@ public class ImageObject {
 		return id;
 	}
 
+	public Date getUploadDate() {
+		if (loadImage())
+			return imageInfo.getImage().getDate();
+		return null;
+	}
+	
 	public boolean hasDescription() {
 		if (loadImage())
 			return imageInfo.getImage().getDescription().length() > 0;

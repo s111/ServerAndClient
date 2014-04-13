@@ -140,6 +140,9 @@ public abstract class Thumb extends MouseAdapter {
 		int rating = imageObject.getRating();
 		if (rating != 0)
 			toolTipText += "Rating: " + Integer.toString(rating) + "<br>";
+		
+		toolTipText += "Uploaded: " + imageObject.getUploadDate();
+		
 		toolTipText += "</html>";
 		return toolTipText;
 	}

@@ -1,6 +1,7 @@
 package com.github.groupa.client.jsonobjects;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class ImageFull {
@@ -13,6 +14,8 @@ public class ImageFull {
 	private String description = "";
 
 	private List<String> tags = new ArrayList<>();
+	
+	private Date date;
 
 	public long getId() {
 		return id;
@@ -52,5 +55,13 @@ public class ImageFull {
 
 	public void setIds(List<Long> ids) {
 		this.ids = ids;
+	}
+
+	public Date getDate() {
+		return date;
+	}
+
+	public void setDate(Date uploadDate) {
+		this.date = uploadDate;
 	}
 }
