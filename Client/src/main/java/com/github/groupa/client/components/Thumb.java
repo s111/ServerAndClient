@@ -109,11 +109,12 @@ public abstract class Thumb extends MouseAdapter {
 		BufferedImage img = imageObject.getThumb(size);
 		if (img != null) {
 			label.setIcon(new ImageIcon(img));
+			label.setText(null);
 		} else {
 			imageObject.loadImage(new Callback<BufferedImage>() {
 				@Override
 				public void success(BufferedImage image) {
-					label.setText("");
+					label.setText(null);
 					label.setIcon(new ImageIcon(image));
 				}
 
