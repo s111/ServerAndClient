@@ -34,6 +34,7 @@ public class ImageObject {
 
 	private EventBus eventBus;
 	private ServerConnection serverConnection;
+	private ThreadPool threadPool;
 	private long id;
 
 	private ImageInfo imageInfo;
@@ -43,9 +44,10 @@ public class ImageObject {
 
 	@Inject
 	public ImageObject(EventBus eventBus, ServerConnection serverConnection,
-			@Assisted long id) {
+			ThreadPool threadPool, @Assisted long id) {
 		this.eventBus = eventBus;
 		this.serverConnection = serverConnection;
+		this.threadPool = threadPool;
 		this.id = id;
 	}
 
@@ -120,17 +122,18 @@ public class ImageObject {
 		if (_hasImage(size)) {
 			callback.success(_getImage(size));
 		} else {
-			new Thread(new Runnable() {
+			threadPool.add(new Runnable() {
 				public void run() {
 					BufferedImage image = serverConnection.getImage(id, size);
 					if (image != null) {
 						ImageObject.this.images.put(size, image);
-						callback.success(image);
-					} else
+						if (callback != null)
+							callback.success(image);
+					} else if (callback != null)
 						callback.failure();
 					// TODO: Send event
 				}
-			}).start();
+			});
 		}
 	}
 
@@ -183,7 +186,7 @@ public class ImageObject {
 		return (int) (this.id ^ (this.id >>> 32));
 	}
 
-	public void refreshImage() {
+	public void refreshImages() {
 		valid = false;
 		Set<String> sizes = images.keySet();
 		images.clear();

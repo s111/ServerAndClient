@@ -27,7 +27,7 @@ public class ModifyImage {
 			}
 
 			public void success() {
-				image.refreshImage();
+				image.refreshImages();
 			}
 		};
 		threadPool.add(new WorkerThread<ImageObject>(callback, image, job));
@@ -43,7 +43,7 @@ public class ModifyImage {
 			}
 
 			public void success() {
-				image.refreshImage();
+				image.refreshImages();
 			}
 		};
 		threadPool.add(new WorkerThread<ImageObject>(callback, image, job));
