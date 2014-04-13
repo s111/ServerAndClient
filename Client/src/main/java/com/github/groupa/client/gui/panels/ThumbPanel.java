@@ -200,6 +200,7 @@ public class ThumbPanel extends JPanel implements Scrollable {
 		for (ImageObject img : list) {
 			addImage(img);
 		}
+		revalidate();
 	}
 
 	private void addImage(final ImageObject image) {
