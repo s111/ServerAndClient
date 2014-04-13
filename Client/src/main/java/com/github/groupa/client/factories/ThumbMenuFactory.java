@@ -7,10 +7,9 @@ import java.util.List;
 import javax.swing.JMenuItem;
 import javax.swing.JPopupMenu;
 
-import library.Library;
-
 import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.events.SwitchViewEvent;
+import com.github.groupa.client.library.Library;
 import com.github.groupa.client.views.View;
 import com.google.common.eventbus.EventBus;
 

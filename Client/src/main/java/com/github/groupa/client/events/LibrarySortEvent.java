@@ -1,6 +1,6 @@
 package com.github.groupa.client.events;
 
-import library.Library;
+import com.github.groupa.client.library.Library;
 
 public class LibrarySortEvent {
 	private Library library;

@@ -18,8 +18,6 @@ import javax.swing.JPanel;
 import javax.swing.KeyStroke;
 import javax.swing.border.EtchedBorder;
 
-import library.Library;
-import library.LibrarySort;
 import net.miginfocom.swing.MigLayout;
 
 import org.slf4j.Logger;
@@ -30,6 +28,8 @@ import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.events.ImageModifiedEvent;
 import com.github.groupa.client.events.LibraryAddEvent;
 import com.github.groupa.client.events.SwitchViewEvent;
+import com.github.groupa.client.library.Library;
+import com.github.groupa.client.library.LibrarySort;
 import com.github.groupa.client.servercommunication.ModifyImage;
 import com.github.groupa.client.views.View;
 import com.google.common.eventbus.EventBus;

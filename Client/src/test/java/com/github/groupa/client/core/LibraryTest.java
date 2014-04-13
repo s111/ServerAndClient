@@ -5,10 +5,6 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.List;
 
-import library.DescriptionConstraint;
-import library.Library;
-import library.TagConstraint;
-
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -17,6 +13,9 @@ import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.events.LibraryAddEvent;
 import com.github.groupa.client.events.LibraryRemoveEvent;
 import com.github.groupa.client.helpers.MockImageObject;
+import com.github.groupa.client.library.DescriptionConstraint;
+import com.github.groupa.client.library.Library;
+import com.github.groupa.client.library.TagConstraint;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 

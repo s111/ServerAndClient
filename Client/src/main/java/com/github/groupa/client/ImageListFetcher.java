@@ -2,14 +2,13 @@ package com.github.groupa.client;
 
 import java.net.ConnectException;
 
-import library.Library;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.groupa.client.factories.ImageObjectFactory;
 import com.github.groupa.client.jsonobjects.ImageList;
 import com.github.groupa.client.jsonobjects.ImageShort;
+import com.github.groupa.client.library.Library;
 import com.github.groupa.client.main.Main;
 import com.github.groupa.client.servercommunication.RESTService;
 import com.google.inject.Inject;

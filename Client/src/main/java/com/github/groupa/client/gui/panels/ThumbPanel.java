@@ -19,14 +19,13 @@ import javax.swing.Scrollable;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 
-import library.Library;
-import library.LibrarySort;
-
 import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.components.Thumb;
 import com.github.groupa.client.events.LibraryAddEvent;
 import com.github.groupa.client.events.SwitchViewEvent;
 import com.github.groupa.client.factories.ThumbMenuFactory;
+import com.github.groupa.client.library.Library;
+import com.github.groupa.client.library.LibrarySort;
 import com.github.groupa.client.views.View;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;

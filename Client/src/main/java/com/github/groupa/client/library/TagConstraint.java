@@ -1,4 +1,4 @@
-package library;
+package com.github.groupa.client.library;
 
 import com.github.groupa.client.ImageObject;
 

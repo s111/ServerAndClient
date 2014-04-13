@@ -4,8 +4,6 @@ import java.net.ConnectException;
 
 import javax.swing.JOptionPane;
 
-import library.Library;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,6 +12,7 @@ import retrofit.mime.TypedFile;
 import com.github.groupa.client.events.UploadImageEvent;
 import com.github.groupa.client.factories.ImageObjectFactory;
 import com.github.groupa.client.jsonobjects.ImageInfo;
+import com.github.groupa.client.library.Library;
 import com.github.groupa.client.main.Main;
 import com.github.groupa.client.servercommunication.RESTService;
 import com.google.common.eventbus.Subscribe;

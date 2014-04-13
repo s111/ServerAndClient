@@ -2,9 +2,8 @@ package com.github.groupa.client.events;
 
 import java.util.List;
 
-import library.Library;
-
 import com.github.groupa.client.ImageObject;
+import com.github.groupa.client.library.Library;
 
 public class LibraryAddEvent {
 	private Library library;

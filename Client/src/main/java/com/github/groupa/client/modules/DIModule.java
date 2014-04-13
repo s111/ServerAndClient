@@ -3,7 +3,6 @@ package com.github.groupa.client.modules;
 import javax.inject.Singleton;
 import javax.swing.JMenuBar;
 
-import library.Library;
 import retrofit.RestAdapter;
 
 import com.github.groupa.client.RESTErrorHandler;
@@ -16,6 +15,7 @@ import com.github.groupa.client.gui.panels.ImageSidebarPanel;
 import com.github.groupa.client.gui.panels.MainPanel;
 import com.github.groupa.client.gui.panels.RootPanel;
 import com.github.groupa.client.gui.panels.ThumbPanel;
+import com.github.groupa.client.library.Library;
 import com.github.groupa.client.main.Application;
 import com.github.groupa.client.main.Main;
 import com.github.groupa.client.servercommunication.ModifyImage;

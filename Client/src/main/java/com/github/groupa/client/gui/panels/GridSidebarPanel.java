@@ -16,12 +16,12 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EtchedBorder;
 
-import library.Library;
-import library.LibrarySort;
-import library.TagConstraint;
 import net.miginfocom.swing.MigLayout;
 
 import com.github.groupa.client.components.ZoomSlider;
+import com.github.groupa.client.library.Library;
+import com.github.groupa.client.library.LibrarySort;
+import com.github.groupa.client.library.TagConstraint;
 
 public class GridSidebarPanel implements SidebarPanel {
 	private JPanel panel = new JPanel();
