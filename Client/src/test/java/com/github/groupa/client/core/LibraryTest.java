@@ -5,13 +5,15 @@ import static org.junit.Assert.*;
 import java.util.ArrayList;
 import java.util.List;
 
+import library.DescriptionConstraint;
+import library.Library;
+import library.TagConstraint;
+
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import com.github.groupa.client.ImageObject;
-import com.github.groupa.client.Library;
-import com.github.groupa.client.LibraryConstraint;
 import com.github.groupa.client.events.LibraryAddEvent;
 import com.github.groupa.client.events.LibraryRemoveEvent;
 import com.github.groupa.client.helpers.MockImageObject;
@@ -148,12 +150,10 @@ public class LibraryTest {
 
 		assertEquals(4, rootLibrary.size());
 		assertEquals(4, subLibrary.size());
-		subLibrary.addConstraint(new LibraryConstraint(
-				LibraryConstraint.HAS_DESCRIPTION));
+		subLibrary.addConstraint(new DescriptionConstraint(true));
 		assertEquals(4, rootLibrary.size());
 		assertEquals(3, subLibrary.size());
-		subLibrary.addConstraint(new LibraryConstraint(
-				LibraryConstraint.HAS_TAG, "tag2"));
+		subLibrary.addConstraint(new TagConstraint("tag2"));
 		assertEquals(4, rootLibrary.size());
 		assertEquals(1, subLibrary.size());
 	}

@@ -16,11 +16,11 @@ import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EtchedBorder;
 
+import library.Library;
+import library.LibrarySort;
+import library.TagConstraint;
 import net.miginfocom.swing.MigLayout;
 
-import com.github.groupa.client.Library;
-import com.github.groupa.client.LibraryConstraint;
-import com.github.groupa.client.LibrarySort;
 import com.github.groupa.client.components.ZoomSlider;
 
 public class GridSidebarPanel implements SidebarPanel {
@@ -119,8 +119,7 @@ public class GridSidebarPanel implements SidebarPanel {
 					SwingUtilities.invokeLater(new Runnable() {
 						public void run() {
 							thumbPanel.setLibrary(new Library(rootLibrary)
-									.addConstraint(new LibraryConstraint(
-											LibraryConstraint.HAS_TAG, text)));
+									.addConstraint(new TagConstraint(text)));
 						}
 					});
 				}

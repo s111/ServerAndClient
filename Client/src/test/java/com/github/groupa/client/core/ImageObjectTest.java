@@ -13,6 +13,7 @@ import org.junit.Test;
 
 import com.github.groupa.client.Callback;
 import com.github.groupa.client.ImageObject;
+import com.github.groupa.client.ThreadPool;
 import com.github.groupa.client.helpers.MockImageInfo;
 import com.github.groupa.client.helpers.MockServerConnection;
 import com.github.groupa.client.jsonobjects.ImageFull;
@@ -24,11 +25,13 @@ public class ImageObjectTest {
 	private static EventBus eventBus;
 	private static List<ImageObject> images;
 	private static ServerConnection serverConnection;
+	private static ThreadPool threadPool;
 	
 	@BeforeClass
 	public static void beforeClass() {
 		eventBus = new EventBus();
 		images = new ArrayList<>();
+		threadPool = new ThreadPool();
 	}
 	
 	@Before
@@ -40,7 +43,7 @@ public class ImageObjectTest {
 	@Test
 	public void testRating() throws InterruptedException {
 		for (int i = 1; i <= 5; i++) {
-			ImageObject img = new ImageObject(eventBus, serverConnection, i);
+			ImageObject img = new ImageObject(eventBus, serverConnection, threadPool, i);
 			ImageFull imageFull = new ImageFull();
 			ImageInfo imageInfo = MockImageInfo.get(imageFull);
 			when(serverConnection.getImageInfo(i)).thenReturn(imageInfo);
@@ -56,7 +59,7 @@ public class ImageObjectTest {
 	@Test
 	public void testDescription() throws InterruptedException {
 		for (int i = 1; i <= 5; i++) {
-			ImageObject img = new ImageObject(eventBus, serverConnection, i);
+			ImageObject img = new ImageObject(eventBus, serverConnection, threadPool, i);
 			ImageFull imageFull = new ImageFull();
 			ImageInfo imageInfo = MockImageInfo.get(imageFull);
 			when(serverConnection.getImageInfo(i)).thenReturn(imageInfo);
@@ -74,7 +77,7 @@ public class ImageObjectTest {
 	@Test
 	public void testTag() throws InterruptedException {
 		for (int i = 1; i <= 5; i++) {
-			ImageObject img = new ImageObject(eventBus, serverConnection, i);
+			ImageObject img = new ImageObject(eventBus, serverConnection, threadPool, i);
 			ImageFull imageFull = new ImageFull();
 			ImageInfo imageInfo = MockImageInfo.get(imageFull);
 			when(serverConnection.getImageInfo(i)).thenReturn(imageInfo);
@@ -91,7 +94,7 @@ public class ImageObjectTest {
 
 	@Test
 	public void testImage() throws InterruptedException {
-		final ImageObject img = new ImageObject(eventBus, serverConnection, 1);
+		final ImageObject img = new ImageObject(eventBus, serverConnection, threadPool, 1);
 		final BufferedImage imageCompressed = mock(BufferedImage.class);
 		assertFalse(img.hasImage());
 		assertFalse(img.hasImageRaw());

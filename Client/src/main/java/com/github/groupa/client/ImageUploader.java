@@ -4,6 +4,8 @@ import java.net.ConnectException;
 
 import javax.swing.JOptionPane;
 
+import library.Library;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

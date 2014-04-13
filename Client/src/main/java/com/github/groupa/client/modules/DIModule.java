@@ -3,9 +3,9 @@ package com.github.groupa.client.modules;
 import javax.inject.Singleton;
 import javax.swing.JMenuBar;
 
+import library.Library;
 import retrofit.RestAdapter;
 
-import com.github.groupa.client.Library;
 import com.github.groupa.client.RESTErrorHandler;
 import com.github.groupa.client.ThreadPool;
 import com.github.groupa.client.components.ZoomSlider;

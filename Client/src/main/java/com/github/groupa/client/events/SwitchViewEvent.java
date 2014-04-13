@@ -2,8 +2,9 @@ package com.github.groupa.client.events;
 
 import java.util.Comparator;
 
+import library.Library;
+
 import com.github.groupa.client.ImageObject;
-import com.github.groupa.client.Library;
 
 public class SwitchViewEvent {
 	private String view;

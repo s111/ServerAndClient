@@ -2,6 +2,8 @@ package com.github.groupa.client;
 
 import java.net.ConnectException;
 
+import library.Library;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

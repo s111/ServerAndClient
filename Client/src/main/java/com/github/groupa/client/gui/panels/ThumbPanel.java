@@ -19,9 +19,10 @@ import javax.swing.Scrollable;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 
+import library.Library;
+import library.LibrarySort;
+
 import com.github.groupa.client.ImageObject;
-import com.github.groupa.client.Library;
-import com.github.groupa.client.LibrarySort;
 import com.github.groupa.client.components.Thumb;
 import com.github.groupa.client.events.LibraryAddEvent;
 import com.github.groupa.client.events.SwitchViewEvent;

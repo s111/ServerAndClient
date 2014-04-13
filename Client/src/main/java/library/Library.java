@@ -1,4 +1,4 @@
-package com.github.groupa.client;
+package library;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
+import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.events.ImageInfoChangedEvent;
 import com.github.groupa.client.events.LibraryAddEvent;
 import com.github.groupa.client.events.LibraryRemoveEvent;
@@ -45,7 +46,7 @@ public class Library {
 		synchronized (images) {
 			for (ImageObject img : images) {
 				if (img != null) {
-					if (!constraint.isSatisfied(img)) {
+					if (!constraint.satisfied(img)) {
 						list.add(img);
 					}
 				}

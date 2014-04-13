@@ -1,10 +1,11 @@
-package com.github.groupa.client;
+package library;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import com.github.groupa.client.ImageObject;
 import com.google.common.collect.ComparisonChain;
 import com.google.common.collect.Ordering;
 
