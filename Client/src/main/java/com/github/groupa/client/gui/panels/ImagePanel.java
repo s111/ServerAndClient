@@ -21,13 +21,13 @@ import javax.swing.JComponent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.github.groupa.client.Callback;
 import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.servercommunication.ModifyImage;
 import com.google.inject.Inject;
 
 @SuppressWarnings("serial")
 public class ImagePanel extends JComponent {
+	@SuppressWarnings("unused")
 	private static final Logger logger = LoggerFactory
 			.getLogger(ImagePanel.class);
 
@@ -119,15 +119,7 @@ public class ImagePanel extends JComponent {
 			return;
 		}
 
-		modifyImage.crop(new Callback<ImageObject>() {
-			public void success(ImageObject t) {
-			}
-
-			public void failure() {
-				logger.warn("could not crop image");
-			}
-
-		}, imageObject, absoluteClip);
+		modifyImage.crop(null, imageObject, absoluteClip);
 	}
 
 	public void setImage(ImageObject image) {

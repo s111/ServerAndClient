@@ -36,6 +36,7 @@ import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
 
 public class ImageContentPanel implements ContentPanel {
+	@SuppressWarnings("unused")
 	private static final Logger logger = LoggerFactory
 			.getLogger(ImageContentPanel.class);
 
@@ -117,19 +118,7 @@ public class ImageContentPanel implements ContentPanel {
 	}
 
 	private void rotateImage(ImageObject image, int angle) {
-		modifyImage.rotate(new Callback<ImageObject>() {
-
-			@Override
-			public void success(ImageObject t) {
-
-			}
-
-			@Override
-			public void failure() {
-				logger.warn("Error rotating image");
-			}
-
-		}, image, angle);
+		modifyImage.rotate(null, image, angle);
 
 	}
 
