@@ -11,6 +11,7 @@ import javax.swing.JMenuItem;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import com.github.groupa.client.ImageListFetcher;
+import com.github.groupa.client.ThreadPool;
 import com.github.groupa.client.events.SwitchViewEvent;
 import com.github.groupa.client.events.UploadImageEvent;
 import com.github.groupa.client.gui.panels.ImagePanel;
@@ -24,6 +25,7 @@ public class MenuBar {
 	private JMenuBar menuBar = new JMenuBar();
 
 	private EventBus eventBus;
+	private ThreadPool threadPool;
 
 	private JMenuItem fetchImagesItem = new JMenuItem("Fetch images");
 	private JMenuItem uploadImageItem = new JMenuItem("Upload image");
@@ -36,9 +38,10 @@ public class MenuBar {
 	private JMenu fileMenu;
 
 	@Inject
-	public MenuBar(EventBus eventBus, ImagePanel imagePanel) {
+	public MenuBar(EventBus eventBus, ImagePanel imagePanel, ThreadPool threadPool) {
 		this.eventBus = eventBus;
 		this.imagePanel = imagePanel;
+		this.threadPool = threadPool;
 
 		eventBus.register(this);
 
@@ -84,7 +87,7 @@ public class MenuBar {
 		fetchImagesItem.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				new Thread(new Runnable() {
+				threadPool.add(new Runnable() {
 					@Override
 					public void run() {
 						RESTService restService = Main.injector
@@ -95,7 +98,7 @@ public class MenuBar {
 						// until the thread is completed.
 						new ImageListFetcher(restService).importAllImages();
 					}
-				}).start();
+				});
 			}
 		});
 	}
