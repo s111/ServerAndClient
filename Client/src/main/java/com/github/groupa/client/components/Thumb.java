@@ -81,10 +81,8 @@ public abstract class Thumb extends MouseAdapter {
 	}
 
 	private void refreshImages() {
-		synchronized (this) {
-			for (Map.Entry<String, JLabel> entry : labels.entrySet()) {
-				setIcon(entry.getValue(), entry.getKey());
-			}
+		for (Map.Entry<String, JLabel> entry : labels.entrySet()) {
+			setIcon(entry.getValue(), entry.getKey());
 		}
 	}
 
@@ -95,14 +93,15 @@ public abstract class Thumb extends MouseAdapter {
 			refreshImages();
 		}
 	}
-	
+
 	@Subscribe
-	private void imageChangeListener(ImageInfoChangedEvent event) {
+	public void imageChangeListener(ImageInfoChangedEvent event) {
+		ImageObject img = event.getImageObject();
+		if (!img.equals(imageObject))
+			return;
 		toolTipText = createToolTipText();
-		synchronized (this) {
-			for (JLabel label : labels.values()) {
-				label.setToolTipText(toolTipText);
-			}
+		for (JLabel label : labels.values()) {
+			label.setToolTipText(toolTipText);
 		}
 	}
 

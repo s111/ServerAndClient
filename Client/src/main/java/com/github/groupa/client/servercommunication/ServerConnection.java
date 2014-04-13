@@ -79,7 +79,7 @@ public class ServerConnection {
 	public boolean rate(long id, int rating) {
 		try {
 			Response response = restService.rateImage(id, rating);
-			if (response.getStatus() == 202)
+			if (response.getStatus() == 200)
 				return true;
 		} catch (ConnectException e) {
 			logger.warn("Could not connect to server to rate image(" + id
@@ -94,7 +94,7 @@ public class ServerConnection {
 	public boolean addTag(long id, String tag) {
 		try {
 			Response response = restService.tagImage(id, tag);
-			if (response.getStatus() == 202)
+			if (response.getStatus() == 200)
 				return true;
 		}  catch (ConnectException e) {
 			logger.warn("Could not connect to server to tag image(" + id
@@ -109,7 +109,7 @@ public class ServerConnection {
 	public boolean describe(long id, String description) {
 		try {
 			Response response = restService.describeImage(id, description);
-			if (response.getStatus() == 202)
+			if (response.getStatus() == 200)
 				return true;
 		} catch (ConnectException e) {
 			logger.warn("Could not connect to server to describe image(" + id

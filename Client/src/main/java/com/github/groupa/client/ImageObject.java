@@ -139,7 +139,7 @@ public class ImageObject {
 			loadImage();
 		else
 			imageInfo.getImage().setRating(rating);
-		eventBus.post(new ImageInfoChangedEvent(ImageObject.this));
+		eventBus.post(new ImageInfoChangedEvent(this));
 	}
 
 	public void describe(final String description) {
@@ -147,7 +147,7 @@ public class ImageObject {
 			loadImage();
 		else
 			imageInfo.getImage().setDescription(description);
-		eventBus.post(new ImageInfoChangedEvent(ImageObject.this));
+		eventBus.post(new ImageInfoChangedEvent(this));
 	}
 
 	public void addTag(final String tag) {
@@ -155,7 +155,7 @@ public class ImageObject {
 			loadImage();
 		else
 			imageInfo.getImage().getTags().add(tag);
-		eventBus.post(new ImageInfoChangedEvent(ImageObject.this));
+		eventBus.post(new ImageInfoChangedEvent(this));
 	}
 
 	private boolean _hasImage(String img) {
