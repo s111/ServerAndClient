@@ -22,11 +22,11 @@ import com.google.inject.assistedinject.Assisted;
 public class ImageObject {
 	public static Map<String, Integer> thumbSize = new HashMap<>();
 	static {
-		thumbSize.put("xs", 40);
-		thumbSize.put("s", 80);
-		thumbSize.put("m", 140);
-		thumbSize.put("l", 220);
-		thumbSize.put("xl", 260);
+		thumbSize.put("xs", 48);
+		thumbSize.put("s", 64);
+		thumbSize.put("m", 128);
+		thumbSize.put("l", 192);
+		thumbSize.put("xl", 256);
 	}
 
 	private static final Logger logger = LoggerFactory
