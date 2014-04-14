@@ -54,21 +54,23 @@ public class ThumbnailGenerator {
 		Dimension imageSize = getImageSize();
 
 		if (size < 5) {
-			this.dimension = THUMBNAIL_SIZES.get(size);
+			dimension = THUMBNAIL_SIZES.get(size);
 		} else {
-			this.dimension = imageSize;
+			dimension = imageSize;
 		}
 
-		if (dimension.width > imageSize.width) {
-			dimension.width = imageSize.width;
+		int width = dimension.width;
+		int height = dimension.height;
+
+		if (dimension.width > width) {
+			width = imageSize.width;
 		}
 
-		if (dimension.height > imageSize.height) {
-			dimension.height = imageSize.height;
+		if (dimension.height > height) {
+			height = imageSize.height;
 		}
 
-		Thumbnails.of(file).size(dimension.width, dimension.height)
-				.toFile(filename);
+		Thumbnails.of(file).size(width, height).toFile(filename);
 	}
 
 	public void saveThumbnailToDatabase() {
