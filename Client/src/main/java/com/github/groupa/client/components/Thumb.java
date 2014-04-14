@@ -3,8 +3,10 @@ package com.github.groupa.client.components;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.text.DateFormat;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import javax.swing.BorderFactory;
@@ -141,7 +143,8 @@ public abstract class Thumb extends MouseAdapter {
 		if (rating != 0)
 			toolTipText += "Rating: " + Integer.toString(rating) + "<br>";
 		
-		toolTipText += "Uploaded: " + imageObject.getUploadDate();
+		DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, Locale.getDefault());
+		toolTipText += "Uploaded: " + df.format(imageObject.getUploadDate());
 		
 		toolTipText += "</html>";
 		return toolTipText;
