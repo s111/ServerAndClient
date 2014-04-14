@@ -404,6 +404,10 @@ public class ImagePanel extends JComponent {
 		public void mouseReleased(MouseEvent event) {
 			super.mouseReleased(event);
 
+			if (image == null) {
+				return;
+			}
+
 			double divisor = Math.abs((1 + scale) - 1);
 
 			absoluteClip.x = (int) Math
@@ -419,6 +423,10 @@ public class ImagePanel extends JComponent {
 		@Override
 		public void mousePressed(MouseEvent event) {
 			super.mousePressed(event);
+
+			if (image == null) {
+				return;
+			}
 
 			int scaledImageWidth = (int) (getImageWidth() * scale);
 			int scaledImageHeight = (int) (getImageHeight() * scale);
@@ -444,6 +452,10 @@ public class ImagePanel extends JComponent {
 		@Override
 		public void mouseDragged(MouseEvent event) {
 			super.mouseDragged(event);
+
+			if (image == null) {
+				return;
+			}
 
 			if (isSelecting) {
 				endOffsetX = getRestrainedOffsetX(event.getX());
@@ -471,6 +483,10 @@ public class ImagePanel extends JComponent {
 		@Override
 		public void mouseWheelMoved(MouseWheelEvent event) {
 			super.mouseWheelMoved(event);
+
+			if (image == null) {
+				return;
+			}
 
 			if (isSelecting) {
 				return;
