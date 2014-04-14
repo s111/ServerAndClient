@@ -13,6 +13,7 @@ import java.util.Map;
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
+import javax.swing.SwingConstants;
 import javax.swing.border.Border;
 
 import com.github.groupa.client.Callback;
@@ -109,6 +110,7 @@ public abstract class Thumb extends MouseAdapter {
 	}
 
 	private void setIcon(final JLabel label, String size) {
+		label.setHorizontalAlignment(SwingConstants.CENTER);
 		BufferedImage img = imageObject.getThumb(size);
 		if (img != null) {
 			label.setIcon(new ImageIcon(img));
