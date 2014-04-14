@@ -58,10 +58,10 @@ public class ImageObject {
 
 	public Date getUploadDate() {
 		if (loadImage())
-			return imageInfo.getImage().getDate();
+			return imageInfo.getImage().getDateUploaded();
 		return null;
 	}
-	
+
 	public boolean hasDescription() {
 		if (loadImage())
 			return imageInfo.getImage().getDescription().length() > 0;

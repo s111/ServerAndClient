@@ -1,7 +1,6 @@
 package com.github.groupa.client.jsonobjects;
 
-import java.util.ArrayList;
-import java.util.Date;
+import java.sql.Timestamp;
 import java.util.List;
 
 public class ImageFull {
@@ -9,13 +8,14 @@ public class ImageFull {
 
 	private List<Long> ids;
 
-	private int rating = 0;
+	private int rating;
 
-	private String description = "";
+	private String description;
 
-	private List<String> tags = new ArrayList<>();
-	
-	private Date date;
+	private List<String> tags;
+
+	private Timestamp dateTaken;
+	private Timestamp dateUploaded;
 
 	public long getId() {
 		return id;
@@ -57,11 +57,19 @@ public class ImageFull {
 		this.ids = ids;
 	}
 
-	public Date getDate() {
-		return date;
+	public Timestamp getDateTaken() {
+		return dateTaken;
 	}
 
-	public void setDate(Date uploadDate) {
-		this.date = uploadDate;
+	public void setDateTaken(Timestamp dateTaken) {
+		this.dateTaken = dateTaken;
+	}
+
+	public Timestamp getDateUploaded() {
+		return dateUploaded;
+	}
+
+	public void setDateUploaded(Timestamp dateUploaded) {
+		this.dateUploaded = dateUploaded;
 	}
 }
