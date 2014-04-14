@@ -2,6 +2,7 @@ package com.github.groupa.client.gui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 import javax.inject.Inject;
 import javax.swing.JFileChooser;
@@ -11,9 +12,9 @@ import javax.swing.JMenuItem;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
 import com.github.groupa.client.ImageListFetcher;
+import com.github.groupa.client.ImageUploader;
 import com.github.groupa.client.ThreadPool;
 import com.github.groupa.client.events.SwitchViewEvent;
-import com.github.groupa.client.events.UploadImageEvent;
 import com.github.groupa.client.gui.panels.ImagePanel;
 import com.github.groupa.client.main.Main;
 import com.github.groupa.client.servercommunication.RESTService;
@@ -24,11 +25,11 @@ import com.google.common.eventbus.Subscribe;
 public class MenuBar {
 	private JMenuBar menuBar = new JMenuBar();
 
-	private EventBus eventBus;
 	private ThreadPool threadPool;
+	private ImageUploader imageUploader;
 
 	private JMenuItem fetchImagesItem = new JMenuItem("Fetch images");
-	private JMenuItem uploadImageItem = new JMenuItem("Upload image");
+	private JMenuItem uploadImageItem = new JMenuItem("Upload images");
 	private JMenuItem cropImage = new JMenuItem("Toggle cropping");
 	private JMenuItem crop = new JMenuItem("Crop Image");
 
@@ -38,10 +39,11 @@ public class MenuBar {
 	private JMenu fileMenu;
 
 	@Inject
-	public MenuBar(EventBus eventBus, ImagePanel imagePanel, ThreadPool threadPool) {
-		this.eventBus = eventBus;
+	public MenuBar(EventBus eventBus, ImagePanel imagePanel,
+			ThreadPool threadPool, ImageUploader imageUploader) {
 		this.imagePanel = imagePanel;
 		this.threadPool = threadPool;
+		this.imageUploader = imageUploader;
 
 		eventBus.register(this);
 
@@ -72,12 +74,19 @@ public class MenuBar {
 						".jpg, .jpeg, .gif, .png", "jpg", "jpeg", "gif", "png");
 
 				chooser.setFileFilter(filter);
+				chooser.setMultiSelectionEnabled(true);
 
 				int returnVal = chooser.showOpenDialog(null);
 
 				if (returnVal == JFileChooser.APPROVE_OPTION) {
-					eventBus.post(new UploadImageEvent(chooser
-							.getSelectedFile()));
+					final File[] files = chooser.getSelectedFiles();
+					if (files.length > 0) {
+						threadPool.add(new Runnable() {
+							public void run() {
+								imageUploader.uploadImages(files);
+							}
+						});
+					}
 				}
 			}
 		});

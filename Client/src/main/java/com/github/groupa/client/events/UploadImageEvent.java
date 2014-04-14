@@ -3,13 +3,13 @@ package com.github.groupa.client.events;
 import java.io.File;
 
 public class UploadImageEvent {
-	private File file;
+	private File[] files;
 	
-	public UploadImageEvent(File file) {
-		this.file = file;
+	public UploadImageEvent(File[] files) {
+		this.files = files;
 	}
 
-	public File getFile() {
-		return file;
+	public File[] getFiles() {
+		return files;
 	}
 }
