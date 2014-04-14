@@ -13,7 +13,8 @@ public class Image {
 	private String filename;
 	private String description;
 
-	private Timestamp date;
+	private Timestamp dateTaken;
+	private Timestamp dateUploaded;
 
 	private Set<Tag> tags = new HashSet<>();
 
@@ -76,11 +77,19 @@ public class Image {
 		this.imageChangeCount = imageChangeCount;
 	}
 
-	public Timestamp getDate() {
-		return date;
+	public Timestamp getDateTaken() {
+		return dateTaken;
 	}
 
-	public void setDate(Timestamp date) {
-		this.date = date;
+	public void setDateTaken(Timestamp dateTaken) {
+		this.dateTaken = dateTaken;
+	}
+
+	public Timestamp getDateUploaded() {
+		return dateUploaded;
+	}
+
+	public void setDateUploaded(Timestamp dateUploaded) {
+		this.dateUploaded = dateUploaded;
 	}
 }

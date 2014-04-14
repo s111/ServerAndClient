@@ -177,7 +177,7 @@ public class QueryImage {
 		}
 	}
 
-	public void setDate(long id, Date date) {
+	public void setDateTaken(long id, Date date) {
 		long time = date.getTime();
 		Timestamp timestamp = new Timestamp(time);
 
@@ -187,7 +187,7 @@ public class QueryImage {
 		Image image = getImage(session, id);
 
 		if (image != null) {
-			image.setDate(timestamp);
+			image.setDateTaken(timestamp);
 		}
 
 		session.getTransaction().commit();

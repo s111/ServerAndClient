@@ -134,7 +134,7 @@ public class MetadataUtil {
 		}
 
 		if (date != null) {
-			queryImage.setDate(id, date);
+			queryImage.setDateTaken(id, date);
 		}
 	}
 

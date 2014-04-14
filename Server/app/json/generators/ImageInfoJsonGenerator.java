@@ -53,7 +53,7 @@ public class ImageInfoJsonGenerator {
 
 		imageFull.setRating(rating == null ? 0 : rating);
 		imageFull.setDescription(image.getDescription());
-		imageFull.setDate(image.getDate());
+		imageFull.setDate(image.getDateTaken());
 
 		List<String> tagsAsString = new ArrayList<>();
 
