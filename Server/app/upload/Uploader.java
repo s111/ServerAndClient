@@ -91,6 +91,9 @@ public class Uploader {
 		/* TODO Remove the id:{id} tag before release */
 		queryTag.tagImage(id, "id:" + id);
 
+		// Get the new image after it has been tagged
+		image = queryImage.getImage(id);
+
 		return image;
 	}
 
