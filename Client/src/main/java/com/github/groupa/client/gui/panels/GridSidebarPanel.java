@@ -2,6 +2,8 @@ package com.github.groupa.client.gui.panels;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.inject.Inject;
 import javax.swing.BorderFactory;
@@ -12,7 +14,6 @@ import javax.swing.JLabel;
 import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
-import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EtchedBorder;
 
@@ -20,30 +21,31 @@ import net.miginfocom.swing.MigLayout;
 
 import com.github.groupa.client.components.ZoomSlider;
 import com.github.groupa.client.library.Library;
+import com.github.groupa.client.library.LibraryConstraint;
 import com.github.groupa.client.library.LibrarySort;
+import com.github.groupa.client.library.RatingConstraint;
 import com.github.groupa.client.library.TagConstraint;
 
 public class GridSidebarPanel implements SidebarPanel {
 	private JPanel panel = new JPanel();
 
 	private ThumbPanel thumbPanel;
-	private Library rootLibrary;
+	private Library library;
 	private ZoomSlider zoomSlider;
 
 	@Inject
 	public GridSidebarPanel(Library rootLibrary, ThumbPanel thumbPanel,
 			ZoomSlider zoomSlider) {
-		this.rootLibrary = rootLibrary;
 		this.thumbPanel = thumbPanel;
 		this.zoomSlider = zoomSlider;
-
+		library = new Library(rootLibrary);
 		MigLayout layout = new MigLayout();
 
 		panel.setLayout(layout);
 
 		panel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
 
-		setUpSearchComponents();
+		setUpConstraintComponents();
 		setUpSortComponents();
 		setUpTagComponents();
 		setUpZoomComponents();
@@ -68,6 +70,57 @@ public class GridSidebarPanel implements SidebarPanel {
 		panel.add(scrollPane, "grow, push, wrap");
 	}
 
+	private void setUpConstraintComponents() {
+		String[] sortTypes = { "Filters", "Add tag filter", "Add rating filter" };
+
+		final List<LibraryConstraint> constraints = new ArrayList<>();
+		final JComboBox<String> comboBox = new JComboBox<>(sortTypes);
+		comboBox.addActionListener(new ActionListener() {
+			public void actionPerformed(final ActionEvent arg0) {
+				SwingUtilities.invokeLater(new Runnable() {
+					public void run() {
+						constraintAction(comboBox, constraints);
+					}
+				});
+			}
+		});
+		panel.add(comboBox, "width 128, wrap");
+	}
+
+	private void constraintAction(JComboBox<String> comboBox, List<LibraryConstraint> constraints) {
+		Object item = comboBox.getSelectedItem();
+		if (item instanceof String) {
+			LibraryConstraint constraint = null;
+			if ("Add tag filter".equals(item)) {
+				constraint = TagConstraint.create();
+			} else if ("Add rating filter".equals(item)) {
+				constraint = RatingConstraint.create();
+			} else {
+				for (LibraryConstraint c : constraints) {
+					if (item.equals(c.toString())) {
+						comboBox.removeItem(item);
+						thumbPanel.setLibrary(library.removeConstraint(c));
+						constraints.remove(c);
+						comboBox.setSelectedIndex(0);
+						break;
+					}
+				}
+			}
+			if (constraint != null) {
+				for (LibraryConstraint c : constraints) {
+					if (item.equals(c.toString())) {
+						comboBox.setSelectedIndex(0);
+						return;
+					}
+				}
+				constraints.add(constraint);
+				comboBox.addItem(constraint.toString());
+				thumbPanel.setLibrary(library.addConstraint(constraint));
+				comboBox.setSelectedIndex(0);
+			}
+		}
+	}
+
 	private void setUpSortComponents() {
 		panel.add(new JLabel("Sort"), "wrap");
 		String[] sortTypes = { "ID", "Rating (desc)", "Rating (asc)" };
@@ -89,42 +142,6 @@ public class GridSidebarPanel implements SidebarPanel {
 			}
 		});
 		panel.add(comboBox, "width 128, wrap");
-	}
-
-	private void setUpSearchComponents() {
-		panel.add(new JLabel("Search"), "wrap");
-
-		JButton searchButton;
-
-		JTextField searchField;
-		searchField = new JTextField();
-
-		panel.add(searchField, "split 2, width 128");
-		searchButton = new JButton("Search");
-		panel.add(searchButton, "wrap");
-
-		ActionListener actionListener = getSearchListener(searchField);
-		searchButton.addActionListener(actionListener);
-		searchField.addActionListener(actionListener);
-	}
-
-	private ActionListener getSearchListener(final JTextField searchField) {
-		return new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent event) {
-				final String text = searchField.getText();
-				if (text == null || text.equals("")) {
-					thumbPanel.setLibrary(rootLibrary);
-				} else {
-					SwingUtilities.invokeLater(new Runnable() {
-						public void run() {
-							thumbPanel.setLibrary(new Library(rootLibrary)
-									.addConstraint(new TagConstraint(text)));
-						}
-					});
-				}
-			}
-		};
 	}
 
 	private void setUpEditMetadataComponent() {

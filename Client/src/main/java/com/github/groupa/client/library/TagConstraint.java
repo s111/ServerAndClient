@@ -1,8 +1,17 @@
 package com.github.groupa.client.library;
 
+import javax.swing.JOptionPane;
+
 import com.github.groupa.client.ImageObject;
 
 public class TagConstraint extends LibraryConstraint {
+	public static TagConstraint create() {
+		String tag = JOptionPane.showInputDialog("Enter tag name: ");
+		if (tag != null && tag.length() > 0)
+			return new TagConstraint(tag);
+		return null;
+	}
+	
 	private boolean invert;
 	private String tag;
 	

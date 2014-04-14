@@ -62,9 +62,9 @@ public class Library {
 		return set;
 	}
 
-	public void removeConstraint(LibraryConstraint constraint) {
+	public Library removeConstraint(LibraryConstraint constraint) {
 		if (!constraints.contains(constraint) || parent == null)
-			return;
+			return this;
 		synchronized (this) {
 			constraints.remove(constraint);
 			List<ImageObject> parentImages = parent.getImages();
@@ -79,6 +79,7 @@ public class Library {
 				eventBus.post(new LibraryAddEvent(this, parentImages));
 			}
 		}
+		return this;
 	}
 
 	public EventBus getEventBus() {
