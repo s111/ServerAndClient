@@ -2,8 +2,6 @@ package com.github.groupa.client.gui.panels;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.inject.Inject;
 import javax.swing.BorderFactory;
@@ -19,26 +17,24 @@ import javax.swing.border.EtchedBorder;
 
 import net.miginfocom.swing.MigLayout;
 
+import com.github.groupa.client.components.ConstraintComboBox;
 import com.github.groupa.client.components.ZoomSlider;
-import com.github.groupa.client.library.Library;
-import com.github.groupa.client.library.LibraryConstraint;
 import com.github.groupa.client.library.LibrarySort;
-import com.github.groupa.client.library.RatingConstraint;
-import com.github.groupa.client.library.TagConstraint;
 
 public class GridSidebarPanel implements SidebarPanel {
 	private JPanel panel = new JPanel();
 
 	private ThumbPanel thumbPanel;
-	private Library library;
 	private ZoomSlider zoomSlider;
 
+	private ConstraintComboBox constraintComboBox;
+
 	@Inject
-	public GridSidebarPanel(Library rootLibrary, ThumbPanel thumbPanel,
-			ZoomSlider zoomSlider) {
+	public GridSidebarPanel(ThumbPanel thumbPanel,
+			ZoomSlider zoomSlider, ConstraintComboBox constraintComboBox) {
 		this.thumbPanel = thumbPanel;
 		this.zoomSlider = zoomSlider;
-		library = new Library(rootLibrary);
+		this.constraintComboBox = constraintComboBox;
 		MigLayout layout = new MigLayout();
 
 		panel.setLayout(layout);
@@ -51,6 +47,10 @@ public class GridSidebarPanel implements SidebarPanel {
 		setUpZoomComponents();
 		setUpEditMetadataComponent();
 
+	}
+
+	private void setUpConstraintComponents() {
+		panel.add(constraintComboBox, "width 128, wrap");
 	}
 
 	private void setUpZoomComponents() {
@@ -68,57 +68,6 @@ public class GridSidebarPanel implements SidebarPanel {
 		JScrollPane scrollPane = new JScrollPane(new JList<>(defaultListModel));
 
 		panel.add(scrollPane, "grow, push, wrap");
-	}
-
-	private void setUpConstraintComponents() {
-		String[] sortTypes = { "Filters", "Add tag filter", "Add rating filter" };
-
-		final List<LibraryConstraint> constraints = new ArrayList<>();
-		final JComboBox<String> comboBox = new JComboBox<>(sortTypes);
-		comboBox.addActionListener(new ActionListener() {
-			public void actionPerformed(final ActionEvent arg0) {
-				SwingUtilities.invokeLater(new Runnable() {
-					public void run() {
-						constraintAction(comboBox, constraints);
-					}
-				});
-			}
-		});
-		panel.add(comboBox, "width 128, wrap");
-	}
-
-	private void constraintAction(JComboBox<String> comboBox, List<LibraryConstraint> constraints) {
-		Object item = comboBox.getSelectedItem();
-		if (item instanceof String) {
-			LibraryConstraint constraint = null;
-			if ("Add tag filter".equals(item)) {
-				constraint = TagConstraint.create();
-			} else if ("Add rating filter".equals(item)) {
-				constraint = RatingConstraint.create();
-			} else {
-				for (LibraryConstraint c : constraints) {
-					if (item.equals(c.toString())) {
-						comboBox.removeItem(item);
-						thumbPanel.setLibrary(library.removeConstraint(c));
-						constraints.remove(c);
-						comboBox.setSelectedIndex(0);
-						break;
-					}
-				}
-			}
-			if (constraint != null) {
-				for (LibraryConstraint c : constraints) {
-					if (item.equals(c.toString())) {
-						comboBox.setSelectedIndex(0);
-						return;
-					}
-				}
-				constraints.add(constraint);
-				comboBox.addItem(constraint.toString());
-				thumbPanel.setLibrary(library.addConstraint(constraint));
-				comboBox.setSelectedIndex(0);
-			}
-		}
 	}
 
 	private void setUpSortComponents() {
