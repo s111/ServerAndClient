@@ -72,7 +72,7 @@ public class GridSidebarPanel implements SidebarPanel {
 
 	private void setUpSortComponents() {
 		panel.add(new JLabel("Sort"), "wrap");
-		String[] sortTypes = { "ID", "Rating (desc)", "Rating (asc)" };
+		String[] sortTypes = { "ID", "Rating (desc)", "Rating (asc)", "Upload date (asc)", "Upload date (desc)" };
 
 		final JComboBox<String> comboBox = new JComboBox<>(sortTypes);
 		comboBox.addActionListener(new ActionListener() {
@@ -85,6 +85,10 @@ public class GridSidebarPanel implements SidebarPanel {
 							thumbPanel.sort(LibrarySort.SORT_RATING_DESC);
 						} else if (comboBox.getSelectedIndex() == 2) {
 							thumbPanel.sort(LibrarySort.SORT_RATING_ASC);
+						} else if (comboBox.getSelectedIndex() == 3) {
+							thumbPanel.sort(LibrarySort.SORT_UPLOAD_DATE_ASC);
+						} else if (comboBox.getSelectedIndex() == 4) {
+							thumbPanel.sort(LibrarySort.SORT_UPLOAD_DATE_DESC);
 						}
 					}
 				});
