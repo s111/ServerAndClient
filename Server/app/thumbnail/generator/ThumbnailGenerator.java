@@ -51,10 +51,20 @@ public class ThumbnailGenerator {
 	}
 
 	public void writeThumbnailToDisk() throws IOException {
+		Dimension imageSize = getImageSize();
+
 		if (size < 5) {
 			this.dimension = THUMBNAIL_SIZES.get(size);
 		} else {
-			this.dimension = getImageSize();
+			this.dimension = imageSize;
+		}
+
+		if (dimension.width > imageSize.width) {
+			dimension.width = imageSize.width;
+		}
+
+		if (dimension.height > imageSize.height) {
+			dimension.height = imageSize.height;
 		}
 
 		Thumbnails.of(file).size(dimension.width, dimension.height)
