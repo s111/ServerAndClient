@@ -4,6 +4,7 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
 import java.text.DateFormat;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
@@ -143,8 +144,11 @@ public abstract class Thumb extends MouseAdapter {
 		if (rating != 0)
 			toolTipText += "Rating: " + Integer.toString(rating) + "<br>";
 		
-		DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, Locale.getDefault());
-		toolTipText += "Uploaded: " + df.format(imageObject.getUploadDate());
+		Date date = imageObject.getUploadDate();
+		if (date != null) {
+			DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, Locale.getDefault());
+			toolTipText += "Uploaded: " + df.format(date);
+		}
 		
 		toolTipText += "</html>";
 		return toolTipText;

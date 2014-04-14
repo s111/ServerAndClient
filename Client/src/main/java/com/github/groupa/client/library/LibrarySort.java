@@ -39,6 +39,19 @@ public class LibrarySort {
 							Ordering.natural().nullsLast()).result();
 		}
 	};
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public static Comparator<ImageObject> SORT_AS = new Comparator() {
+		public int compare(Object o1, Object o2) {
+			ImageObject i1 = (ImageObject) o1;
+			ImageObject i2 = (ImageObject) o2;
+			return ComparisonChain
+					.start()
+					.compare(i2.getRating(), i1.getRating())
+					.compare(i1.getId(), i2.getId(),
+							Ordering.natural().nullsLast()).result();
+		}
+	};
 
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static Comparator<ImageObject> SORT_ID_ASC = new Comparator() {
