@@ -55,11 +55,30 @@ public class Library {
 		tryRemoveImages(list);
 		return this;
 	}
-	
+
 	public Set<LibraryConstraint> getConstraints() {
 		Set<LibraryConstraint> set = new HashSet<>();
 		set.addAll(constraints);
 		return set;
+	}
+
+	public void removeConstraint(LibraryConstraint constraint) {
+		if (!constraints.contains(constraint) || parent == null)
+			return;
+		synchronized (this) {
+			constraints.remove(constraint);
+			List<ImageObject> parentImages = parent.getImages();
+			parentImages.removeAll(images);
+			Iterator<ImageObject> itr = parentImages.iterator();
+			while (itr.hasNext()) {
+				if (!LibraryConstraint.satisfied(constraints, itr.next()))
+					itr.remove();
+			}
+			if (!parentImages.isEmpty()) {
+				images.addAll(parentImages);
+				eventBus.post(new LibraryAddEvent(this, parentImages));
+			}
+		}
 	}
 
 	public EventBus getEventBus() {

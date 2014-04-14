@@ -15,6 +15,7 @@ import com.github.groupa.client.events.LibraryRemoveEvent;
 import com.github.groupa.client.helpers.MockImageObject;
 import com.github.groupa.client.library.DescriptionConstraint;
 import com.github.groupa.client.library.Library;
+import com.github.groupa.client.library.LibraryConstraint;
 import com.github.groupa.client.library.TagConstraint;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -124,7 +125,7 @@ public class LibraryTest {
 		}
 		rootLibrary.addAll(list);
 		assertEquals(3, rootLibrary.size());
-		
+
 		eventBus.register(this);
 		expectedImage = list.remove(0);
 		eventBus.post(new LibraryRemoveEvent(rootLibrary, expectedImage));
@@ -152,6 +153,13 @@ public class LibraryTest {
 		subLibrary.addConstraint(new DescriptionConstraint(true));
 		assertEquals(4, rootLibrary.size());
 		assertEquals(3, subLibrary.size());
+		for (LibraryConstraint c : subLibrary.getConstraints()) {
+			if (!(c instanceof DescriptionConstraint))
+				continue;
+			subLibrary.removeConstraint(c);
+		}
+		assertEquals(4, subLibrary.size());
+		subLibrary.addConstraint(new DescriptionConstraint(true));
 		subLibrary.addConstraint(new TagConstraint("tag2"));
 		assertEquals(4, rootLibrary.size());
 		assertEquals(1, subLibrary.size());
