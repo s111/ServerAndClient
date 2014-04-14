@@ -14,7 +14,8 @@ public class ImageFull {
 
 	private List<String> tags;
 
-	private Timestamp date;
+	private Timestamp dateTaken;
+	private Timestamp dateUploaded;
 
 	public long getId() {
 		return id;
@@ -56,12 +57,19 @@ public class ImageFull {
 		this.ids = ids;
 	}
 
-	public Timestamp getDate() {
-		return date;
+	public Timestamp getDateTaken() {
+		return dateTaken;
 	}
 
-	public void setDate(Timestamp date) {
-		this.date = date;
+	public void setDateTaken(Timestamp dateTaken) {
+		this.dateTaken = dateTaken;
 	}
 
+	public Timestamp getDateUploaded() {
+		return dateUploaded;
+	}
+
+	public void setDateUploaded(Timestamp dateUploaded) {
+		this.dateUploaded = dateUploaded;
+	}
 }

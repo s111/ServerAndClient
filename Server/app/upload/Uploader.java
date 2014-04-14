@@ -4,6 +4,8 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.util.Date;
 
 import json.generators.ImageInfoJsonGenerator;
 import models.Image;
@@ -76,15 +78,18 @@ public class Uploader {
 
 		Image image = new Image();
 		image.setFilename(IMAGE_DIRECTORY + filename);
+		image.setDateUploaded(new Timestamp(new Date().getTime()));
 
 		QueryImage queryImage = new QueryImage(
 				HibernateUtil.getSessionFactory());
 
 		queryImage.addImage(image);
 
+		long id = image.getId();
+
 		QueryTag queryTag = new QueryTag(HibernateUtil.getSessionFactory());
 		/* TODO Remove the id:{id} tag before release */
-		queryTag.tagImage(image.getId(), "id:" + image.getId());
+		queryTag.tagImage(id, "id:" + id);
 
 		return image;
 	}
