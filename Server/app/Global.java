@@ -1,4 +1,6 @@
 import java.io.File;
+import java.sql.Timestamp;
+import java.util.Date;
 
 import models.Image;
 import play.Application;
@@ -39,6 +41,7 @@ public class Global extends GlobalSettings {
 				if (queryImage.getImage(filenameInDatabase) == null) {
 					Image image = new Image();
 					image.setFilename(filenameInDatabase);
+					image.setDateUploaded(new Timestamp(new Date().getTime()));
 
 					queryImage.addImage(image);
 
