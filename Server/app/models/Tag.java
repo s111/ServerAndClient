@@ -3,7 +3,7 @@ package models;
 import java.util.HashSet;
 import java.util.Set;
 
-public class Tag implements Comparable<Tag> {
+public class Tag {
 	private String name;
 
 	private Set<Image> images = new HashSet<>();
@@ -25,7 +25,12 @@ public class Tag implements Comparable<Tag> {
 	}
 
 	@Override
-	public int compareTo(Tag otherTag) {
-		return name.compareTo(otherTag.getName());
+	public boolean equals(Object other) {
+		return name.equals(((Tag) other).getName());
+	}
+
+	@Override
+	public int hashCode() {
+		return 31 + (name == null ? 0 : name.hashCode());
 	}
 }

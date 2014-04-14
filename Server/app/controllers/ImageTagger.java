@@ -33,4 +33,11 @@ public class ImageTagger extends Controller {
 
 		return ok();
 	}
+
+	public static Result delete(long id, String name) {
+		QueryTag queryTag = new QueryTag(HibernateUtil.getSessionFactory());
+		queryTag.removeTag(id, name);
+
+		return ok();
+	}
 }

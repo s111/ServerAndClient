@@ -56,6 +56,22 @@ public class QueryTag {
 		return copy;
 	}
 
+	public void removeTag(long id, String name) {
+		Session session = sessionFactory.getCurrentSession();
+		session.beginTransaction();
+
+		Image image = (Image) session.byId(Image.class).load(id);
+
+		Tag tag = new Tag();
+		tag.setName(name);
+
+		if (image != null) {
+			image.getTags().remove(tag);
+		}
+
+		session.getTransaction().commit();
+	}
+
 	public void tagImage(long id, String name) {
 		Session session = sessionFactory.getCurrentSession();
 		session.beginTransaction();
