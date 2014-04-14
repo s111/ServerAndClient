@@ -2,6 +2,7 @@ package com.github.groupa.client.servercommunication;
 
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.ConnectException;
@@ -12,6 +13,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import retrofit.client.Response;
+import retrofit.mime.TypedFile;
 
 import com.github.groupa.client.jsonobjects.ImageInfo;
 import com.google.inject.Inject;
@@ -85,8 +87,8 @@ public class ServerConnection {
 			logger.warn("Could not connect to server to rate image(" + id
 					+ "): " + e.getMessage());
 		} catch (Exception e) {
-			logger.warn("Unknown server error when rating image(" + id
-					+ "): " + e.getMessage());
+			logger.warn("Unknown server error when rating image(" + id + "): "
+					+ e.getMessage());
 		}
 		return false;
 	}
@@ -96,12 +98,12 @@ public class ServerConnection {
 			Response response = restService.tagImage(id, tag);
 			if (response.getStatus() == 200)
 				return true;
-		}  catch (ConnectException e) {
+		} catch (ConnectException e) {
 			logger.warn("Could not connect to server to tag image(" + id
 					+ "): " + e.getMessage());
 		} catch (Exception e) {
-			logger.warn("Unknown server error when tagging image(" + id
-					+ "): " + e.getMessage());
+			logger.warn("Unknown server error when tagging image(" + id + "): "
+					+ e.getMessage());
 		}
 		return false;
 	}
@@ -167,6 +169,19 @@ public class ServerConnection {
 					+ "): " + e.getMessage());
 		}
 
+		return null;
+	}
+
+	public ImageInfo uploadImage(File file) {
+		try {
+			return restService.uploadImage(new TypedFile("image/*", file));
+		} catch (ConnectException e) {
+			logger.warn("Could not connect to server to upload image("
+					+ file.getAbsolutePath() + "): " + e.getMessage());
+		} catch (Exception e) {
+			logger.warn("Unknown server error when uploading image("
+					+ file.getAbsolutePath() + "): " + e.getMessage());
+		}
 		return null;
 	}
 }
