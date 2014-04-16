@@ -5,6 +5,8 @@ import java.util.Hashtable;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSlider;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import net.miginfocom.swing.MigLayout;
 
@@ -13,7 +15,12 @@ import com.google.inject.Inject;
 public class RatingFilterPanel {
 	private JPanel panel = new JPanel();
 
-	private int currentLevel = 0;
+	private int currentMinLevel = 0;
+	private int currentMaxLevel = 5;
+
+	private JSlider minSlider;
+
+	private JSlider maxSlider;
 
 	@Inject
 	public RatingFilterPanel() {
@@ -23,8 +30,8 @@ public class RatingFilterPanel {
 	}
 
 	private void setUpRatingSlider() {
-		JSlider minSlider = new JSlider(JSlider.HORIZONTAL, 0, 5, currentLevel);
-		JSlider maxSlider = new JSlider(JSlider.HORIZONTAL, 0, 5, currentLevel);
+		minSlider = new JSlider(JSlider.HORIZONTAL, 0, 5, currentMinLevel);
+		maxSlider = new JSlider(JSlider.HORIZONTAL, 0, 5, currentMaxLevel);
 		final Hashtable<Integer, JLabel> table = new Hashtable<Integer, JLabel>();
 		table.put(0, new JLabel("0"));
 		table.put(1, new JLabel("1"));
@@ -47,6 +54,30 @@ public class RatingFilterPanel {
 
 		panel.add(minSlider, "wrap");
 		panel.add(maxSlider);
+
+		minSlider.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent Event) {
+				currentMinLevel = minSlider.getValue();
+
+				if (!minSlider.getValueIsAdjusting()) {
+					if (currentMinLevel > currentMaxLevel) {
+						minSlider.setValue(currentMaxLevel);
+					}
+				}
+			}
+		});
+
+		maxSlider.addChangeListener(new ChangeListener() {
+			public void stateChanged(ChangeEvent Event) {
+				currentMaxLevel = maxSlider.getValue();
+
+				if (!maxSlider.getValueIsAdjusting()) {
+					if (currentMaxLevel < currentMinLevel) {
+						maxSlider.setValue(currentMinLevel);
+					}
+				}
+			}
+		});
 	}
 
 	public JPanel getPanel() {
