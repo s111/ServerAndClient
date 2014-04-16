@@ -6,14 +6,14 @@ public class RatingConstraint extends LibraryConstraint {
 	public static RatingConstraint create() {
 		return new RatingConstraint(1);
 	}
-	
+
 	private int min = 0;
 	private int max = 5;
-	
+
 	public RatingConstraint(int min) {
 		this.min = min;
 	}
-	
+
 	public RatingConstraint(int min, int max) {
 		this.min = min;
 		this.max = max;
@@ -23,7 +23,7 @@ public class RatingConstraint extends LibraryConstraint {
 		int rating = image.getRating();
 		return min <= rating && rating <= max;
 	}
-	
+
 	public String toString() {
 		if (min == 0) {
 			if (max == 5) {

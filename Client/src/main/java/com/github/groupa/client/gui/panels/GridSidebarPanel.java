@@ -24,17 +24,19 @@ import com.github.groupa.client.library.LibrarySort;
 public class GridSidebarPanel implements SidebarPanel {
 	private JPanel panel = new JPanel();
 
+	private RatingFilterPanel ratingFilterPanel;
 	private ThumbPanel thumbPanel;
 	private ZoomSlider zoomSlider;
 
 	private ConstraintComboBox constraintComboBox;
 
 	@Inject
-	public GridSidebarPanel(ThumbPanel thumbPanel,
-			ZoomSlider zoomSlider, ConstraintComboBox constraintComboBox) {
+	public GridSidebarPanel(ThumbPanel thumbPanel, ZoomSlider zoomSlider,
+			ConstraintComboBox constraintComboBox, RatingFilterPanel ratingPanel) {
 		this.thumbPanel = thumbPanel;
 		this.zoomSlider = zoomSlider;
 		this.constraintComboBox = constraintComboBox;
+		this.ratingFilterPanel = ratingPanel;
 		MigLayout layout = new MigLayout();
 
 		panel.setLayout(layout);
@@ -42,11 +44,16 @@ public class GridSidebarPanel implements SidebarPanel {
 		panel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
 
 		setUpConstraintComponents();
+		setUpRatingFilterPanel();
 		setUpSortComponents();
 		setUpTagComponents();
 		setUpZoomComponents();
 		setUpEditMetadataComponent();
 
+	}
+
+	private void setUpRatingFilterPanel() {
+		panel.add(ratingFilterPanel.getPanel(), "align center, wrap");
 	}
 
 	private void setUpConstraintComponents() {
@@ -72,7 +79,8 @@ public class GridSidebarPanel implements SidebarPanel {
 
 	private void setUpSortComponents() {
 		panel.add(new JLabel("Sort"), "wrap");
-		String[] sortTypes = { "ID", "Rating (desc)", "Rating (asc)", "Upload date (asc)", "Upload date (desc)" };
+		String[] sortTypes = { "ID", "Rating (desc)", "Rating (asc)",
+				"Upload date (asc)", "Upload date (desc)" };
 
 		final JComboBox<String> comboBox = new JComboBox<>(sortTypes);
 		comboBox.addActionListener(new ActionListener() {
