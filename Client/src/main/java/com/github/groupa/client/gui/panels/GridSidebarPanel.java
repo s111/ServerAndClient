@@ -30,13 +30,17 @@ public class GridSidebarPanel implements SidebarPanel {
 
 	private ConstraintComboBox constraintComboBox;
 
+	private EditMetadataWindow editMetadataWindow;
+
 	@Inject
 	public GridSidebarPanel(ThumbPanel thumbPanel, ZoomSlider zoomSlider,
-			ConstraintComboBox constraintComboBox, RatingFilterPanel ratingPanel) {
+			ConstraintComboBox constraintComboBox,
+			EditMetadataWindow editMetadataWindow, RatingFilterPanel ratingPanel) {
 		this.thumbPanel = thumbPanel;
 		this.zoomSlider = zoomSlider;
 		this.constraintComboBox = constraintComboBox;
 		this.ratingFilterPanel = ratingPanel;
+		this.editMetadataWindow = editMetadataWindow;
 		MigLayout layout = new MigLayout();
 
 		panel.setLayout(layout);
@@ -114,7 +118,7 @@ public class GridSidebarPanel implements SidebarPanel {
 
 			@Override
 			public void actionPerformed(ActionEvent event) {
-				new EditMetadataWindow();
+				editMetadataWindow.display();
 			}
 		});
 

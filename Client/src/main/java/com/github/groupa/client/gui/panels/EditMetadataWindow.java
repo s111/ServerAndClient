@@ -2,7 +2,10 @@ package com.github.groupa.client.gui.panels;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.inject.Inject;
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultListModel;
 import javax.swing.JButton;
@@ -15,6 +18,13 @@ import javax.swing.JScrollPane;
 import javax.swing.JTextField;
 
 import net.miginfocom.swing.MigLayout;
+
+import com.github.groupa.client.ImageObject;
+import com.github.groupa.client.jsonobjects.ImageFull;
+import com.github.groupa.client.jsonobjects.ImagesUpdate;
+import com.github.groupa.client.servercommunication.ModifyImage;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 
 public class EditMetadataWindow {
 	private JPanel panel = new JPanel();
@@ -42,7 +52,15 @@ public class EditMetadataWindow {
 
 	private JList<String> tagList;
 
-	public EditMetadataWindow() {
+	private ModifyImage modifyImage;
+
+	private ThumbPanel thumbPanel;
+
+	@Inject
+	public EditMetadataWindow(ModifyImage modifyImage, ThumbPanel thumbPanel) {
+		this.modifyImage = modifyImage;
+		this.thumbPanel = thumbPanel;
+
 		MigLayout layout = new MigLayout();
 
 		panel.setLayout(layout);
@@ -75,7 +93,6 @@ public class EditMetadataWindow {
 		dialog.setModal(true);
 		dialog.setResizable(false);
 		dialog.setLocationRelativeTo(null);
-		dialog.setVisible(true);
 	}
 
 	private void setUpDescriptionField() {
@@ -164,7 +181,68 @@ public class EditMetadataWindow {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				// TODO save the data to the images.
+				ImagesUpdate imagesUpdate = createImagesUpdate();
+
+				JsonObject jsonObject = imagesUpdateToJson(imagesUpdate);
+
+				modifyImage.updateMultipleImages(jsonObject);
+
+				System.out.println(jsonObject.toString());
+
+				dialog.setVisible(false);
+			}
+
+			private ImagesUpdate createImagesUpdate() {
+				List<Long> ids = new ArrayList<>();
+
+				for (ImageObject image : thumbPanel.getSelectedImages()) {
+					ids.add(image.getId());
+				}
+
+				ImageFull imageFull = createImageFull();
+
+				ImagesUpdate imagesUpdate = new ImagesUpdate();
+				imagesUpdate.setIds(ids);
+				imagesUpdate.setMetadata(imageFull);
+
+				return imagesUpdate;
+			}
+
+			private ImageFull createImageFull() {
+				String description = descriptionField.getText();
+
+				if (description.trim().equals("")) {
+					description = null;
+				}
+
+				ImageFull imageFull = new ImageFull();
+				imageFull.setDescription(description);
+				imageFull.setRating(getSelectedRating());
+
+				List<String> tags = new ArrayList<>();
+
+				for (Object tag : tagListModel.toArray()) {
+					tags.add((String) tag);
+				}
+
+				imageFull.setTags(tags);
+				return imageFull;
+			}
+
+			private JsonObject imagesUpdateToJson(ImagesUpdate imagesUpdate) {
+				Gson gson = new Gson();
+
+				String json = gson.toJson(imagesUpdate);
+
+				JsonObject jsonObject = gson.fromJson(json, JsonObject.class);
+				JsonObject metadataWithoutId = jsonObject.get("metadata")
+						.getAsJsonObject();
+				metadataWithoutId.remove("id");
+
+				jsonObject.remove("metadata");
+				jsonObject.add("metadata", metadataWithoutId);
+
+				return jsonObject;
 			}
 		});
 
@@ -185,7 +263,6 @@ public class EditMetadataWindow {
 		panel.add(closeButton);
 	}
 
-	@SuppressWarnings("unused")
 	private int getSelectedRating() {
 		selectedRating = 0;
 
@@ -196,5 +273,9 @@ public class EditMetadataWindow {
 		}
 
 		return selectedRating;
+	}
+
+	public void display() {
+		dialog.setVisible(true);
 	}
 }

@@ -16,6 +16,7 @@ import retrofit.client.Response;
 import retrofit.mime.TypedFile;
 
 import com.github.groupa.client.jsonobjects.ImageInfo;
+import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 
 public class ServerConnection {
@@ -183,5 +184,21 @@ public class ServerConnection {
 					+ file.getAbsolutePath() + "): " + e.getMessage());
 		}
 		return null;
+	}
+
+	public boolean updateMultipleImages(JsonObject jsonObject) {
+		try {
+			restService.updateMultipleImages(jsonObject);
+
+			return true;
+		} catch (ConnectException e) {
+			logger.warn("Could not connect to server to update images: "
+					+ e.getMessage());
+		} catch (Exception e) {
+			logger.warn("Unknown server error when updating images: "
+					+ e.getMessage());
+		}
+
+		return false;
 	}
 }

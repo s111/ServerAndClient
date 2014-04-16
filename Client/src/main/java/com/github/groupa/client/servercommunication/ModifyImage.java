@@ -5,6 +5,7 @@ import java.awt.Rectangle;
 import com.github.groupa.client.Callback;
 import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.ThreadPool;
+import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 
 public class ModifyImage {
@@ -95,6 +96,17 @@ public class ModifyImage {
 			}
 		};
 		threadPool.add(new WorkerThread<ImageObject>(callback, image, job));
+	}
+
+	public void updateMultipleImages(final JsonObject jsonObject) {
+		Runnable job = new Runnable() {
+			@Override
+			public void run() {
+				serverConnection.updateMultipleImages(jsonObject);
+			}
+		};
+
+		threadPool.add(job);
 	}
 
 	private class WorkerThread<T> implements Runnable {
