@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.List;
 
 import json.objects.ImageFull;
+import json.objects.ImagesUpdate;
 import play.mvc.Controller;
 import play.mvc.Result;
 import queryDB.QueryImage;
@@ -18,16 +19,19 @@ public class ImageUpdateMultiple extends Controller {
 		JsonNode jsonData = request().body().asJson();
 
 		ObjectMapper mapper = new ObjectMapper();
-		ImageFull imageFull = mapper.convertValue(jsonData, ImageFull.class);
+		ImagesUpdate imagesUpdate = mapper.convertValue(jsonData,
+				ImagesUpdate.class);
 
 		QueryImage imageQueries = new QueryImage(
 				HibernateUtil.getSessionFactory());
 		QueryTag queryTag = new QueryTag(HibernateUtil.getSessionFactory());
 
-		for (Long id : imageFull.getIds()) {
+		for (Long id : imagesUpdate.getIds()) {
 			if (id == null || id == 0) {
 				continue;
 			}
+
+			ImageFull imageFull = imagesUpdate.getMetadata();
 
 			String description = imageFull.getDescription();
 

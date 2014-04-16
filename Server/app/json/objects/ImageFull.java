@@ -6,8 +6,6 @@ import java.util.List;
 public class ImageFull {
 	private long id;
 
-	private List<Long> ids;
-
 	private int rating;
 
 	private String description;
@@ -47,14 +45,6 @@ public class ImageFull {
 
 	public void setTags(List<String> tags) {
 		this.tags = tags;
-	}
-
-	public List<Long> getIds() {
-		return ids;
-	}
-
-	public void setIds(List<Long> ids) {
-		this.ids = ids;
 	}
 
 	public Timestamp getDateTaken() {

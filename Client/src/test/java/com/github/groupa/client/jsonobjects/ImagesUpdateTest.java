@@ -10,9 +10,9 @@ import org.junit.Test;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 
-public class ImageFullTest {
+public class ImagesUpdateTest {
 	@Test
-	public void convert_imageFullList_to_json() {
+	public void convert_imagesUpdate_to_json() {
 		List<String> tags = new ArrayList<>();
 		tags.add("tag1");
 		tags.add("tag2");
@@ -21,21 +21,23 @@ public class ImageFullTest {
 		ids.add(1L);
 		ids.add(2L);
 
-		ImageFull imageFull = new ImageFull();
+		ImagesUpdate imagesUpdate = new ImagesUpdate();
+		imagesUpdate.setIds(ids);
+		imagesUpdate.setMetadata(new ImageFull());
+
+		ImageFull imageFull = imagesUpdate.getMetadata();
+
 		imageFull.setDescription("asd");
 		imageFull.setRating(5);
-		imageFull.setIds(ids);
 		imageFull.setTags(tags);
 		Gson gson = new Gson();
 
-		String json = gson.toJson(imageFull);
+		String json = gson.toJson(imagesUpdate);
 
 		JsonObject jsonObject = gson.fromJson(json, JsonObject.class);
-		// The id is not used when updating multiple images so it can be removed
-		jsonObject.remove("id");
 
 		assertEquals(
-				"{\"ids\":[1,2],\"rating\":5,\"description\":\"asd\",\"tags\":[\"tag1\",\"tag2\"]}",
+				"{\"ids\":[1,2],\"metadata\":{\"id\":0,\"rating\":5,\"description\":\"asd\",\"tags\":[\"tag1\",\"tag2\"]}}",
 				jsonObject.toString());
 	}
 }

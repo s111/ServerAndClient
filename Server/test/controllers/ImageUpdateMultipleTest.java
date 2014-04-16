@@ -23,7 +23,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class ImageUpdateMultipleTest extends WithDatabase {
-	private static final String JSON_VALID = "{\"ids\":[1,2],\"rating\":5,\"description\":\"asd\",\"tags\":[\"tag1\",\"tag2\"]}";
+	private static final String JSON_VALID = "{\"ids\":[1,2],\"metadata\":{\"id\":0,\"rating\":5,\"description\":\"asd\",\"tags\":[\"tag1\",\"tag2\"]}}";
 	private static final String FILENAME1 = "filename1";
 	private static final String FILENAME2 = "filename2";
 
