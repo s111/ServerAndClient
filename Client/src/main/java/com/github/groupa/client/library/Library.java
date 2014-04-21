@@ -40,7 +40,14 @@ public class Library {
 		images.addAll(initialImages);
 	}
 
+	public boolean isRootLibrary() {
+		return parent == null;
+	}
+
 	public Library addConstraint(LibraryConstraint constraint) {
+		if (parent == null)
+			throw new RuntimeException(
+					"Root library should never contain constraints");
 		constraints.add(constraint);
 		ArrayList<ImageObject> list = new ArrayList<>();
 		synchronized (images) {

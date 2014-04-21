@@ -10,10 +10,15 @@ import javax.swing.event.ChangeListener;
 
 import net.miginfocom.swing.MigLayout;
 
+import com.github.groupa.client.library.Library;
+import com.github.groupa.client.library.LibraryConstraint;
+import com.github.groupa.client.library.RatingConstraint;
 import com.google.inject.Inject;
 
 public class RatingFilterPanel {
 	private JPanel panel = new JPanel();
+
+	private ThumbPanel thumbPanel;
 
 	private int currentMinLevel = 0;
 	private int currentMaxLevel = 5;
@@ -23,10 +28,29 @@ public class RatingFilterPanel {
 	private JSlider maxSlider;
 
 	@Inject
-	public RatingFilterPanel() {
+	public RatingFilterPanel(ThumbPanel thumbPanel) {
+		this.thumbPanel = thumbPanel;
 		panel.setLayout(new MigLayout());
 
 		setUpRatingSlider();
+	}
+
+	private void setConstraint() {
+		int min = minSlider.getValue();
+		int max = maxSlider.getValue();
+		Library library = thumbPanel.getLibrary();
+		if (library.isRootLibrary()) {
+			library = new Library(library);
+			thumbPanel.setLibrary(library);
+		} else {
+			for (LibraryConstraint c : library.getConstraints()) {
+				if (c instanceof RatingConstraint) {
+					library.removeConstraint(c);
+				}
+			}
+		}
+		RatingConstraint rating = new RatingConstraint(min, max);
+		library.addConstraint(rating);
 	}
 
 	private void setUpRatingSlider() {
@@ -60,8 +84,10 @@ public class RatingFilterPanel {
 				currentMinLevel = minSlider.getValue();
 
 				if (!minSlider.getValueIsAdjusting()) {
+					setConstraint();
 					if (currentMinLevel > currentMaxLevel) {
 						minSlider.setValue(currentMaxLevel);
+
 					}
 				}
 			}
@@ -72,11 +98,13 @@ public class RatingFilterPanel {
 				currentMaxLevel = maxSlider.getValue();
 
 				if (!maxSlider.getValueIsAdjusting()) {
+					setConstraint();
 					if (currentMaxLevel < currentMinLevel) {
 						maxSlider.setValue(currentMinLevel);
 					}
 				}
 			}
+
 		});
 	}
 
