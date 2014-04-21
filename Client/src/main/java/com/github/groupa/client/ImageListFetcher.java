@@ -33,6 +33,9 @@ public class ImageListFetcher {
 		} catch (ConnectException exception) {
 			logger.error("Could not connect to the server: "
 					+ exception.getMessage());
+		} catch (Exception e) {
+			logger.error("Unknown error when attempting to import images from server: "
+					+ e.getMessage());
 		}
 
 		if (imageList == null) {
