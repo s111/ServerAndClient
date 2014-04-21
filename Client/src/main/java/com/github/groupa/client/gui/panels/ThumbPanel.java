@@ -106,6 +106,9 @@ public class ThumbPanel extends JPanel implements Scrollable {
 	public List<ImageObject> getSelectedImages() {
 		List<ImageObject> list = new ArrayList<>();
 		list.addAll(selectedImages);
+		if (activeImage != null && !list.contains(activeImage)) {
+			list.add(activeImage);
+		}
 		return list;
 	}
 
