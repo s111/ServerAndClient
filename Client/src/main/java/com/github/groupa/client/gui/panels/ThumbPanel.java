@@ -22,6 +22,7 @@ import javax.swing.border.Border;
 import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.components.Thumb;
 import com.github.groupa.client.events.LibraryAddEvent;
+import com.github.groupa.client.events.LibraryRemoveEvent;
 import com.github.groupa.client.events.SwitchViewEvent;
 import com.github.groupa.client.factories.ThumbMenuFactory;
 import com.github.groupa.client.library.Library;
@@ -173,6 +174,19 @@ public class ThumbPanel extends JPanel implements Scrollable {
 			sort();
 		}
 	}
+
+	@Subscribe
+	public void libraryRemoveImageListener(LibraryRemoveEvent event) {
+		if (event.getLibrary().equals(library)) {
+			ImageObject image = event.getImage();
+			if (image == null) {
+				removeImages(event.getImages());
+			} else {
+				removeImage(image);
+			}
+			sort();
+		}
+	}
 	
 	private int roomForColumns() {
 		int size = ImageObject.thumbSize.get(this.thumbSize) + 4;
@@ -199,6 +213,21 @@ public class ThumbPanel extends JPanel implements Scrollable {
 		revalidate();
 	}
 
+	private void removeImages(List<ImageObject> list) {
+		for (ImageObject img : list) {
+			removeImage(img);
+		}
+		revalidate();
+	}
+	
+	private void removeImage(ImageObject img) {
+		if (images.remove(img)) {
+			selectedImages.remove(img);
+			if (activeImage == img) activeImage = null;
+			remove(thumbs.get(img).getThumb(thumbSize));
+		}
+	}
+	
 	private void addImages(List<ImageObject> list) {
 		for (ImageObject img : list) {
 			addImage(img);
