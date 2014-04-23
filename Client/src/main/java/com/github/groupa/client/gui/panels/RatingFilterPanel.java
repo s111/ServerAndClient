@@ -18,8 +18,6 @@ import com.google.inject.Inject;
 public class RatingFilterPanel {
 	private JPanel panel = new JPanel();
 
-	private ThumbPanel thumbPanel;
-
 	private int currentMinLevel = 0;
 	private int currentMaxLevel = 5;
 
@@ -27,9 +25,11 @@ public class RatingFilterPanel {
 
 	private JSlider maxSlider;
 
+	private Library library;
+
 	@Inject
-	public RatingFilterPanel(ThumbPanel thumbPanel) {
-		this.thumbPanel = thumbPanel;
+	public RatingFilterPanel(Library library) {
+		this.library = library;
 		panel.setLayout(new MigLayout());
 
 		setUpRatingSlider();
@@ -38,17 +38,12 @@ public class RatingFilterPanel {
 	private void setConstraint() {
 		int min = minSlider.getValue();
 		int max = maxSlider.getValue();
-		Library library = thumbPanel.getLibrary();
-		if (library.isRootLibrary()) {
-			library = new Library(library);
-			thumbPanel.setLibrary(library);
-		} else {
-			for (LibraryConstraint c : library.getConstraints()) {
-				if (c instanceof RatingConstraint) {
-					library.removeConstraint(c);
-				}
+		for (LibraryConstraint c : library.getConstraints()) {
+			if (c instanceof RatingConstraint) {
+				library.removeConstraint(c);
 			}
 		}
+
 		RatingConstraint rating = new RatingConstraint(min, max);
 		library.addConstraint(rating);
 	}

@@ -3,13 +3,11 @@ package com.github.groupa.client.events;
 import java.util.Comparator;
 
 import com.github.groupa.client.ImageObject;
-import com.github.groupa.client.library.Library;
 
 public class SwitchViewEvent {
 	private String view;
 	private boolean hasSwitched = false;
 	private ImageObject imageObject = null;
-	private Library library = null;
 	private Comparator<ImageObject> comparator = null;
 	
 	public SwitchViewEvent(String view) {
@@ -21,23 +19,15 @@ public class SwitchViewEvent {
 		this.imageObject = img;
 	}
 	
-	public SwitchViewEvent(String view, ImageObject img, Library library) {
+	public SwitchViewEvent(String view, ImageObject img, Comparator<ImageObject> comparator) {
 		this.view = view;
 		this.imageObject = img;
-		this.library = library;
-	}
-	
-	public SwitchViewEvent(String view, ImageObject img, Library library, Comparator<ImageObject> cmp) {
-		this.view = view;
-		this.imageObject = img;
-		this.library = library;
-		this.comparator = cmp;
+		this.comparator = comparator;
 	}
 
 	public SwitchViewEvent(SwitchViewEvent event) {
 		setView(event.getView());
 		setImageObject(event.getImageObject());
-		setLibrary(event.getLibrary());
 		setComparator(event.getComparator());
 		hasSwitched = true;
 	}
@@ -60,14 +50,6 @@ public class SwitchViewEvent {
 	
 	public void setImageObject(ImageObject img) {
 		imageObject = img;
-	}
-
-	public Library getLibrary() {
-		return library;
-	}
-
-	public void setLibrary(Library library) {
-		this.library = library;
 	}
 
 	public Comparator<ImageObject> getComparator() {

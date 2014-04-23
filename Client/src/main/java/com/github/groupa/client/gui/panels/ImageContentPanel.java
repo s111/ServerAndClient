@@ -28,7 +28,6 @@ import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.events.ImageModifiedEvent;
 import com.github.groupa.client.events.LibraryAddEvent;
 import com.github.groupa.client.events.SwitchViewEvent;
-import com.github.groupa.client.library.Library;
 import com.github.groupa.client.library.LibrarySort;
 import com.github.groupa.client.servercommunication.ModifyImage;
 import com.github.groupa.client.views.View;
@@ -51,8 +50,6 @@ public class ImageContentPanel implements ContentPanel {
 	private List<ImageObject> images = new ArrayList<>();
 
 	private ImageSidebarPanel imageSidebarPanel;
-
-	private Library library;
 
 	private ModifyImage modifyImage;
 
@@ -189,15 +186,13 @@ public class ImageContentPanel implements ContentPanel {
 		try {
 			if (event.hasSwitched() && View.IMAGE_VIEW.equals(event.getView())) {
 				ImageObject img = event.getImageObject();
-				Library lib = event.getLibrary();
 				Comparator<ImageObject> cmp = event.getComparator();
 				if (cmp != null)
 					comparator = cmp;
-				if (lib != null)
-					setLibrary(lib);
 				if (img != null) {
 					setImage(images.indexOf(img));
-				} else setImage(currentImageIndex);
+				} else
+					setImage(currentImageIndex);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -206,13 +201,11 @@ public class ImageContentPanel implements ContentPanel {
 
 	@Subscribe
 	public void libraryAddImageListener(LibraryAddEvent event) {
-		if (event.getLibrary().equals(library)) {
-			ImageObject image = event.getImage();
-			if (image == null) {
-				addImages(event.getImages());
-			} else {
-				addImage(image);
-			}
+		ImageObject image = event.getImage();
+		if (image == null) {
+			addImages(event.getImages());
+		} else {
+			addImage(image);
 		}
 	}
 
@@ -223,19 +216,7 @@ public class ImageContentPanel implements ContentPanel {
 			sort();
 		}
 	}
-
-	private void setLibrary(Library lib) {
-		this.library = lib;
-		ImageObject prevImg = null;
-		if (currentImageIndex < images.size())
-			prevImg = images.get(currentImageIndex);
-		images.clear();
-		addImages(lib.getImages());
-		if (prevImg != null && images.contains(prevImg))
-			setImage(images.indexOf(prevImg));
-		else setImage(0);
-	}
-
+	
 	private void addImage(ImageObject img) {
 		images.add(img);
 		sort();

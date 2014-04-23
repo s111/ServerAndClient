@@ -25,7 +25,6 @@ import com.github.groupa.client.events.LibraryAddEvent;
 import com.github.groupa.client.events.LibraryRemoveEvent;
 import com.github.groupa.client.events.SwitchViewEvent;
 import com.github.groupa.client.factories.ThumbMenuFactory;
-import com.github.groupa.client.library.Library;
 import com.github.groupa.client.library.LibrarySort;
 import com.github.groupa.client.views.View;
 import com.google.common.eventbus.EventBus;
@@ -52,20 +51,17 @@ public class ThumbPanel extends JPanel implements Scrollable {
 	private String thumbSize = "m";
 
 	private EventBus eventBus;
-	private Library library;
 	private ImageObject activeImage = null;
 	private Comparator<ImageObject> comparator = LibrarySort.SORT_ID_ASC;
 
 	private int prevWidth = 333; // Hacky but it works (atm)
 
 	@Inject
-	public ThumbPanel(EventBus eventBus, Library library) {
+	public ThumbPanel(EventBus eventBus) {
 		super();
 		this.eventBus = eventBus;
-		this.library = library;
 		eventBus.register(this);
 		setLayout(layout);
-		setLibrary(library);
 	}
 
 	@Override
@@ -139,55 +135,28 @@ public class ThumbPanel extends JPanel implements Scrollable {
 		setColumnCount(roomForColumns());
 	}
 
-	public void setLibrary(Library library) {
-		this.library = library;
-		this.images.clear();
-		this.selectedImages.clear();
-		activeImage = null;
-		removeAll();
-		addImages(library.getImages());
-	}
-
-	public Library getLibrary() {
-		return library;
-	}
-
-	@Subscribe
-	public void switchViewListener(SwitchViewEvent event) {
-		if (event.hasSwitched() && View.GRID_VIEW.equals(event.getView())) {
-			Library lib = event.getLibrary();
-			if (lib != null && !lib.equals(library)) {
-				setLibrary(lib);
-			}
-		}
-	}
-
 	@Subscribe
 	public void libraryAddImageListener(LibraryAddEvent event) {
-		if (event.getLibrary().equals(library)) {
-			ImageObject image = event.getImage();
-			if (image == null) {
-				addImages(event.getImages());
-			} else {
-				addImage(image);
-			}
-			sort();
+		ImageObject image = event.getImage();
+		if (image == null) {
+			addImages(event.getImages());
+		} else {
+			addImage(image);
 		}
+		sort();
 	}
 
 	@Subscribe
 	public void libraryRemoveImageListener(LibraryRemoveEvent event) {
-		if (event.getLibrary().equals(library)) {
-			ImageObject image = event.getImage();
-			if (image == null) {
-				removeImages(event.getImages());
-			} else {
-				removeImage(image);
-			}
-			sort();
+		ImageObject image = event.getImage();
+		if (image == null) {
+			removeImages(event.getImages());
+		} else {
+			removeImage(image);
 		}
+		sort();
 	}
-	
+
 	private int roomForColumns() {
 		int size = ImageObject.thumbSize.get(this.thumbSize) + 4;
 		int columns = (prevWidth - 20) / size;
@@ -219,15 +188,16 @@ public class ThumbPanel extends JPanel implements Scrollable {
 		}
 		revalidate();
 	}
-	
+
 	private void removeImage(ImageObject img) {
 		if (images.remove(img)) {
 			selectedImages.remove(img);
-			if (activeImage == img) activeImage = null;
+			if (activeImage == img)
+				activeImage = null;
 			remove(thumbs.get(img).getThumb(thumbSize));
 		}
 	}
-	
+
 	private void addImages(List<ImageObject> list) {
 		for (ImageObject img : list) {
 			addImage(img);
@@ -261,7 +231,7 @@ public class ThumbPanel extends JPanel implements Scrollable {
 			@Override
 			public void doubleClick() {
 				eventBus.post(new SwitchViewEvent(View.IMAGE_VIEW,
-						getImageObject(), ThumbPanel.this.getLibrary(), ThumbPanel.this.comparator));
+						getImageObject(), ThumbPanel.this.comparator));
 			}
 
 			@Override
@@ -271,7 +241,7 @@ public class ThumbPanel extends JPanel implements Scrollable {
 					ThumbPanel.this.setActiveImage(getImageObject());
 				}
 				JPopupMenu menu = ThumbMenuFactory.getMenu(eventBus, image,
-						getLibrary(), selectedImages);
+						selectedImages);
 				menu.show(this.getThumb(thumbSize), event.getX(), event.getY());
 			}
 		};

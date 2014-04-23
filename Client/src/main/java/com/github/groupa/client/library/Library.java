@@ -2,7 +2,6 @@ package com.github.groupa.client.library;
 
 import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -15,11 +14,10 @@ import com.google.common.eventbus.Subscribe;
 import com.google.inject.Inject;
 
 public class Library {
-	private Library parent = null;
 	private EventBus eventBus;
 
-	private Set<ImageObject> images = new HashSet<>();
-
+	private Set<ImageObject> constrainedImages = new HashSet<>();
+	private Set<ImageObject> allImages = new HashSet<>();
 	private Set<LibraryConstraint> constraints = new HashSet<>();
 
 	@Inject
@@ -28,197 +26,146 @@ public class Library {
 		eventBus.register(this);
 	}
 
-	public Library(Library parent) {
-		this.parent = parent;
-		this.eventBus = parent.getEventBus();
-		eventBus.register(this);
-		tryAddImages(parent.getImages());
-	}
-
-	public Library(EventBus eventBus, List<ImageObject> initialImages) {
-		this.eventBus = eventBus;
-		images.addAll(initialImages);
-	}
-
-	public boolean isRootLibrary() {
-		return parent == null;
-	}
-
-	public Library addConstraint(LibraryConstraint constraint) {
-		if (parent == null)
-			throw new RuntimeException(
-					"Root library should never contain constraints");
-		constraints.add(constraint);
-		ArrayList<ImageObject> list = new ArrayList<>();
-		synchronized (images) {
-			for (ImageObject img : images) {
-				if (img != null) {
-					if (!constraint.satisfied(img)) {
-						list.add(img);
-					}
-				}
-			}
-		}
-		tryRemoveImages(list);
-		return this;
-	}
-
 	public Set<LibraryConstraint> getConstraints() {
 		Set<LibraryConstraint> set = new HashSet<>();
 		set.addAll(constraints);
 		return set;
 	}
 
-	public Library removeConstraint(LibraryConstraint constraint) {
-		if (!constraints.contains(constraint) || parent == null)
-			return this;
+	public void addConstraint(LibraryConstraint constraint) {
+		if (constraints.contains(constraint))
+			return;
+		ArrayList<ImageObject> list = new ArrayList<>();
 		synchronized (this) {
-			constraints.remove(constraint);
-			List<ImageObject> parentImages = parent.getImages();
-			parentImages.removeAll(images);
-			Iterator<ImageObject> itr = parentImages.iterator();
-			while (itr.hasNext()) {
-				if (!LibraryConstraint.satisfied(constraints, itr.next()))
-					itr.remove();
-			}
-			if (!parentImages.isEmpty()) {
-				images.addAll(parentImages);
-				eventBus.post(new LibraryAddEvent(this, parentImages));
+			constraints.add(constraint);
+			for (ImageObject img : constrainedImages) {
+				if (!constraint.satisfied(img)) {
+					list.add(img);
+				}
 			}
 		}
-		return this;
+		removeImages(list);
 	}
 
-	public EventBus getEventBus() {
-		return eventBus;
+	public void removeConstraint(LibraryConstraint constraint) {
+		if (!constraints.contains(constraint))
+			return;
+		ArrayList<ImageObject> list = new ArrayList<>();
+		synchronized (this) {
+			constraints.remove(constraint);
+			for (ImageObject img : allImages) {
+				if (!constrainedImages.contains(img)
+						&& LibraryConstraint.satisfied(constraints, img)) {
+					list.add(img);
+				}
+			}
+		}
+		addImages(list);
+	}
+
+	public List<String> getKnownTags() {
+		List<String> list = new ArrayList<String>();
+		synchronized (allImages) {
+			for (ImageObject img : allImages) {
+				for (String tag : img.getTags()) {
+					if (!list.contains(tag))
+						list.add(tag);
+				}
+			}
+		}
+		return list;
 	}
 
 	public List<ImageObject> getImages() {
 		List<ImageObject> list = new ArrayList<>();
-		list.addAll(images);
+		list.addAll(constrainedImages);
 		return list;
 	}
 
 	public void add(ImageObject img) {
-		if (parent == null) {
-			tryAddImage(img);
-		} else {
-			parent.add(img);
+		if (!allImages.contains(img)) {
+			allImages.add(img);
+			addImage(img);
 		}
 	}
 
 	public void addAll(List<ImageObject> list) {
-		if (parent == null) {
-			tryAddImages(list);
-		} else {
-			parent.addAll(list);
+		List<ImageObject> newList = new ArrayList<>();
+		newList.addAll(list);
+		newList.removeAll(allImages);
+		allImages.addAll(newList);
+		addImages(newList);
+	}
+	
+	public void remove(ImageObject img) {
+		if (allImages.contains(img)) {
+			allImages.remove(img);
+			removeImage(img);
+		}
+	}
+	
+	public void removeAll(List<ImageObject> list) {
+		List<ImageObject> newList = new ArrayList<>();
+		newList.addAll(list);
+		newList.retainAll(allImages);
+		if (!newList.isEmpty()) {
+			allImages.removeAll(newList);
+			removeImages(newList);
 		}
 	}
 
-	public int size() {
-		return images.size();
+	public int allImagesCount() {
+		return allImages.size();
 	}
 
-	public boolean hasImage(ImageObject image) {
-		return images.contains(image);
+	public int constrainedImagesCount() {
+		return constrainedImages.size();
+	}
+
+	public boolean libraryContains(ImageObject image) {
+		return allImages.contains(image);
 	}
 
 	@Subscribe
 	public void imageChangedListener(ImageInfoChangedEvent event) {
 		ImageObject img = event.getImageObject();
 		boolean satisfied = LibraryConstraint.satisfied(constraints, img);
-		boolean hasImage = hasImage(img);
-		if (parent != null) {
-			satisfied = parent.hasImage(img) && satisfied;
-		}
-
+		boolean hasImage = constrainedImages.contains(img);
 		if (!hasImage && satisfied) {
-			tryAddImage(img);
+			addImage(img);
 		}
 		if (hasImage && !satisfied) {
-			tryRemoveImage(img);
+			removeImage(img);
 		}
 	}
 
-	@Subscribe
-	public void libaryAddListener(LibraryAddEvent event) {
-		if (parent == null || !event.getLibrary().equals(parent))
-			return;
-		ImageObject img = event.getImage();
-		if (img == null) {
-			tryAddImages(event.getImages());
-		} else {
-			tryAddImage(img);
+	private void addImages(List<ImageObject> list) {
+		list.removeAll(constrainedImages);
+		if (!list.isEmpty()) {
+			constrainedImages.addAll(list);
+			eventBus.post(new LibraryAddEvent(list));
 		}
 	}
 
-	@Subscribe
-	public void libaryRemoveListener(LibraryRemoveEvent event) {
-		if (parent == null && !event.getLibrary().equals(parent)
-				&& !event.getLibrary().equals(this)) {
-			return;
-		}
-		ImageObject img = event.getImage();
-		if (img == null) {
-			tryRemoveImages(event.getImages());
-		} else {
-			tryRemoveImage(img);
+	private void addImage(ImageObject img) {
+		if (!constrainedImages.contains(img)) {
+			constrainedImages.add(img);
+			eventBus.post(new LibraryAddEvent(img));
 		}
 	}
 
-	private void tryAddImages(List<ImageObject> list) {
-		List<ImageObject> newImages = new ArrayList<>();
-		newImages.addAll(list);
-		Iterator<ImageObject> itr = newImages.iterator();
-		while (itr.hasNext()) {
-			ImageObject img = itr.next();
-			if (images.contains(img)
-					|| !LibraryConstraint.satisfied(constraints, img)) {
-				itr.remove();
-			}
-		}
-		if (newImages.size() > 0) {
-			synchronized (images) {
-				images.addAll(newImages);
-			}
-			eventBus.post(new LibraryAddEvent(this, newImages));
+	private void removeImages(List<ImageObject> list) {
+		list.retainAll(constrainedImages);
+		if (!list.isEmpty()) {
+			constrainedImages.removeAll(list);
+			eventBus.post(new LibraryRemoveEvent(list));
 		}
 	}
 
-	private void tryAddImage(ImageObject img) {
-		boolean success = false;
-		synchronized (images) {
-			if (!images.contains(img)
-					&& LibraryConstraint.satisfied(constraints, img)) {
-				success = images.add(img);
-			}
-		}
-		if (success) {
-			eventBus.post(new LibraryAddEvent(this, img));
-		}
-	}
-
-	private void tryRemoveImage(ImageObject img) {
-		boolean success = false;
-		synchronized (images) {
-			if ((success = images.contains(img))) {
-				images.remove(img);
-			}
-		}
-		if (success) {
-			eventBus.post(new LibraryRemoveEvent(this, img));
-		}
-	}
-
-	private void tryRemoveImages(List<ImageObject> list) {
-		List<ImageObject> retainedList = new ArrayList<>(list.size());
-		retainedList.addAll(list);
-		retainedList.retainAll(images);
-		synchronized (images) {
-			images.removeAll(list);
-		}
-		if (!retainedList.isEmpty()) {
-			eventBus.post(new LibraryRemoveEvent(this, retainedList));
+	private void removeImage(ImageObject img) {
+		if (!constrainedImages.contains(img)) {
+			constrainedImages.remove(img);
+			eventBus.post(new LibraryRemoveEvent(img));
 		}
 	}
 }

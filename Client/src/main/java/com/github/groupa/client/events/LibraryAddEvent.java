@@ -3,20 +3,16 @@ package com.github.groupa.client.events;
 import java.util.List;
 
 import com.github.groupa.client.ImageObject;
-import com.github.groupa.client.library.Library;
 
 public class LibraryAddEvent {
-	private Library library;
 	private ImageObject image = null;
 	private List<ImageObject> images = null;
 
-	public LibraryAddEvent(Library library, ImageObject image) {
-		this.library = library;
+	public LibraryAddEvent(ImageObject image) {
 		this.image = image;
 	}
 
-	public LibraryAddEvent(Library library, List<ImageObject> images) {
-		this.library = library;
+	public LibraryAddEvent(List<ImageObject> images) {
 		this.images = images;
 	}
 
@@ -26,10 +22,6 @@ public class LibraryAddEvent {
 
 	public List<ImageObject> getImages() {
 		return images;
-	}
-
-	public Library getLibrary() {
-		return library;
 	}
 
 	public String toString() {

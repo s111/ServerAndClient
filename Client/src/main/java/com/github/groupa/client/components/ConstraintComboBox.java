@@ -8,7 +8,6 @@ import java.util.List;
 import javax.swing.JComboBox;
 import javax.swing.SwingUtilities;
 
-import com.github.groupa.client.gui.panels.ThumbPanel;
 import com.github.groupa.client.library.Library;
 import com.github.groupa.client.library.LibraryConstraint;
 import com.github.groupa.client.library.RatingConstraint;
@@ -20,14 +19,12 @@ public class ConstraintComboBox extends JComboBox<String> {
 	private static String[] initialItems = { "Filters", "Add tag filter", "Add rating filter" };
 
 	private Library library;
-	private ThumbPanel thumbPanel;
 	private List<LibraryConstraint> constraints = new ArrayList<>();
 
 	@Inject
-	public ConstraintComboBox(ThumbPanel thumbPanel, Library library) {
+	public ConstraintComboBox(Library library) {
 		super(initialItems);
-		this.thumbPanel = thumbPanel;
-		this.library = new Library(library);
+		this.library = library;
 		setUpConstraintComponents();
 	}
 	
@@ -55,7 +52,7 @@ public class ConstraintComboBox extends JComboBox<String> {
 				for (LibraryConstraint c : constraints) {
 					if (item.equals(c.toString())) {
 						removeItem(item);
-						thumbPanel.setLibrary(library.removeConstraint(c));
+						library.removeConstraint(c);
 						constraints.remove(c);
 						setSelectedIndex(0);
 						break;
@@ -71,7 +68,7 @@ public class ConstraintComboBox extends JComboBox<String> {
 				}
 				constraints.add(constraint);
 				addItem(constraint.toString());
-				thumbPanel.setLibrary(library.addConstraint(constraint));
+				library.addConstraint(constraint);
 				setSelectedIndex(0);
 			}
 		}
