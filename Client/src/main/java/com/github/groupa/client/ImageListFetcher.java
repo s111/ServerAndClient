@@ -9,7 +9,6 @@ import com.github.groupa.client.factories.ImageObjectFactory;
 import com.github.groupa.client.jsonobjects.ImageList;
 import com.github.groupa.client.jsonobjects.ImageShort;
 import com.github.groupa.client.library.Library;
-import com.github.groupa.client.main.Main;
 import com.github.groupa.client.servercommunication.RESTService;
 import com.google.inject.Inject;
 
@@ -17,15 +16,17 @@ public class ImageListFetcher {
 	private static final Logger logger = LoggerFactory
 			.getLogger(ImageListFetcher.class);
 	private RESTService restService;
+	private ImageObjectFactory imageObjectFactory;
+	private Library library;
 
 	@Inject
-	public ImageListFetcher(RESTService restService) {
+	public ImageListFetcher(RESTService restService, Library library, ImageObjectFactory imageObjectFactory) {
 		this.restService = restService;
+		this.library = library;
+		this.imageObjectFactory = imageObjectFactory;
 	}
 
 	public void importAllImages() {
-		Library library = Main.injector.getInstance(Library.class);
-
 		ImageList imageList = null;
 
 		try {
@@ -43,9 +44,6 @@ public class ImageListFetcher {
 
 			return;
 		}
-
-		ImageObjectFactory imageObjectFactory = Main.injector
-				.getInstance(ImageObjectFactory.class);
 
 		for (ImageShort image : imageList.getImages()) {
 			library.add(imageObjectFactory.create(image.getId()));

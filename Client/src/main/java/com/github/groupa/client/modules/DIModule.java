@@ -9,6 +9,7 @@ import javax.swing.JMenuBar;
 import retrofit.RestAdapter;
 import retrofit.converter.GsonConverter;
 
+import com.github.groupa.client.ImageListFetcher;
 import com.github.groupa.client.RESTErrorHandler;
 import com.github.groupa.client.ThreadPool;
 import com.github.groupa.client.components.ZoomSlider;
@@ -49,6 +50,7 @@ public class DIModule extends AbstractModule {
 		bind(ThreadPool.class).in(Singleton.class);
 		bind(ServerConnection.class).in(Singleton.class);
 		bind(ModifyImage.class).in(Singleton.class);
+		bind(ImageListFetcher.class).in(Singleton.class);
 		install(new FactoryModuleBuilder().build(ImageObjectFactory.class));
 	}
 

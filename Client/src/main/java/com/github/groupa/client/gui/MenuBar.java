@@ -11,13 +11,10 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
-import com.github.groupa.client.ImageListFetcher;
 import com.github.groupa.client.ImageUploader;
 import com.github.groupa.client.ThreadPool;
 import com.github.groupa.client.events.SwitchViewEvent;
 import com.github.groupa.client.gui.panels.ImagePanel;
-import com.github.groupa.client.main.Main;
-import com.github.groupa.client.servercommunication.RESTService;
 import com.github.groupa.client.views.View;
 import com.google.common.eventbus.EventBus;
 import com.google.common.eventbus.Subscribe;
@@ -28,7 +25,6 @@ public class MenuBar {
 	private ThreadPool threadPool;
 	private ImageUploader imageUploader;
 
-	private JMenuItem fetchImagesItem = new JMenuItem("Fetch images");
 	private JMenuItem uploadImageItem = new JMenuItem("Upload images");
 	private JMenuItem cropImage = new JMenuItem("Toggle cropping");
 	private JMenuItem crop = new JMenuItem("Crop Image");
@@ -47,13 +43,11 @@ public class MenuBar {
 
 		eventBus.register(this);
 
-		setUpFetchImages();
 		setUpUploadImage();
 		setUpToggleCropping();
 		setUpCrop();
 
 		fileMenu = new JMenu("File");
-		fileMenu.add(fetchImagesItem);
 		fileMenu.add(uploadImageItem);
 
 		edit = new JMenu("Edit");
@@ -88,26 +82,6 @@ public class MenuBar {
 						});
 					}
 				}
-			}
-		});
-	}
-
-	private void setUpFetchImages() {
-		fetchImagesItem.addActionListener(new ActionListener() {
-			@Override
-			public void actionPerformed(ActionEvent event) {
-				threadPool.add(new Runnable() {
-					@Override
-					public void run() {
-						RESTService restService = Main.injector
-								.getInstance(RESTService.class);
-
-						// TODO We need to fix the way we import images.
-						// And more importanly we need to disable this menu
-						// until the thread is completed.
-						new ImageListFetcher(restService).importAllImages();
-					}
-				});
 			}
 		});
 	}

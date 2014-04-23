@@ -3,6 +3,7 @@ package com.github.groupa.client.main;
 import javax.inject.Inject;
 import javax.swing.SwingUtilities;
 
+import com.github.groupa.client.ImageListFetcher;
 import com.github.groupa.client.ImageUploader;
 import com.github.groupa.client.gui.frames.MainFrame;
 import com.google.common.eventbus.EventBus;
@@ -12,10 +13,13 @@ public class Application {
 
 	private MainFrame mainFrame;
 
+	private ImageListFetcher imageListFetcher;
+
 	@Inject
 	public Application(EventBus eventBus, MainFrame mainFrame,
-			ImageUploader imageUploader) {
+			ImageUploader imageUploader, ImageListFetcher imageListFetcher) {
 		this.mainFrame = mainFrame;
+		this.imageListFetcher = imageListFetcher;
 
 		eventBus.register(imageUploader);
 	}
@@ -25,6 +29,7 @@ public class Application {
 			@Override
 			public void run() {
 				mainFrame.display();
+				imageListFetcher.importAllImages();
 			}
 		});
 	}
