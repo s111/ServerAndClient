@@ -5,13 +5,10 @@ import java.awt.event.ActionListener;
 
 import javax.inject.Inject;
 import javax.swing.BorderFactory;
-import javax.swing.DefaultListModel;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JLabel;
-import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.JScrollPane;
 import javax.swing.SwingUtilities;
 import javax.swing.border.EtchedBorder;
 
@@ -32,15 +29,19 @@ public class GridSidebarPanel implements SidebarPanel {
 
 	private EditMetadataWindow editMetadataWindow;
 
+	private TagFilterPanel tagFilterPanel;
+
 	@Inject
 	public GridSidebarPanel(ThumbPanel thumbPanel, ZoomSlider zoomSlider,
 			ConstraintComboBox constraintComboBox,
-			EditMetadataWindow editMetadataWindow, RatingFilterPanel ratingPanel) {
+			EditMetadataWindow editMetadataWindow, RatingFilterPanel ratingPanel, TagFilterPanel tagFilterPanel) {
 		this.thumbPanel = thumbPanel;
 		this.zoomSlider = zoomSlider;
 		this.constraintComboBox = constraintComboBox;
 		this.ratingFilterPanel = ratingPanel;
 		this.editMetadataWindow = editMetadataWindow;
+		this.tagFilterPanel = tagFilterPanel;
+		
 		MigLayout layout = new MigLayout();
 
 		panel.setLayout(layout);
@@ -69,16 +70,7 @@ public class GridSidebarPanel implements SidebarPanel {
 	}
 
 	private void setUpTagComponents() {
-		panel.add(new JLabel("Tags"), "wrap");
-
-		DefaultListModel<Object> defaultListModel = new DefaultListModel<>();
-		defaultListModel.addElement("tag1");
-		defaultListModel.addElement("tag2");
-		defaultListModel.addElement("tag3");
-
-		JScrollPane scrollPane = new JScrollPane(new JList<>(defaultListModel));
-
-		panel.add(scrollPane, "grow, push, wrap");
+		panel.add(tagFilterPanel.getPanel(), "grow, push, wrap");
 	}
 
 	private void setUpSortComponents() {

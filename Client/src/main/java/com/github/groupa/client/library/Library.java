@@ -7,6 +7,7 @@ import java.util.Set;
 
 import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.events.ImageInfoChangedEvent;
+import com.github.groupa.client.events.KnownTagsChangedEvent;
 import com.github.groupa.client.events.LibraryAddEvent;
 import com.github.groupa.client.events.LibraryRemoveEvent;
 import com.google.common.eventbus.EventBus;
@@ -63,17 +64,14 @@ public class Library {
 		addImages(list);
 	}
 
-	public List<String> getKnownTags() {
-		List<String> list = new ArrayList<String>();
+	public void checkTags(ImageObject TODO) {
+		Set<String> set = new HashSet<String>();
 		synchronized (allImages) {
 			for (ImageObject img : allImages) {
-				for (String tag : img.getTags()) {
-					if (!list.contains(tag))
-						list.add(tag);
-				}
+				set.addAll(img.getTags());
 			}
 		}
-		return list;
+		eventBus.post(new KnownTagsChangedEvent(set));
 	}
 
 	public List<ImageObject> getImages() {
@@ -87,6 +85,7 @@ public class Library {
 			allImages.add(img);
 			addImage(img);
 		}
+		checkTags(img);
 	}
 
 	public void addAll(List<ImageObject> list) {
@@ -95,6 +94,9 @@ public class Library {
 		newList.removeAll(allImages);
 		allImages.addAll(newList);
 		addImages(newList);
+		for (ImageObject img : list) {
+			checkTags(img);
+		}
 	}
 	
 	public void remove(ImageObject img) {
@@ -102,6 +104,7 @@ public class Library {
 			allImages.remove(img);
 			removeImage(img);
 		}
+		checkTags(img);
 	}
 	
 	public void removeAll(List<ImageObject> list) {
@@ -111,6 +114,9 @@ public class Library {
 		if (!newList.isEmpty()) {
 			allImages.removeAll(newList);
 			removeImages(newList);
+		}
+		for (ImageObject img : list) {
+			checkTags(img);
 		}
 	}
 
@@ -137,6 +143,7 @@ public class Library {
 		if (hasImage && !satisfied) {
 			removeImage(img);
 		}
+		checkTags(img);
 	}
 
 	private void addImages(List<ImageObject> list) {
