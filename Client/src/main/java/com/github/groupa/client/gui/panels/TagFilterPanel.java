@@ -76,7 +76,6 @@ public class TagFilterPanel implements Panel {
 			selectedTags.put(tag, constraint);
 			library.addConstraint(constraint);
 		}
-		System.out.println("remove: " + toRemove.size() + " : add: " + toAdd.size());
 	}
 
 	public JPanel getPanel() {
