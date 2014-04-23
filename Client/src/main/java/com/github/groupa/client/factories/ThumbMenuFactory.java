@@ -34,6 +34,6 @@ public abstract class ThumbMenuFactory {
 
 	private static void showClickedImage(EventBus eventBus, ImageObject image,
 			List<ImageObject> selectedImages) {
-		eventBus.post(new SwitchViewEvent(View.IMAGE_VIEW, image));
+		eventBus.post(new SwitchViewEvent(View.IMAGE_VIEW, image, selectedImages));
 	}
 }

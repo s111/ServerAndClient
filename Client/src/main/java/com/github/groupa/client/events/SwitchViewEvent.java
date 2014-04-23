@@ -1,6 +1,6 @@
 package com.github.groupa.client.events;
 
-import java.util.Comparator;
+import java.util.List;
 
 import com.github.groupa.client.ImageObject;
 
@@ -8,7 +8,7 @@ public class SwitchViewEvent {
 	private String view;
 	private boolean hasSwitched = false;
 	private ImageObject imageObject = null;
-	private Comparator<ImageObject> comparator = null;
+	private List<ImageObject> imageList;
 	
 	public SwitchViewEvent(String view) {
 		this.view = view;
@@ -19,16 +19,16 @@ public class SwitchViewEvent {
 		this.imageObject = img;
 	}
 	
-	public SwitchViewEvent(String view, ImageObject img, Comparator<ImageObject> comparator) {
+	public SwitchViewEvent(String view, ImageObject img, List<ImageObject> imageList) {
 		this.view = view;
 		this.imageObject = img;
-		this.comparator = comparator;
+		this.setImageList(imageList);
 	}
 
 	public SwitchViewEvent(SwitchViewEvent event) {
 		setView(event.getView());
 		setImageObject(event.getImageObject());
-		setComparator(event.getComparator());
+		setImageList(event.getImageList());
 		hasSwitched = true;
 	}
 	
@@ -52,11 +52,11 @@ public class SwitchViewEvent {
 		imageObject = img;
 	}
 
-	public Comparator<ImageObject> getComparator() {
-		return comparator ;
+	public List<ImageObject> getImageList() {
+		return imageList;
 	}
-	
-	public void setComparator(Comparator<ImageObject> cmp) {
-		comparator = cmp;
+
+	public void setImageList(List<ImageObject> imageList) {
+		this.imageList = imageList;
 	}
 }

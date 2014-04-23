@@ -5,7 +5,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -26,9 +25,8 @@ import org.slf4j.LoggerFactory;
 import com.github.groupa.client.Callback;
 import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.events.ImageModifiedEvent;
-import com.github.groupa.client.events.LibraryAddEvent;
 import com.github.groupa.client.events.SwitchViewEvent;
-import com.github.groupa.client.library.LibrarySort;
+import com.github.groupa.client.library.Library;
 import com.github.groupa.client.servercommunication.ModifyImage;
 import com.github.groupa.client.views.View;
 import com.google.common.eventbus.EventBus;
@@ -53,15 +51,16 @@ public class ImageContentPanel implements ContentPanel {
 
 	private ModifyImage modifyImage;
 
-	private Comparator<ImageObject> comparator = LibrarySort.SORT_ID_ASC;
+	private Library library;
 
 	@Inject
 	public ImageContentPanel(ModifyImage modifyImage, EventBus eventBus,
-			ImagePanel imagePanel, ImageSidebarPanel imageSidebarPanel) {
+			ImagePanel imagePanel, ImageSidebarPanel imageSidebarPanel, Library library) {
 		this.modifyImage = modifyImage;
 		this.eventBus = eventBus;
 		this.imagePanel = imagePanel;
 		this.imageSidebarPanel = imageSidebarPanel;
+		this.library = library;
 
 		MigLayout layout = new MigLayout();
 
@@ -116,7 +115,6 @@ public class ImageContentPanel implements ContentPanel {
 
 	private void rotateImage(ImageObject image, int angle) {
 		modifyImage.rotate(null, image, angle);
-
 	}
 
 	@SuppressWarnings("serial")
@@ -186,13 +184,14 @@ public class ImageContentPanel implements ContentPanel {
 		try {
 			if (event.hasSwitched() && View.IMAGE_VIEW.equals(event.getView())) {
 				ImageObject img = event.getImageObject();
-				Comparator<ImageObject> cmp = event.getComparator();
-				if (cmp != null)
-					comparator = cmp;
+				images = event.getImageList();
+				if (images.size() <= 1) {
+					images = library.getImages();
+				}
 				if (img != null) {
 					setImage(images.indexOf(img));
 				} else
-					setImage(currentImageIndex);
+					setImage(0);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -200,41 +199,9 @@ public class ImageContentPanel implements ContentPanel {
 	}
 
 	@Subscribe
-	public void libraryAddImageListener(LibraryAddEvent event) {
-		ImageObject image = event.getImage();
-		if (image == null) {
-			addImages(event.getImages());
-		} else {
-			addImage(image);
-		}
-	}
-
-	@Subscribe
 	public void imageModifiedListener(ImageModifiedEvent event) {
 		if (images.indexOf(event.getImageObject()) == currentImageIndex) {
 			setImage(currentImageIndex);
-			sort();
-		}
-	}
-	
-	private void addImage(ImageObject img) {
-		images.add(img);
-		sort();
-	}
-
-	private void addImages(List<ImageObject> images) {
-		this.images.addAll(images);
-		sort();
-	}
-
-	private void sort() {
-		if (currentImageIndex >= images.size()) {
-			LibrarySort.sort(images, comparator);
-		} else {
-			int oldIndex = currentImageIndex;
-			ImageObject prevImg = images.get(oldIndex);
-			if (LibrarySort.sort(images, comparator) && prevImg != null)
-				currentImageIndex = images.indexOf(prevImg);
 		}
 	}
 }

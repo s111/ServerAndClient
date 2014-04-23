@@ -231,7 +231,7 @@ public class ThumbPanel extends JPanel implements Scrollable {
 			@Override
 			public void doubleClick() {
 				eventBus.post(new SwitchViewEvent(View.IMAGE_VIEW,
-						getImageObject(), ThumbPanel.this.comparator));
+						getImageObject(), images));
 			}
 
 			@Override
@@ -241,7 +241,7 @@ public class ThumbPanel extends JPanel implements Scrollable {
 					ThumbPanel.this.setActiveImage(getImageObject());
 				}
 				JPopupMenu menu = ThumbMenuFactory.getMenu(eventBus, image,
-						selectedImages);
+						getSelectedImages());
 				menu.show(this.getThumb(thumbSize), event.getX(), event.getY());
 			}
 		};
