@@ -2,6 +2,7 @@ package utils;
 
 import java.util.Properties;
 
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.boot.registry.StandardServiceRegistry;
 import org.hibernate.boot.registry.StandardServiceRegistryBuilder;
@@ -33,5 +34,21 @@ public class HibernateUtil {
 	 */
 	public static SessionFactory getNewSessionFactory() {
 		return buildSessionFactory();
+	}
+
+	public static <T> T performAction(HibernateStrategy<T> strategy) {
+		Session session = sessionFactory.getCurrentSession();
+		session.beginTransaction();
+
+		try {
+			T object = strategy.execute(session);
+			session.getTransaction().commit();
+
+			return object;
+		} catch (Exception exception) {
+			session.getTransaction().rollback();
+
+			throw new RuntimeException(exception);
+		}
 	}
 }
