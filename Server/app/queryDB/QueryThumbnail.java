@@ -9,6 +9,9 @@ import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.Restrictions;
 
+import utils.HibernateStrategy;
+import utils.HibernateUtil;
+
 public class QueryThumbnail {
 	private SessionFactory sessionFactory;
 
@@ -16,58 +19,65 @@ public class QueryThumbnail {
 		this.sessionFactory = sessionFactory;
 	}
 
-	public void addThumbnail(long id, int size, String filename) {
-		Session session = sessionFactory.getCurrentSession();
-		session.beginTransaction();
+	public void addThumbnail(final long id, final int size,
+			final String filename) {
+		HibernateUtil.performAction(new HibernateStrategy<Void>() {
+			@Override
+			public Void execute(Session session) {
+				Image image = (Image) session.byId(Image.class).load(id);
+				Thumbnail thumbnail = (Thumbnail) session
+						.createCriteria(Thumbnail.class)
+						.add(Restrictions.eq("image.id", id))
+						.add(Restrictions.eq("size", size)).uniqueResult();
 
-		Image image = (Image) session.byId(Image.class).load(id);
-		Thumbnail thumbnail = getThumbnail(session, id, size);
+				if (thumbnail != null) {
+					session.delete(thumbnail);
+				}
 
-		if (thumbnail != null) {
-			session.delete(thumbnail);
-		}
+				thumbnail = new Thumbnail();
+				thumbnail.setSize(size);
+				thumbnail.setFilename(filename);
 
-		thumbnail = new Thumbnail();
-		thumbnail.setSize(size);
-		thumbnail.setFilename(filename);
+				session.save(thumbnail);
 
-		session.save(thumbnail);
+				image.getThumbnails().add(thumbnail);
 
-		image.getThumbnails().add(thumbnail);
-
-		session.getTransaction().commit();
+				return null;
+			}
+		}, sessionFactory);
 	}
 
-	public Thumbnail getThumbnail(long id, int size) {
-		Session session = sessionFactory.getCurrentSession();
-		session.beginTransaction();
+	public Thumbnail getThumbnail(final long id, final int size) {
+		HibernateStrategy<Thumbnail> strategy = new HibernateStrategy<Thumbnail>() {
+			@Override
+			public Thumbnail execute(Session session) {
+				Thumbnail thumbnail = (Thumbnail) session
+						.createCriteria(Thumbnail.class)
+						.add(Restrictions.eq("image.id", id))
+						.add(Restrictions.eq("size", size)).uniqueResult();
 
-		Thumbnail thumbnail = getThumbnail(session, id, size);
+				return thumbnail;
+			}
+		};
 
-		session.getTransaction().commit();
-
-		return thumbnail;
+		return HibernateUtil.performAction(strategy, sessionFactory);
 	}
 
-	private Thumbnail getThumbnail(Session session, long id, int size) {
-		return (Thumbnail) session.createCriteria(Thumbnail.class)
-				.add(Restrictions.eq("image.id", id))
-				.add(Restrictions.eq("size", size)).uniqueResult();
-	}
+	public void deleteAllThumbnails(final long id) {
+		HibernateUtil.performAction(new HibernateStrategy<Void>() {
+			@Override
+			public Void execute(Session session) {
+				@SuppressWarnings("unchecked")
+				List<Thumbnail> thumbnails = (List<Thumbnail>) session
+						.createCriteria(Thumbnail.class)
+						.add(Restrictions.eq("image.id", id)).list();
 
-	public void deleteAllThumbnails(long id) {
-		Session session = sessionFactory.getCurrentSession();
-		session.beginTransaction();
+				for (Thumbnail thumbnail : thumbnails) {
+					session.delete(thumbnail);
+				}
 
-		@SuppressWarnings("unchecked")
-		List<Thumbnail> thumbnails = (List<Thumbnail>) session
-				.createCriteria(Thumbnail.class)
-				.add(Restrictions.eq("image.id", id)).list();
-
-		for (Thumbnail thumbnail : thumbnails) {
-			session.delete(thumbnail);
-		}
-
-		session.getTransaction().commit();
+				return null;
+			}
+		}, sessionFactory);
 	}
 }

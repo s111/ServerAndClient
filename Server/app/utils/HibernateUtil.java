@@ -36,7 +36,8 @@ public class HibernateUtil {
 		return buildSessionFactory();
 	}
 
-	public static <T> T performAction(HibernateStrategy<T> strategy) {
+	public static <T> T performAction(HibernateStrategy<T> strategy,
+			SessionFactory sessionFactory) {
 		Session session = sessionFactory.getCurrentSession();
 		session.beginTransaction();
 
