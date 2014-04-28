@@ -14,7 +14,6 @@ import javax.swing.border.EtchedBorder;
 
 import net.miginfocom.swing.MigLayout;
 
-import com.github.groupa.client.components.ConstraintComboBox;
 import com.github.groupa.client.components.ZoomSlider;
 import com.github.groupa.client.library.LibrarySort;
 
@@ -25,30 +24,26 @@ public class GridSidebarPanel implements SidebarPanel {
 	private ThumbPanel thumbPanel;
 	private ZoomSlider zoomSlider;
 
-	private ConstraintComboBox constraintComboBox;
-
 	private EditMetadataWindow editMetadataWindow;
 
 	private TagFilterPanel tagFilterPanel;
 
 	@Inject
 	public GridSidebarPanel(ThumbPanel thumbPanel, ZoomSlider zoomSlider,
-			ConstraintComboBox constraintComboBox,
-			EditMetadataWindow editMetadataWindow, RatingFilterPanel ratingPanel, TagFilterPanel tagFilterPanel) {
+			EditMetadataWindow editMetadataWindow,
+			RatingFilterPanel ratingPanel, TagFilterPanel tagFilterPanel) {
 		this.thumbPanel = thumbPanel;
 		this.zoomSlider = zoomSlider;
-		this.constraintComboBox = constraintComboBox;
 		this.ratingFilterPanel = ratingPanel;
 		this.editMetadataWindow = editMetadataWindow;
 		this.tagFilterPanel = tagFilterPanel;
-		
+
 		MigLayout layout = new MigLayout();
 
 		panel.setLayout(layout);
 
 		panel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
 
-		setUpConstraintComponents();
 		setUpRatingFilterPanel();
 		setUpSortComponents();
 		setUpTagComponents();
@@ -59,10 +54,6 @@ public class GridSidebarPanel implements SidebarPanel {
 
 	private void setUpRatingFilterPanel() {
 		panel.add(ratingFilterPanel.getPanel(), "align center, wrap");
-	}
-
-	private void setUpConstraintComponents() {
-		panel.add(constraintComboBox, "width 128, wrap");
 	}
 
 	private void setUpZoomComponents() {
