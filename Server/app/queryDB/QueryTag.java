@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Set;
 
 import metadata.MetadataUtil;
+import metadata.XmpWriter;
 import models.Image;
 import models.Tag;
 
@@ -64,9 +65,9 @@ public class QueryTag {
 	}
 
 	public void removeTag(final long id, final String name) {
-		HibernateUtil.performAction(new HibernateStrategy<Void>() {
+		HibernateStrategy<Image> strategy = new HibernateStrategy<Image>() {
 			@Override
-			public Void execute(Session session) {
+			public Image execute(Session session) {
 				Image image = (Image) session.byId(Image.class).load(id);
 
 				Tag tag = new Tag();
@@ -76,9 +77,15 @@ public class QueryTag {
 					image.getTags().remove(tag);
 				}
 
-				return null;
+				return image;
 			}
-		}, sessionFactory);
+		};
+
+		Image image = HibernateUtil.performAction(strategy, sessionFactory);
+
+		if (image != null) {
+			XmpWriter.deleteTag(new File(image.getFilename()), name);
+		}
 	}
 
 	public void tagImage(final long id, final String name) {
@@ -113,8 +120,11 @@ public class QueryTag {
 		Tag tag = (Tag) imageAndTag[1];
 
 		if (image != null) {
-			MetadataUtil.saveTagToFile(new File(image.getFilename()),
-					tag.getName());
+			File file = new File(image.getFilename());
+
+			MetadataUtil.saveTagToFile(file, tag.getName());
+
+			XmpWriter.addTag(file, tag.getName());
 		}
 	}
 

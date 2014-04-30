@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 
 import metadata.MetadataUtil;
+import metadata.XmpWriter;
 import models.Image;
 
 import org.hibernate.Hibernate;
@@ -184,8 +185,11 @@ public class QueryImage {
 		Image image = HibernateUtil.performAction(strategy, sessionFactory);
 
 		if (image != null) {
-			MetadataUtil.saveDescriptionToFile(new File(image.getFilename()),
-					description);
+			File file = new File(image.getFilename());
+
+			MetadataUtil.saveDescriptionToFile(file, description);
+
+			XmpWriter.setDescription(file, description);
 		}
 	}
 
@@ -206,8 +210,11 @@ public class QueryImage {
 		Image image = HibernateUtil.performAction(strategy, sessionFactory);
 
 		if (image != null) {
-			MetadataUtil
-					.saveRatingToFile(new File(image.getFilename()), rating);
+			File file = new File(image.getFilename());
+
+			MetadataUtil.saveRatingToFile(file, rating);
+
+			XmpWriter.setRating(file, rating);
 		}
 	}
 
