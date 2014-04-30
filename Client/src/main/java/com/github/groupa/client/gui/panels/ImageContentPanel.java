@@ -36,22 +36,14 @@ public class ImageContentPanel implements ContentPanel {
 	@SuppressWarnings("unused")
 	private static final Logger logger = LoggerFactory
 			.getLogger(ImageContentPanel.class);
-
 	private JPanel panel = new JPanel();
-
 	private EventBus eventBus;
-
 	private ImagePanel imagePanel;
-
-	private int currentImageIndex = 0;
-
 	private List<ImageObject> images = new ArrayList<>();
-
 	private ImageSidebarPanel imageSidebarPanel;
-
 	private ModifyImage modifyImage;
-
 	private Library library;
+	private ImageObject activeImageObject = null;
 
 	@Inject
 	public ImageContentPanel(ModifyImage modifyImage, EventBus eventBus,
@@ -65,29 +57,24 @@ public class ImageContentPanel implements ContentPanel {
 		MigLayout layout = new MigLayout();
 
 		panel.setLayout(layout);
-
 		panel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
-
 		panel.add(imagePanel, "grow, push, wrap");
 
 		NavigationPanel navigationPanel = new NavigationPanel();
 
 		navigationPanel.setNextAction(new ActionListener() {
-			@Override
 			public void actionPerformed(ActionEvent e) {
-				setImage(currentImageIndex + 1);
+				nextImage();
 			}
 		});
 
 		navigationPanel.setPreviousAction(new ActionListener() {
-			@Override
 			public void actionPerformed(ActionEvent event) {
-				setImage(currentImageIndex - 1);
+				previousImage();
 			}
 		});
 
 		navigationPanel.setUpAction(new ActionListener() {
-			@Override
 			public void actionPerformed(ActionEvent event) {
 				ImageContentPanel.this.eventBus.post(new SwitchViewEvent(
 						View.GRID_VIEW));
@@ -95,21 +82,18 @@ public class ImageContentPanel implements ContentPanel {
 		});
 
 		navigationPanel.setCWAction(new ActionListener() {
-			@Override
 			public void actionPerformed(ActionEvent event) {
-				rotateImage(images.get(currentImageIndex), 90);
+				rotateImage(activeImageObject, 90);
 			}
 		});
 
 		navigationPanel.setCCWAction(new ActionListener() {
-			@Override
 			public void actionPerformed(ActionEvent event) {
-				rotateImage(images.get(currentImageIndex), -90);
+				rotateImage(activeImageObject, -90);
 			}
 		});
 
 		panel.add(navigationPanel.getPanel(), "growx");
-
 		addKeyBindings();
 	}
 
@@ -131,37 +115,56 @@ public class ImageContentPanel implements ContentPanel {
 				"previousView");
 
 		actionMap.put("keyLeft", new AbstractAction() {
-			@Override
 			public void actionPerformed(ActionEvent e) {
-				setImage(currentImageIndex - 1);
+				previousImage();
 			}
 		});
 
 		actionMap.put("keyRight", new AbstractAction() {
-			@Override
 			public void actionPerformed(ActionEvent e) {
-				setImage(currentImageIndex + 1);
+				nextImage();
 			}
 		});
 		actionMap.put("previousView", new AbstractAction() {
-			@Override
 			public void actionPerformed(ActionEvent e) {
 				eventBus.post(new SwitchViewEvent(View.GRID_VIEW));
 			}
 		});
 	}
 
-	private void setImage(final int index) {
-		int count = images.size();
-		if (count == 0) {
-			return;
+	private void nextImage() {
+		ImageObject newImage = null;
+		if (images == null) {
+			newImage = library.getNextImage(activeImageObject);
+		} else {
+			int idx = images.indexOf(activeImageObject);
+			int size = images.size();
+			if (idx != -1 && size > 1) {
+				newImage = images.get((idx + size + 1) % size);
+			}
 		}
-
-		currentImageIndex = (count + index) % count;
-		final ImageObject activeImageObject = images.get(currentImageIndex);
-		if (activeImageObject == null)
+		setImage(newImage);
+	}
+	
+	private void previousImage() {
+		ImageObject newImage = null;
+		if (images == null) {
+			newImage = library.getPrevImage(activeImageObject);
+		} else {
+			int idx = images.indexOf(activeImageObject);
+			int size = images.size();
+			if (idx != -1 && size > 1) {
+				newImage = images.get((idx + size - 1) % size);
+			}
+		}
+		setImage(newImage);
+	}
+	
+	private void setImage(ImageObject img) {
+		if (img == null)
 			return;
-		activeImageObject.loadImage(new Callback<BufferedImage>() {
+		activeImageObject = img;
+		img.loadImage(new Callback<BufferedImage>() {
 			@Override
 			public void success(BufferedImage image) {
 				imagePanel.setImage(activeImageObject);
@@ -186,12 +189,9 @@ public class ImageContentPanel implements ContentPanel {
 				ImageObject img = event.getImageObject();
 				images = event.getImageList();
 				if (images.size() <= 1) {
-					images = library.getImages();
+					images = null;
 				}
-				if (img != null) {
-					setImage(images.indexOf(img));
-				} else
-					setImage(0);
+				setImage(img);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -200,8 +200,8 @@ public class ImageContentPanel implements ContentPanel {
 
 	@Subscribe
 	public void imageModifiedListener(ImageModifiedEvent event) {
-		if (images.indexOf(event.getImageObject()) == currentImageIndex) {
-			setImage(currentImageIndex);
+		if (event.getImageObject() == activeImageObject) {
+			setImage(activeImageObject);
 		}
 	}
 }

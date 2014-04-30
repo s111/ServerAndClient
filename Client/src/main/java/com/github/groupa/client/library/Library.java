@@ -17,7 +17,7 @@ import com.google.inject.Inject;
 public class Library {
 	private EventBus eventBus;
 
-	private Set<ImageObject> constrainedImages = new HashSet<>();
+	private List<ImageObject> constrainedImages = new ArrayList<>();
 	private Set<ImageObject> allImages = new HashSet<>();
 	private Set<LibraryConstraint> constraints = new HashSet<>();
 
@@ -98,7 +98,7 @@ public class Library {
 			checkTags(img);
 		}
 	}
-	
+
 	public void remove(ImageObject img) {
 		if (allImages.contains(img)) {
 			allImages.remove(img);
@@ -106,7 +106,7 @@ public class Library {
 		}
 		checkTags(img);
 	}
-	
+
 	public void removeAll(List<ImageObject> list) {
 		List<ImageObject> newList = new ArrayList<>();
 		newList.addAll(list);
@@ -130,6 +130,23 @@ public class Library {
 
 	public boolean libraryContains(ImageObject image) {
 		return allImages.contains(image);
+	}
+
+	public ImageObject getNextImage(ImageObject img) {
+		int idx = constrainedImages.indexOf(img);
+		if (idx == -1 || idx == constrainedImages.size() - 1)
+			return constrainedImages.get(0);
+		return constrainedImages.get(idx + 1);
+	}
+	
+	public ImageObject getPrevImage(ImageObject img) {
+		int size = constrainedImages.size();
+		if (size == 0) return null;
+		else if (size == 1) return img;
+		int idx = constrainedImages.indexOf(img) - 1;
+		if (idx < 0)
+			return constrainedImages.get(size - 1);
+		return constrainedImages.get(idx);
 	}
 
 	@Subscribe
