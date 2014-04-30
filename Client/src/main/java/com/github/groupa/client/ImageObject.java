@@ -13,6 +13,7 @@ import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.groupa.client.events.ImageAvailableEvent;
 import com.github.groupa.client.events.ImageInfoChangedEvent;
 import com.github.groupa.client.events.ImageModifiedEvent;
 import com.github.groupa.client.jsonobjects.ImageInfo;
@@ -138,7 +139,7 @@ public class ImageObject {
 							callback.success(image);
 					} else if (callback != null)
 						callback.failure();
-					// TODO: Send event
+					eventBus.post(new ImageAvailableEvent(ImageObject.this, size));
 				}
 			});
 		}

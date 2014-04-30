@@ -1,5 +1,6 @@
 package com.github.groupa.client.components;
 
+import java.awt.Dimension;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
@@ -8,28 +9,34 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
 import javax.swing.JLabel;
+import javax.swing.JPanel;
 import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
 import javax.swing.border.Border;
+import javax.swing.event.AncestorEvent;
+import javax.swing.event.AncestorListener;
 
-import com.github.groupa.client.Callback;
 import com.github.groupa.client.ImageObject;
+import com.github.groupa.client.events.ImageAvailableEvent;
 import com.github.groupa.client.events.ImageInfoChangedEvent;
 import com.github.groupa.client.events.ImageModifiedEvent;
 import com.google.common.eventbus.Subscribe;
 
-public abstract class Thumb extends MouseAdapter {
+public abstract class Thumb extends MouseAdapter implements AncestorListener {
 	private ImageObject imageObject;
 	private HashMap<String, JLabel> labels = new HashMap<String, JLabel>();
 	private Border border = BorderFactory.createEmptyBorder(2, 2, 2, 2);
 	private String toolTipText;
+	private String lastSize;
+	private JPanel rootPanel;
 
-	public Thumb(ImageObject img) {
+	public Thumb(ImageObject img, JPanel root) {
 		this.imageObject = img;
+		this.rootPanel = root;
 		toolTipText = createToolTipText();
 	}
 
@@ -45,14 +52,10 @@ public abstract class Thumb extends MouseAdapter {
 	}
 
 	public JLabel getThumb(String size) {
+		this.lastSize = size;
 		JLabel label = labels.get(size);
 		if (label == null) {
-			label = new JLabel();
-			label.setText("Not loaded");
-			setIcon(label, size);
-			label.addMouseListener(this);
-			label.setBorder(border);
-			label.setToolTipText(toolTipText);
+			label = createLabel(size);
 			labels.put(size, label);
 		}
 		return label;
@@ -84,17 +87,13 @@ public abstract class Thumb extends MouseAdapter {
 		}
 	}
 
-	private void refreshImages() {
-		for (Map.Entry<String, JLabel> entry : labels.entrySet()) {
-			setIcon(entry.getValue(), entry.getKey());
-		}
-	}
-
 	@Subscribe
 	public void modifyImageListener(ImageModifiedEvent event) {
 		ImageObject img = event.getImageObject();
 		if (img.equals(imageObject)) {
-			refreshImages();
+			// TODO: Remove ImageModifiedEvent. ImageAvailableEvent is
+			// sufficient
+
 		}
 	}
 
@@ -109,26 +108,84 @@ public abstract class Thumb extends MouseAdapter {
 		}
 	}
 
-	private void setIcon(final JLabel label, String size) {
+	@Subscribe
+	public void imageAvailableListener(ImageAvailableEvent event) {
+		ImageObject img = event.getImageObject();
+		if (img.equals(imageObject)) {
+			String size = event.getSize();
+			JLabel label = labels.get(size);
+			if (label == null) {
+				label = createLabel(size);
+				labels.put(size, label);
+			} else {
+				setIcon(label, size);
+			}
+		}
+	}
+
+	@Override
+	public void ancestorAdded(AncestorEvent event) {
+		checkLoad();
+	}
+
+	public void ancestorRemoved(AncestorEvent event) {
+	}
+
+	public void ancestorMoved(AncestorEvent event) {
+		checkLoad();
+	}
+
+	private void checkLoad() {
+		final JLabel label = labels.get(lastSize);
+		if (label != null && label.getIcon() == null) {
+			SwingUtilities.invokeLater(new Runnable() {
+				public void run() {
+					if (label.getBounds()
+							.intersects(rootPanel.getVisibleRect())) {
+						imageObject.loadImage(null, lastSize);
+					}
+				}
+			});
+		}
+	}
+
+	private JLabel createLabel(final String size) {
+		@SuppressWarnings("serial")
+		JLabel label = new JLabel() {
+			@Override
+			public Dimension getMinimumSize() {
+				return getPreferredSize();
+			}
+
+			@Override
+			public Dimension getMaximumSize() {
+				return getPreferredSize();
+			}
+
+			@Override
+			public Dimension getPreferredSize() {
+				int s = ImageObject.thumbSize.get(size);
+				return new Dimension(s, s);
+			}
+		};
+		label.setText("Not loaded");
+		setIcon(label, size);
+		label.addMouseListener(this);
+		label.addAncestorListener(this);
+		label.setBorder(border);
+		label.setToolTipText(toolTipText);
+		return label;
+	}
+
+	private boolean setIcon(JLabel label, String size) {
 		label.setHorizontalAlignment(SwingConstants.CENTER);
 		BufferedImage img = imageObject.getThumb(size);
 		if (img != null) {
 			label.setIcon(new ImageIcon(img));
 			label.setText(null);
-		} else {
-			imageObject.loadImage(new Callback<BufferedImage>() {
-				@Override
-				public void success(BufferedImage image) {
-					label.setText(null);
-					label.setIcon(new ImageIcon(image));
-				}
-
-				@Override
-				public void failure() {
-					label.setText("Error loading image");
-				}
-			}, size);
-		}
+			return true;
+		} else
+			return false;
 	}
 
 	private String createToolTipText() {
@@ -145,13 +202,14 @@ public abstract class Thumb extends MouseAdapter {
 		int rating = imageObject.getRating();
 		if (rating != 0)
 			toolTipText += "Rating: " + Integer.toString(rating) + "<br>";
-		
+
 		Date date = imageObject.getUploadDate();
 		if (date != null) {
-			DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.SHORT, Locale.getDefault());
+			DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT,
+					DateFormat.SHORT, Locale.getDefault());
 			toolTipText += "Uploaded: " + df.format(date);
 		}
-		
+
 		toolTipText += "</html>";
 		return toolTipText;
 	}

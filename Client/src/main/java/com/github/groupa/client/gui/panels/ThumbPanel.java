@@ -207,7 +207,7 @@ public class ThumbPanel extends JPanel implements Scrollable {
 
 	private void addImage(final ImageObject image) {
 		images.add(image);
-		Thumb thumb = new Thumb(image) {
+		Thumb thumb = new Thumb(image, this) {
 			@Override
 			public void singleClick() {
 				ThumbPanel.this.deselectImages();
