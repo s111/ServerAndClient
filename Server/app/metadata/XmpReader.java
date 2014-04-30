@@ -26,11 +26,14 @@ public class XmpReader {
 
 		XMPMeta xmpMeta = XmpUtil.extractOrCreateXMPMeta(imageFilePath);
 
-		String description = null;
+		String description = "";
 
 		try {
-			description = xmpMeta.getArrayItem(DC_NAMESPACE_URI, TITLE, 1)
-					.getValue();
+			XMPProperty descriptionItem = xmpMeta.getArrayItem(
+					DC_NAMESPACE_URI, TITLE, 1);
+			if (descriptionItem != null) {
+				description = descriptionItem.getValue();
+			}
 		} catch (XMPException e) {
 			// Ignore exception
 		}
@@ -60,16 +63,18 @@ public class XmpReader {
 			// Ignore exception
 		}
 
-		if (rating.equals("1")) {
-			return 1;
-		} else if (rating.equals("25")) {
-			return 2;
-		} else if (rating.equals("50")) {
-			return 3;
-		} else if (rating.equals("75")) {
-			return 4;
-		} else if (rating.equals("99")) {
-			return 5;
+		if (rating != null) {
+			if (rating.equals("1")) {
+				return 1;
+			} else if (rating.equals("25")) {
+				return 2;
+			} else if (rating.equals("50")) {
+				return 3;
+			} else if (rating.equals("75")) {
+				return 4;
+			} else if (rating.equals("99")) {
+				return 5;
+			}
 		}
 
 		return 0;
@@ -84,7 +89,7 @@ public class XmpReader {
 			Logger.warn("Exception while registering microsoft namespace.\nCould not add tag to image: "
 					+ image.getAbsolutePath());
 
-			return null;
+			return new ArrayList<>();
 		}
 
 		String imageFilePath = image.getAbsolutePath();
@@ -101,7 +106,7 @@ public class XmpReader {
 					+ image.getAbsolutePath()
 					+ "\nCould not count array items.");
 
-			return null;
+			return new ArrayList<>();
 		}
 
 		List<String> list = new ArrayList<>();

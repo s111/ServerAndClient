@@ -165,7 +165,10 @@ public class QueryImage {
 			}
 		}, sessionFactory);
 
-		MetadataUtil.loadMetadataFromFile(image.getId());
+		Long id = image.getId();
+
+		MetadataUtil.loadExifMetadataFromFile(id);
+		MetadataUtil.loadXmpMetadataFromFile(id);
 	}
 
 	public void describeImage(final long id, final String description) {

@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import models.Image;
@@ -97,7 +98,27 @@ public class MetadataUtil {
 		saveMetadataToFile(file, tag, TAG);
 	}
 
-	public static void loadMetadataFromFile(long id) {
+	public static void loadXmpMetadataFromFile(long id) {
+		QueryImage queryImage = new QueryImage(
+				HibernateUtil.getSessionFactory());
+
+		Image image = queryImage.getImage(id);
+
+		File file = new File(image.getFilename());
+
+		queryImage.describeImage(id, XmpReader.getDescription(file));
+		queryImage.rateImage(id, XmpReader.getRating(file));
+
+		QueryTag queryTag = new QueryTag(HibernateUtil.getSessionFactory());
+
+		List<String> tags = XmpReader.getTags(file);
+
+		for (String tag : tags) {
+			queryTag.tagImage(id, tag);
+		}
+	}
+
+	public static void loadExifMetadataFromFile(long id) {
 		QueryImage queryImage = new QueryImage(
 				HibernateUtil.getSessionFactory());
 

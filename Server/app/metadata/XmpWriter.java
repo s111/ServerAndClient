@@ -109,6 +109,8 @@ public class XmpWriter {
 
 		XMPMeta xmpMeta = XmpUtil.extractOrCreateXMPMeta(imageFilePath);
 
+		deleteTag(image, tag);
+
 		try {
 			xmpMeta.appendArrayItem(MICROSOFT_NAMESPACE_URI, KEYWORDS,
 					new PropertyOptions().setArray(true), tag, null);
