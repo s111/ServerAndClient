@@ -1,6 +1,7 @@
 package com.github.groupa.client.jsonobjects;
 
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 
 public class ImageFull {
@@ -8,9 +9,9 @@ public class ImageFull {
 
 	private int rating;
 
-	private String description;
+	private String description = "";
 
-	private List<String> tags;
+	private List<String> tags = new ArrayList<>();
 
 	private Timestamp dateTaken;
 	private Timestamp dateUploaded;
