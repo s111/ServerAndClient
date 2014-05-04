@@ -31,7 +31,7 @@ public class QueryThumbnail {
 						.add(Restrictions.eq("size", size)).uniqueResult();
 
 				if (thumbnail != null) {
-					session.delete(thumbnail);
+					return null;
 				}
 
 				thumbnail = new Thumbnail();
