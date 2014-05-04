@@ -1,21 +1,18 @@
 package models;
 
 public class Thumbnail {
-	private Long id;
+	private String filename;
 
 	private Integer size;
 
-	private String filename;
-
 	private Image image;
 
-	@SuppressWarnings("unused")
-	private void setId(Long id) {
-		this.id = id;
+	public String getFilename() {
+		return filename;
 	}
 
-	public Long getId() {
-		return id;
+	public void setFilename(String filename) {
+		this.filename = filename;
 	}
 
 	public Integer getSize() {
@@ -24,14 +21,6 @@ public class Thumbnail {
 
 	public void setSize(Integer size) {
 		this.size = size;
-	}
-
-	public String getFilename() {
-		return filename;
-	}
-
-	public void setFilename(String filename) {
-		this.filename = filename;
 	}
 
 	public Image getImage() {
