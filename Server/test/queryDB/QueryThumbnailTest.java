@@ -49,44 +49,6 @@ public class QueryThumbnailTest extends WithDatabase {
 	}
 
 	@Test
-	public void addThumbnail_twice_same_size_expect_image_to_have_one_thumbnail() {
-		Image image = new Image();
-		image.setFilename(FILENAME);
-
-		QueryImage imageQueries = new QueryImage(sessionFactory);
-		imageQueries.addImage(image);
-
-		QueryThumbnail thumbnailQueries = new QueryThumbnail(sessionFactory);
-		thumbnailQueries.addThumbnail(image.getId(), 0, FILENAME1);
-		thumbnailQueries.addThumbnail(image.getId(), 0, FILENAME2);
-
-		Image retrievedImage = imageQueries.getImage(image.getId());
-
-		Set<Thumbnail> thumbnails = retrievedImage.getThumbnails();
-		Thumbnail retrievedThumbnail = thumbnails.iterator().next();
-
-		assertEquals(1, retrievedImage.getThumbnails().size());
-		assertEquals(FILENAME2, retrievedThumbnail.getFilename());
-	}
-
-	@Test
-	public void getThumbnail_add_one_thumbnail_expect_one_thumbnail() {
-		Image image = new Image();
-		image.setFilename(FILENAME);
-
-		QueryImage imageQueries = new QueryImage(sessionFactory);
-		imageQueries.addImage(image);
-
-		QueryThumbnail thumbnailQueries = new QueryThumbnail(sessionFactory);
-		thumbnailQueries.addThumbnail(image.getId(), 0, FILENAME1);
-
-		Thumbnail retrievedThumbnail = thumbnailQueries.getThumbnail(
-				image.getId(), 0);
-
-		assertEquals(FILENAME1, retrievedThumbnail.getFilename());
-	}
-
-	@Test
 	public void addThumbnail_twice_same_size_same_filename_expect_image_to_have_one_thumbnail() {
 		Image image = new Image();
 		image.setFilename(FILENAME);
@@ -104,6 +66,23 @@ public class QueryThumbnailTest extends WithDatabase {
 		Thumbnail retrievedThumbnail = thumbnails.iterator().next();
 
 		assertEquals(1, retrievedImage.getThumbnails().size());
+		assertEquals(FILENAME1, retrievedThumbnail.getFilename());
+	}
+
+	@Test
+	public void getThumbnail_add_one_thumbnail_expect_one_thumbnail() {
+		Image image = new Image();
+		image.setFilename(FILENAME);
+
+		QueryImage imageQueries = new QueryImage(sessionFactory);
+		imageQueries.addImage(image);
+
+		QueryThumbnail thumbnailQueries = new QueryThumbnail(sessionFactory);
+		thumbnailQueries.addThumbnail(image.getId(), 0, FILENAME1);
+
+		Thumbnail retrievedThumbnail = thumbnailQueries.getThumbnail(
+				image.getId(), 0);
+
 		assertEquals(FILENAME1, retrievedThumbnail.getFilename());
 	}
 }

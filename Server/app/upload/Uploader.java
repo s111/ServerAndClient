@@ -8,6 +8,7 @@ import java.sql.Timestamp;
 import java.util.Date;
 
 import json.generators.ImageInfoJsonGenerator;
+import metadata.MetadataUtil;
 import models.Image;
 
 import org.apache.commons.io.FileUtils;
@@ -75,9 +76,13 @@ public class Uploader {
 
 	private Image createImage() {
 		String filename = newFile.getName();
+		String path = IMAGE_DIRECTORY + filename;
+
+		Date date = MetadataUtil.getDate(new File(path));
 
 		Image image = new Image();
-		image.setFilename(IMAGE_DIRECTORY + filename);
+		image.setFilename(path);
+		image.setDateTaken(new Timestamp(date.getTime()));
 		image.setDateUploaded(new Timestamp(new Date().getTime()));
 
 		QueryImage queryImage = new QueryImage(

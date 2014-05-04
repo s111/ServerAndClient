@@ -102,9 +102,7 @@ public class XmpReader {
 			numTags = xmpMeta
 					.countArrayItems(MICROSOFT_NAMESPACE_URI, KEYWORDS);
 		} catch (XMPException e) {
-			Logger.warn("Unable to delete tag from image: "
-					+ image.getAbsolutePath()
-					+ "\nCould not count array items.");
+			// No tags available
 
 			return new ArrayList<>();
 		}
@@ -120,7 +118,7 @@ public class XmpReader {
 					currentTag = xmpMeta.getArrayItem(MICROSOFT_NAMESPACE_URI,
 							KEYWORDS, i);
 				} catch (XMPException e) {
-					Logger.warn("Unable to delete tag from image: "
+					Logger.warn("Unable to get tag from image: "
 							+ image.getAbsolutePath());
 
 					continue;

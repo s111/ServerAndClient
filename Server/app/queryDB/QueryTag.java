@@ -5,7 +5,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import metadata.MetadataUtil;
 import metadata.XmpWriter;
 import models.Image;
 import models.Tag;
@@ -121,8 +120,6 @@ public class QueryTag {
 
 		if (image != null) {
 			File file = new File(image.getFilename());
-
-			MetadataUtil.saveTagToFile(file, tag.getName());
 
 			XmpWriter.addTag(file, tag.getName());
 		}

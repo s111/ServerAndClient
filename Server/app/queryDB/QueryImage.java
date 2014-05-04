@@ -167,7 +167,6 @@ public class QueryImage {
 
 		Long id = image.getId();
 
-		MetadataUtil.loadExifMetadataFromFile(id);
 		MetadataUtil.loadXmpMetadataFromFile(id);
 	}
 
@@ -189,8 +188,6 @@ public class QueryImage {
 
 		if (image != null) {
 			File file = new File(image.getFilename());
-
-			MetadataUtil.saveDescriptionToFile(file, description);
 
 			XmpWriter.setDescription(file, description);
 		}
@@ -214,8 +211,6 @@ public class QueryImage {
 
 		if (image != null) {
 			File file = new File(image.getFilename());
-
-			MetadataUtil.saveRatingToFile(file, rating);
 
 			XmpWriter.setRating(file, rating);
 		}

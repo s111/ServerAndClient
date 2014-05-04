@@ -7,8 +7,6 @@ import utils.XmpUtil;
 
 import com.adobe.xmp.XMPException;
 import com.adobe.xmp.XMPMeta;
-import com.adobe.xmp.XMPMetaFactory;
-import com.adobe.xmp.XMPSchemaRegistry;
 import com.adobe.xmp.options.PropertyOptions;
 import com.adobe.xmp.properties.XMPProperty;
 
@@ -67,17 +65,6 @@ public class XmpWriter {
 			return;
 		}
 
-		XMPSchemaRegistry registry = XMPMetaFactory.getSchemaRegistry();
-		try {
-			registry.registerNamespace(MICROSOFT_NAMESPACE_URI,
-					"MicrosoftPhoto:");
-		} catch (XMPException e) {
-			Logger.warn("Exception while registering microsoft namespace.\nCould not set rating for image: "
-					+ image.getAbsolutePath());
-
-			return;
-		}
-
 		String imageFilePath = image.getAbsolutePath();
 
 		XMPMeta xmpMeta = XmpUtil.extractOrCreateXMPMeta(imageFilePath);
@@ -93,23 +80,10 @@ public class XmpWriter {
 		XmpUtil.writeXMPMeta(imageFilePath, xmpMeta);
 	}
 
-	public static void addTag(File image, String tag) {
-		XMPSchemaRegistry registry = XMPMetaFactory.getSchemaRegistry();
-		try {
-			registry.registerNamespace(MICROSOFT_NAMESPACE_URI,
-					"MicrosoftPhoto:");
-		} catch (XMPException e1) {
-			Logger.warn("Exception while registering microsoft namespace.\nCould not add tag to image: "
-					+ image.getAbsolutePath());
-
-			return;
-		}
-
+	private static void _addTag(File image, String tag) {
 		String imageFilePath = image.getAbsolutePath();
 
 		XMPMeta xmpMeta = XmpUtil.extractOrCreateXMPMeta(imageFilePath);
-
-		deleteTag(image, tag);
 
 		try {
 			xmpMeta.appendArrayItem(MICROSOFT_NAMESPACE_URI, KEYWORDS,
@@ -124,18 +98,12 @@ public class XmpWriter {
 		XmpUtil.writeXMPMeta(imageFilePath, xmpMeta);
 	}
 
+	public static void addTag(File image, String tag) {
+		deleteTag(image, tag);
+		_addTag(image, tag);
+	}
+
 	public static void deleteTag(File image, String tag) {
-		XMPSchemaRegistry registry = XMPMetaFactory.getSchemaRegistry();
-		try {
-			registry.registerNamespace(MICROSOFT_NAMESPACE_URI,
-					"MicrosoftPhoto:");
-		} catch (XMPException e1) {
-			Logger.warn("Exception while registering microsoft namespace.\nCould not add tag to image: "
-					+ image.getAbsolutePath());
-
-			return;
-		}
-
 		String imageFilePath = image.getAbsolutePath();
 
 		XMPMeta xmpMeta = XmpUtil.extractOrCreateXMPMeta(imageFilePath);
@@ -146,9 +114,7 @@ public class XmpWriter {
 			numTags = xmpMeta
 					.countArrayItems(MICROSOFT_NAMESPACE_URI, KEYWORDS);
 		} catch (XMPException e) {
-			Logger.warn("Unable to delete tag from image: "
-					+ image.getAbsolutePath()
-					+ "\nCould not count array items.");
+			// There are no tags; return.
 
 			return;
 		}
@@ -162,6 +128,7 @@ public class XmpWriter {
 					currentTag = xmpMeta.getArrayItem(MICROSOFT_NAMESPACE_URI,
 							KEYWORDS, i);
 				} catch (XMPException e) {
+					e.printStackTrace();
 					Logger.warn("Unable to delete tag from image: "
 							+ image.getAbsolutePath());
 
