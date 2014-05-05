@@ -16,8 +16,15 @@ public class ApplicationTest {
 		MainFrame mockMainFrame = mock(MainFrame.class);
 
 		Application application = new Application(new EventBus(),
-				mockMainFrame, mock(ImageUploader.class), mock(ImageListFetcher.class));
+				mockMainFrame, mock(ImageUploader.class),
+				mock(ImageListFetcher.class));
 		application.run();
+
+		try {
+			// Give thread time to be run
+			Thread.sleep(100);
+		} catch (InterruptedException e) {
+		}
 
 		verify(mockMainFrame).display();
 	}
