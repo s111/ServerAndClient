@@ -1,8 +1,7 @@
 import java.io.File;
 import java.sql.Timestamp;
-import java.util.Date;
 
-import metadata.MetadataUtil;
+import metadata.XmpReader;
 import models.Image;
 import play.Application;
 import play.GlobalSettings;
@@ -54,13 +53,10 @@ public class Global extends GlobalSettings {
 						HibernateUtil.getSessionFactory());
 
 				if (queryImage.getImage(filenameInDatabase) == null) {
-					Date date = MetadataUtil.getDate(new File(
-							filenameInDatabase));
-
 					Image image = new Image();
 					image.setFilename(filenameInDatabase);
-					image.setDateTaken(new Timestamp(date.getTime()));
-					image.setDateUploaded(new Timestamp(new Date().getTime()));
+					image.setDateTaken(new Timestamp(XmpReader
+							.getCreationDate(new File(filenameInDatabase))));
 
 					queryImage.addImage(image);
 

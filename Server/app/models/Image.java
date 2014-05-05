@@ -14,7 +14,6 @@ public class Image {
 	private String description;
 
 	private Timestamp dateTaken;
-	private Timestamp dateUploaded;
 
 	private Set<Tag> tags = new HashSet<>();
 
@@ -83,13 +82,5 @@ public class Image {
 
 	public void setDateTaken(Timestamp dateTaken) {
 		this.dateTaken = dateTaken;
-	}
-
-	public Timestamp getDateUploaded() {
-		return dateUploaded;
-	}
-
-	public void setDateUploaded(Timestamp dateUploaded) {
-		this.dateUploaded = dateUploaded;
 	}
 }

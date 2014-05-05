@@ -9,8 +9,17 @@ import java.io.IOException;
 import java.util.List;
 
 import org.apache.commons.io.FileUtils;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 import org.junit.BeforeClass;
 import org.junit.Test;
+
+import upload.Uploader;
+import utils.XmpUtil;
+
+import com.adobe.xmp.XMPException;
+import com.adobe.xmp.XMPMeta;
 
 public class XmpReaderTest {
 	private static File jpg03;
@@ -103,5 +112,31 @@ public class XmpReaderTest {
 		} catch (IOException e) {
 			fail("Failed to make a copy of image: " + image.getAbsolutePath());
 		}
+	}
+
+	@Test
+	public void read_create_date() {
+		XMPMeta xmpMeta = XmpUtil
+				.extractOrCreateXMPMeta(Uploader.IMAGE_DIRECTORY
+						+ "Jellyfish.jpg");
+
+		String creationDate = "";
+
+		try {
+			creationDate = xmpMeta.getProperty("http://ns.adobe.com/xap/1.0/",
+					"xmp:CreateDate").getValue();
+		} catch (XMPException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		if (!creationDate.contains("Z")) {
+			creationDate += "Z";
+		}
+
+		DateTimeFormatter parser = ISODateTimeFormat.dateTime();
+		DateTime dt = parser.parseDateTime(creationDate);
+
+		System.out.println(dt.toString());
 	}
 }

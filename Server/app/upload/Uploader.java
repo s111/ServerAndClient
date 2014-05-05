@@ -5,10 +5,9 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.sql.Timestamp;
-import java.util.Date;
 
 import json.generators.ImageInfoJsonGenerator;
-import metadata.MetadataUtil;
+import metadata.XmpReader;
 import models.Image;
 
 import org.apache.commons.io.FileUtils;
@@ -78,12 +77,10 @@ public class Uploader {
 		String filename = newFile.getName();
 		String path = IMAGE_DIRECTORY + filename;
 
-		Date date = MetadataUtil.getDate(new File(path));
-
 		Image image = new Image();
 		image.setFilename(path);
-		image.setDateTaken(new Timestamp(date.getTime()));
-		image.setDateUploaded(new Timestamp(new Date().getTime()));
+		image.setDateTaken(new Timestamp(XmpReader.getCreationDate(new File(
+				path))));
 
 		QueryImage queryImage = new QueryImage(
 				HibernateUtil.getSessionFactory());

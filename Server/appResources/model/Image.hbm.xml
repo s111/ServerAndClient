@@ -14,7 +14,6 @@
 		<property name="description" />
 		<property name="rating" />
 		<property name="dateTaken" column="date_taken" />
-		<property name="dateUploaded" column="date_uploaded" />
 
 		<set name="tags" table="IMAGE_TAG" inverse="false">
 			<key column="IMAGE_ID" />

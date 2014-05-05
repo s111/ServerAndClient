@@ -2,6 +2,9 @@ package metadata;
 
 import java.io.File;
 
+import org.joda.time.DateTime;
+import org.joda.time.format.ISODateTimeFormat;
+
 import play.Logger;
 import utils.XmpUtil;
 
@@ -11,9 +14,11 @@ import com.adobe.xmp.options.PropertyOptions;
 import com.adobe.xmp.properties.XMPProperty;
 
 public class XmpWriter {
+	private static final String ADOBE_NAMESPACE_URI = "http://ns.adobe.com/xap/1.0/";
 	private static final String DC_NAMESPACE_URI = "http://purl.org/dc/elements/1.1/";
 	private static final String MICROSOFT_NAMESPACE_URI = "http://ns.microsoft.com/photo/1.0/";
 
+	private static final String CREATE_DATE = "xmp:CreateDate";
 	private static final String TITLE = "dc:title";
 	private static final String DESCRIPTION = "dc:description";
 	private static final String SUBJECT = "dc:subject";
@@ -173,5 +178,28 @@ public class XmpWriter {
 				}
 			}
 		}
+	}
+
+	public static void setCreationDate(File image, long time) {
+		String imageFilePath = image.getAbsolutePath();
+
+		XMPMeta xmpMeta = XmpUtil.extractOrCreateXMPMeta(imageFilePath);
+		try {
+			String date = new DateTime(time).toDateTimeISO().toString(
+					ISODateTimeFormat.dateTime());
+
+			if (date.contains("+")) {
+				date = date.substring(0, date.indexOf('+')) + 'Z';
+			}
+
+			xmpMeta.setProperty(ADOBE_NAMESPACE_URI, CREATE_DATE, date);
+		} catch (XMPException e) {
+			Logger.warn("Could not set creation date for image: "
+					+ image.getAbsolutePath());
+
+			return;
+		}
+
+		XmpUtil.writeXMPMeta(imageFilePath, xmpMeta);
 	}
 }

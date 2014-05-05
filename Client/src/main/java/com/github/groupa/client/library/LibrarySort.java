@@ -46,15 +46,16 @@ public class LibrarySort {
 		public int compare(Object o1, Object o2) {
 			ImageObject i1 = (ImageObject) o1;
 			ImageObject i2 = (ImageObject) o2;
-			Date d1 = i1.getUploadDate();
-			Date d2 = i2.getUploadDate();
+			Date d1 = i1.getDateTaken();
+			Date d2 = i2.getDateTaken();
 			int ret = 0;
 			if (d1 != null) {
 				if (d2 != null)
 					ret = d1.compareTo(d2);
 				else
 					ret = -1;
-			} else ret = 1;
+			} else
+				ret = 1;
 
 			if (ret == 0)
 				ret = (i1.getId() < i2.getId()) ? -1 : 1;
@@ -68,15 +69,16 @@ public class LibrarySort {
 		public int compare(Object o1, Object o2) {
 			ImageObject i1 = (ImageObject) o1;
 			ImageObject i2 = (ImageObject) o2;
-			Date d1 = i1.getUploadDate();
-			Date d2 = i2.getUploadDate();
+			Date d1 = i1.getDateTaken();
+			Date d2 = i2.getDateTaken();
 			int ret = 0;
 			if (d1 != null) {
 				if (d2 != null)
 					ret = d2.compareTo(d1);
 				else
 					ret = -1;
-			} else ret = 1;
+			} else
+				ret = 1;
 
 			if (ret == 0)
 				ret = (i1.getId() < i2.getId()) ? -1 : 1;

@@ -57,9 +57,9 @@ public class ImageObject {
 		return id;
 	}
 
-	public Date getUploadDate() {
+	public Date getDateTaken() {
 		if (loadImage())
-			return imageInfo.getImage().getDateUploaded();
+			return imageInfo.getImage().getDateTaken();
 		return null;
 	}
 

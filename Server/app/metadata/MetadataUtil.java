@@ -1,7 +1,6 @@
 package metadata;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
@@ -10,35 +9,7 @@ import queryDB.QueryImage;
 import queryDB.QueryTag;
 import utils.HibernateUtil;
 
-import com.drew.imaging.ImageMetadataReader;
-import com.drew.imaging.ImageProcessingException;
-import com.drew.metadata.Metadata;
-import com.drew.metadata.exif.ExifSubIFDDirectory;
-
 public class MetadataUtil {
-	public static Date getDate(File file) {
-		Date date = null;
-
-		try {
-			Metadata metadata = ImageMetadataReader.readMetadata(file);
-
-			ExifSubIFDDirectory directory = metadata
-					.getDirectory(ExifSubIFDDirectory.class);
-
-			if (directory != null) {
-				date = directory
-						.getDate(ExifSubIFDDirectory.TAG_DATETIME_ORIGINAL);
-			}
-		} catch (ImageProcessingException | IOException e) {
-		}
-
-		if (date == null) {
-			date = new Date();
-		}
-
-		return date;
-	}
-
 	public static void loadXmpMetadataFromFile(long id) {
 		QueryImage queryImage = new QueryImage(
 				HibernateUtil.getSessionFactory());
@@ -47,8 +18,17 @@ public class MetadataUtil {
 
 		File file = new File(image.getFilename());
 
+		Date creationDate = new Date(XmpReader.getCreationDate(file));
+
+		if (creationDate.equals(new Date(0))) {
+			creationDate = new Date();
+
+			XmpWriter.setCreationDate(file, creationDate.getTime());
+		}
+
 		queryImage.describeImage(id, XmpReader.getDescription(file));
 		queryImage.rateImage(id, XmpReader.getRating(file));
+		queryImage.setDateTaken(id, creationDate);
 
 		QueryTag queryTag = new QueryTag(HibernateUtil.getSessionFactory());
 

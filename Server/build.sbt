@@ -11,6 +11,7 @@ libraryDependencies ++= Seq(
   "net.coobird" % "thumbnailator" % "0.4.7",
   "commons-io" % "commons-io" % "2.4",
   "org.mockito" % "mockito-all" % "1.9.5",
+  "joda-time" % "joda-time" % "2.3",
   "org.apache.tika" % "tika-app" % "1.5" excludeAll(ExclusionRule(organization = "org.slf4j"))
 )
 

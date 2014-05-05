@@ -203,11 +203,11 @@ public abstract class Thumb extends MouseAdapter implements AncestorListener {
 		if (rating != 0)
 			toolTipText += "Rating: " + Integer.toString(rating) + "<br>";
 
-		Date date = imageObject.getUploadDate();
+		Date date = imageObject.getDateTaken();
 		if (date != null) {
 			DateFormat df = DateFormat.getDateTimeInstance(DateFormat.SHORT,
 					DateFormat.SHORT, Locale.getDefault());
-			toolTipText += "Uploaded: " + df.format(date);
+			toolTipText += "Creation date: " + df.format(date);
 		}
 
 		toolTipText += "</html>";
