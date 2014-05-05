@@ -7,5 +7,4 @@ public interface BackgroundJob<T> extends Runnable {
 	public void setPriority(int priority);
 	public int getPriority();
 	public void addCallback(Callback<T> callback);
-	public void start();
 }

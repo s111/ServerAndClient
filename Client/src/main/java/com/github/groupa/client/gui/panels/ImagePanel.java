@@ -88,28 +88,10 @@ public class ImagePanel extends JComponent {
 		repaint();
 	}
 
-	public void rotateCW() {
-		rotate(90);
-	}
-
-	public void rotateCCW() {
-		rotate(-90);
-	}
-
 	public void toggleSelection() {
 		isSelecting = !isSelecting;
 
 		resetImage();
-		repaint();
-	}
-
-	private void rotate(int dTheta) {
-		invertSize = !invertSize;
-
-		rotation += dTheta;
-
-		resetImagePosition();
-		resetImageScaling();
 		repaint();
 	}
 

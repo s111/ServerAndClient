@@ -8,10 +8,11 @@ public class BackgroundImageFetch<T> implements BackgroundJob<T> {
 	private String size;
 	private int priority = MEDIUM_PRIORITY;
 	private Runnable runnable;
-	
+
 	private List<Callback<T>> callbacks = new ArrayList<>();
 
-	public BackgroundImageFetch(Runnable runnable, ImageObject imageObject, String size) {
+	public BackgroundImageFetch(Runnable runnable, ImageObject imageObject,
+			String size) {
 		this.runnable = runnable;
 		this.imageObject = imageObject;
 		this.size = size;
@@ -23,17 +24,13 @@ public class BackgroundImageFetch<T> implements BackgroundJob<T> {
 
 		return hashCode() == object.hashCode();
 	}
-	
+
 	public int hashCode() {
 		return imageObject.hashCode() * 33 + size.hashCode();
 	}
-	
+
 	public String toString() {
 		return size + imageObject.getId();
-	}
-
-	public void start() {
-		runnable.run();
 	}
 
 	@SuppressWarnings("unchecked")
@@ -41,7 +38,7 @@ public class BackgroundImageFetch<T> implements BackgroundJob<T> {
 		runnable.run();
 		if (imageObject.hasImage(size)) {
 			for (Callback<T> callback : callbacks) {
-				callback.success((T)imageObject.getImage(size));
+				callback.success((T) imageObject.getImage(size));
 			}
 		} else {
 			for (Callback<T> callback : callbacks) {
@@ -50,12 +47,10 @@ public class BackgroundImageFetch<T> implements BackgroundJob<T> {
 		}
 	}
 
-	@Override
 	public void setPriority(int priority) {
 		this.priority = priority;
 	}
 
-	@Override
 	public int getPriority() {
 		return priority;
 	}
