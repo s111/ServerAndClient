@@ -15,6 +15,8 @@ public class XmpWriter {
 	private static final String MICROSOFT_NAMESPACE_URI = "http://ns.microsoft.com/photo/1.0/";
 
 	private static final String TITLE = "dc:title";
+	private static final String DESCRIPTION = "dc:description";
+	private static final String SUBJECT = "dc:subject";
 	private static final String KEYWORDS = "MicrosoftPhoto:LastKeywordXMP";
 	private static final String RATING = "MicrosoftPhoto:Rating";
 
@@ -23,26 +25,14 @@ public class XmpWriter {
 
 		XMPMeta xmpMeta = XmpUtil.extractOrCreateXMPMeta(imageFilePath);
 
-		if (xmpMeta.doesArrayItemExist(DC_NAMESPACE_URI, TITLE, 1)) {
-			try {
-				xmpMeta.setArrayItem(DC_NAMESPACE_URI, TITLE, 1, description);
-			} catch (XMPException e) {
-				Logger.warn("Could not set description for image: "
-						+ image.getAbsolutePath());
-
-				return;
-			}
-		} else {
-			try {
-				xmpMeta.appendArrayItem(DC_NAMESPACE_URI, TITLE,
-						new PropertyOptions().setArrayAlternate(true),
-						description, null);
-			} catch (XMPException e) {
-				Logger.warn("Could not set description for image: "
-						+ image.getAbsolutePath());
-
-				return;
-			}
+		try {
+			xmpMeta.setLocalizedText(DC_NAMESPACE_URI, TITLE, "default",
+					"default", description);
+			xmpMeta.setLocalizedText(DC_NAMESPACE_URI, DESCRIPTION, "default",
+					"default", description);
+		} catch (XMPException e) {
+			Logger.warn("Could not set image metadata title: "
+					+ image.getAbsolutePath());
 		}
 
 		XmpUtil.writeXMPMeta(imageFilePath, xmpMeta);
@@ -88,6 +78,8 @@ public class XmpWriter {
 		try {
 			xmpMeta.appendArrayItem(MICROSOFT_NAMESPACE_URI, KEYWORDS,
 					new PropertyOptions().setArray(true), tag, null);
+			xmpMeta.appendArrayItem(DC_NAMESPACE_URI, SUBJECT,
+					new PropertyOptions().setArray(true), tag, null);
 		} catch (XMPException e) {
 			Logger.warn("Could not add tag to image: "
 					+ image.getAbsolutePath());
@@ -108,6 +100,13 @@ public class XmpWriter {
 
 		XMPMeta xmpMeta = XmpUtil.extractOrCreateXMPMeta(imageFilePath);
 
+		deleteKeywordTag(image, tag, xmpMeta);
+		deleteSubjectTag(image, tag, xmpMeta);
+
+		XmpUtil.writeXMPMeta(imageFilePath, xmpMeta);
+	}
+
+	private static void deleteKeywordTag(File image, String tag, XMPMeta xmpMeta) {
 		int numTags;
 
 		try {
@@ -122,11 +121,11 @@ public class XmpWriter {
 		for (int i = 1; i <= numTags; i++) {
 			if (xmpMeta
 					.doesArrayItemExist(MICROSOFT_NAMESPACE_URI, KEYWORDS, i)) {
-				XMPProperty currentTag = null;
+				XMPProperty currentKeywordTag = null;
 
 				try {
-					currentTag = xmpMeta.getArrayItem(MICROSOFT_NAMESPACE_URI,
-							KEYWORDS, i);
+					currentKeywordTag = xmpMeta.getArrayItem(
+							MICROSOFT_NAMESPACE_URI, KEYWORDS, i);
 				} catch (XMPException e) {
 					e.printStackTrace();
 					Logger.warn("Unable to delete tag from image: "
@@ -135,13 +134,44 @@ public class XmpWriter {
 					return;
 				}
 
-				if (currentTag.getValue().equals(tag)) {
+				if (currentKeywordTag.getValue().equals(tag)) {
 					xmpMeta.deleteArrayItem(MICROSOFT_NAMESPACE_URI, KEYWORDS,
 							i);
 				}
 			}
 		}
+	}
 
-		XmpUtil.writeXMPMeta(imageFilePath, xmpMeta);
+	private static void deleteSubjectTag(File image, String tag, XMPMeta xmpMeta) {
+		int numTags;
+
+		try {
+			numTags = xmpMeta.countArrayItems(DC_NAMESPACE_URI, SUBJECT);
+		} catch (XMPException e) {
+			// There are no tags; return.
+
+			return;
+		}
+
+		for (int i = 1; i <= numTags; i++) {
+			if (xmpMeta.doesArrayItemExist(DC_NAMESPACE_URI, SUBJECT, i)) {
+				XMPProperty currentKeywordTag = null;
+
+				try {
+					currentKeywordTag = xmpMeta.getArrayItem(DC_NAMESPACE_URI,
+							SUBJECT, i);
+				} catch (XMPException e) {
+					e.printStackTrace();
+					Logger.warn("Unable to delete tag from image: "
+							+ image.getAbsolutePath());
+
+					return;
+				}
+
+				if (currentKeywordTag.getValue().equals(tag)) {
+					xmpMeta.deleteArrayItem(DC_NAMESPACE_URI, SUBJECT, i);
+				}
+			}
+		}
 	}
 }
