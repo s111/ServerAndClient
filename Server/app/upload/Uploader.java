@@ -28,7 +28,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.google.common.io.Files;
 
 public class Uploader {
-	public static final String IMAGE_DIRECTORY = "../../images/";
+	public static String IMAGE_DIRECTORY = "../../images/";
 
 	private File file;
 	private File newFile;
@@ -148,7 +148,7 @@ public class Uploader {
 		try {
 			newFile = File.createTempFile("image", extension, uploadDirectory);
 		} catch (IOException exception) {
-			Logger.error("Could not create new file");
+			Logger.error("Could not create new file in: " + uploadDirectory);
 
 			throw exception;
 		}

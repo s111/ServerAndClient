@@ -30,6 +30,15 @@ public class Global extends GlobalSettings {
 
 		File directory = new File(Uploader.IMAGE_DIRECTORY);
 
+		// Set the IMAGE_DIRECTORY to the full path of the directory so that
+		// there is no doubt which directory to use
+		Uploader.IMAGE_DIRECTORY = directory.getAbsolutePath() + File.separator;
+
+		// Update the directory. This is because when we do path resolution we
+		// might be on another level due to the app path being different from
+		// where the binaries are
+		directory = new File(Uploader.IMAGE_DIRECTORY);
+
 		if (!directory.exists()) {
 			if (!directory.mkdirs()) {
 				Logger.error("Could not create upload directory");
