@@ -3,6 +3,7 @@ package controllers;
 import java.io.File;
 import java.io.IOException;
 
+import metadata.XmpWriter;
 import models.Image;
 import net.coobird.thumbnailator.Thumbnails;
 import play.Logger;
@@ -33,6 +34,8 @@ public class ImageRotater extends Controller {
 
 			return internalServerError();
 		}
+
+		XmpWriter.writeMetadataFromDatabaseToFile(image);
 
 		QueryThumbnail queryThumbnail = new QueryThumbnail(
 				HibernateUtil.getSessionFactory());

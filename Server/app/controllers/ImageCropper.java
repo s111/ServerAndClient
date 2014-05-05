@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import javax.imageio.ImageIO;
 
+import metadata.XmpWriter;
 import models.Image;
 import play.Logger;
 import play.data.DynamicForm;
@@ -63,6 +64,8 @@ public class ImageCropper extends Controller {
 
 			return internalServerError();
 		}
+
+		XmpWriter.writeMetadataFromDatabaseToFile(image);
 
 		QueryThumbnail queryThumbnail = new QueryThumbnail(
 				HibernateUtil.getSessionFactory());

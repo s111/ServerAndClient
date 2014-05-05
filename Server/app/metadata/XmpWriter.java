@@ -1,6 +1,11 @@
 package metadata;
 
 import java.io.File;
+import java.sql.Timestamp;
+import java.util.Set;
+
+import models.Image;
+import models.Tag;
 
 import org.joda.time.DateTime;
 import org.joda.time.format.ISODateTimeFormat;
@@ -201,5 +206,33 @@ public class XmpWriter {
 		}
 
 		XmpUtil.writeXMPMeta(imageFilePath, xmpMeta);
+	}
+
+	public static void writeMetadataFromDatabaseToFile(Image image) {
+		File file = new File(image.getFilename());
+
+		String description = image.getDescription();
+
+		if (description != null) {
+			XmpWriter.setDescription(file, description);
+		}
+
+		Integer rating = image.getRating();
+
+		if (rating != null) {
+			XmpWriter.setRating(file, rating);
+		}
+
+		Set<Tag> tags = image.getTags();
+
+		for (Tag tag : tags) {
+			XmpWriter.addTag(file, tag.getName());
+		}
+
+		Timestamp dateTaken = image.getDateTaken();
+
+		if (dateTaken != null) {
+			XmpWriter.setCreationDate(file, dateTaken.getTime());
+		}
 	}
 }
