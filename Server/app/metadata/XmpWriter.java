@@ -137,7 +137,6 @@ public class XmpWriter {
 					currentKeywordTag = xmpMeta.getArrayItem(
 							MICROSOFT_NAMESPACE_URI, KEYWORDS, i);
 				} catch (XMPException e) {
-					e.printStackTrace();
 					Logger.warn("Unable to delete tag from image: "
 							+ image.getAbsolutePath());
 
@@ -171,7 +170,6 @@ public class XmpWriter {
 					currentKeywordTag = xmpMeta.getArrayItem(DC_NAMESPACE_URI,
 							SUBJECT, i);
 				} catch (XMPException e) {
-					e.printStackTrace();
 					Logger.warn("Unable to delete tag from image: "
 							+ image.getAbsolutePath());
 
