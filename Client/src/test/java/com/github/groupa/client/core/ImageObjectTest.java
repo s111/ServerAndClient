@@ -3,7 +3,6 @@ package com.github.groupa.client.core;
 import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,9 +10,8 @@ import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
-import com.github.groupa.client.Callback;
+import com.github.groupa.client.BackgroundImageFetcher;
 import com.github.groupa.client.ImageObject;
-import com.github.groupa.client.ThreadPool;
 import com.github.groupa.client.helpers.MockImageInfo;
 import com.github.groupa.client.helpers.MockServerConnection;
 import com.github.groupa.client.jsonobjects.ImageFull;
@@ -25,13 +23,14 @@ public class ImageObjectTest {
 	private static EventBus eventBus;
 	private static List<ImageObject> images;
 	private static ServerConnection serverConnection;
-	private static ThreadPool threadPool;
+	@SuppressWarnings("rawtypes")
+	private static BackgroundImageFetcher backgroundImageFetch;
 	
 	@BeforeClass
 	public static void beforeClass() {
 		eventBus = new EventBus();
 		images = new ArrayList<>();
-		threadPool = new ThreadPool();
+		backgroundImageFetch = mock(BackgroundImageFetcher.class);
 	}
 	
 	@Before
@@ -43,7 +42,7 @@ public class ImageObjectTest {
 	@Test
 	public void testRating() throws InterruptedException {
 		for (int i = 1; i <= 5; i++) {
-			ImageObject img = new ImageObject(eventBus, serverConnection, threadPool, i);
+			ImageObject img = new ImageObject(eventBus, serverConnection, backgroundImageFetch, i);
 			ImageFull imageFull = new ImageFull();
 			ImageInfo imageInfo = MockImageInfo.get(imageFull);
 			when(serverConnection.getImageInfo(i)).thenReturn(imageInfo);
@@ -59,7 +58,7 @@ public class ImageObjectTest {
 	@Test
 	public void testDescription() throws InterruptedException {
 		for (int i = 1; i <= 5; i++) {
-			ImageObject img = new ImageObject(eventBus, serverConnection, threadPool, i);
+			ImageObject img = new ImageObject(eventBus, serverConnection, backgroundImageFetch, i);
 			ImageFull imageFull = new ImageFull();
 			ImageInfo imageInfo = MockImageInfo.get(imageFull);
 			when(serverConnection.getImageInfo(i)).thenReturn(imageInfo);
@@ -77,7 +76,7 @@ public class ImageObjectTest {
 	@Test
 	public void testTag() throws InterruptedException {
 		for (int i = 1; i <= 5; i++) {
-			ImageObject img = new ImageObject(eventBus, serverConnection, threadPool, i);
+			ImageObject img = new ImageObject(eventBus, serverConnection, backgroundImageFetch, i);
 			ImageFull imageFull = new ImageFull();
 			ImageInfo imageInfo = MockImageInfo.get(imageFull);
 			when(serverConnection.getImageInfo(i)).thenReturn(imageInfo);
@@ -92,44 +91,5 @@ public class ImageObjectTest {
 		}
 	}
 
-	@Test
-	public void testImage() throws InterruptedException {
-		final ImageObject img = new ImageObject(eventBus, serverConnection, threadPool, 1);
-		final BufferedImage imageCompressed = mock(BufferedImage.class);
-		assertFalse(img.hasImage());
-		assertFalse(img.hasImageRaw());
-		assertNull(img.getImage());
-		when(serverConnection.getImage(1, "compressed")).thenReturn(imageCompressed);
-		img.loadImage(new Callback<BufferedImage>() {
-			public void success(BufferedImage t) {
-				assertEquals(imageCompressed, t);
-				assertEquals(imageCompressed, img.getImage());
-			}
-			public void failure() {
-				fail();
-			}
-		}, "compressed");
-		Thread.sleep(100);
-		assertTrue(img.hasImage());
-		assertEquals(imageCompressed, img.getImage());
-		
-
-		final BufferedImage imageXs = mock(BufferedImage.class);
-		assertFalse(img.hasThumb("xs"));
-		assertNull(img.getThumb("xs"));
-		when(serverConnection.getImage(1, "xs")).thenReturn(imageXs);
-		img.loadImage(new Callback<BufferedImage>() {
-			public void success(BufferedImage t) {
-				assertEquals(imageXs, t);
-				assertEquals(imageXs, img.getThumb("xs"));
-			}
-			public void failure() {
-				fail();
-			}
-		}, "xs");
-		Thread.sleep(100);
-		assertTrue(img.hasThumb("xs"));
-		assertEquals(imageXs, img.getThumb("xs"));
-	}
 
 }
