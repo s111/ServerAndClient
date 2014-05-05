@@ -180,7 +180,7 @@ public class ImageContentPanel implements ContentPanel {
 		}
 		if (newImage == null || newImage.hasImage())
 			return false;
-		
+
 		newImage.loadImage(null, "compressed", BackgroundJob.LOW_PRIORITY);
 		return true;
 	}
@@ -207,19 +207,15 @@ public class ImageContentPanel implements ContentPanel {
 
 	@Subscribe
 	public void switchViewListener(SwitchViewEvent event) {
-		try {
-			if (event.hasSwitched() && View.IMAGE_VIEW.equals(event.getView())) {
-				ImageObject img = event.getImageObject();
-				images = event.getImageList();
-				if (images.size() <= 1) {
-					images = null;
-				}
-				setImage(img);
-				eagerLoad(1);
-				eagerLoad(-1);
+		if (event.hasSwitched() && View.IMAGE_VIEW.equals(event.getView())) {
+			ImageObject img = event.getImageObject();
+			images = event.getImageList();
+			if (images.size() <= 1) {
+				images = null;
 			}
-		} catch (Exception e) {
-			e.printStackTrace();
+			setImage(img);
+			eagerLoad(1);
+			eagerLoad(-1);
 		}
 	}
 
