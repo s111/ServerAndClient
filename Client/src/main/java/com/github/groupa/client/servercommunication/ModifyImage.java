@@ -8,7 +8,6 @@ import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.ThreadPool;
 import com.github.groupa.client.jsonobjects.ImagesUpdate;
 import com.github.groupa.client.library.Library;
-import com.github.groupa.client.main.Main;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.inject.Inject;
@@ -16,11 +15,13 @@ import com.google.inject.Inject;
 public class ModifyImage {
 	private ServerConnection serverConnection;
 	private ThreadPool threadPool;
+	private Library library;
 
 	@Inject
-	public ModifyImage(ServerConnection serverConnection, ThreadPool threadPool) {
+	public ModifyImage(ServerConnection serverConnection, ThreadPool threadPool, Library library) {
 		this.serverConnection = serverConnection;
 		this.threadPool = threadPool;
+		this.library = library;
 	}
 
 	public void rotate(final Callback<ImageObject> callback,
@@ -134,12 +135,11 @@ public class ModifyImage {
 			public void success() {
 				List<Long> ids = imagesUpdate.getIds();
 
-				Library library = Main.injector.getInstance(Library.class);
-				List<ImageObject> images = library.getImages();
+				List<ImageObject> images = library.getAllImages();
 
 				for (ImageObject image : images) {
 					if (ids.contains(image.getId())) {
-						image.refreshImages();
+						image.reloadImageInfo();
 					}
 				}
 			}

@@ -211,6 +211,14 @@ public class ImageObject {
 		imageInfo = serverConnection.getImageInfo(id);
 		return imageInfo != null;
 	}
+	
+	public void reloadImageInfo() {
+		ImageInfo newImageInfo = serverConnection.getImageInfo(id);
+		if (newImageInfo != null) {
+			imageInfo = newImageInfo;
+			eventBus.post(new ImageInfoChangedEvent(this));
+		}
+	}
 
 	public boolean equals(Object o) {
 		if (o == null)

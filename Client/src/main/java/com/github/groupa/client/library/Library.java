@@ -79,6 +79,12 @@ public class Library {
 		list.addAll(constrainedImages);
 		return list;
 	}
+	
+	public List<ImageObject> getAllImages() {
+		List<ImageObject> list = new ArrayList<>();
+		list.addAll(allImages);
+		return list;
+	}
 
 	public void add(ImageObject img) {
 		if (!allImages.contains(img)) {
