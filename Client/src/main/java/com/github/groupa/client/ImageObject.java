@@ -128,7 +128,8 @@ public class ImageObject {
 	public void loadImage(final Callback<BufferedImage> callback,
 			final String size) {
 		if (_hasImage(size)) {
-			callback.success(_getImage(size));
+			if (callback != null)
+				callback.success(_getImage(size));
 		} else {
 			threadPool.add(new Runnable() {
 				public void run() {
