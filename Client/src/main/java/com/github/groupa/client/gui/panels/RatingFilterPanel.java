@@ -1,5 +1,6 @@
 package com.github.groupa.client.gui.panels;
 
+import java.awt.Font;
 import java.util.Hashtable;
 
 import javax.swing.JLabel;
@@ -71,7 +72,18 @@ public class RatingFilterPanel {
 		maxSlider.setMajorTickSpacing(1);
 		maxSlider.setMinorTickSpacing(1);
 
+		JLabel filterByRatingLabel = new JLabel("Filter by rating");
+		filterByRatingLabel.setFont(new Font(filterByRatingLabel.getFont()
+				.getName(), Font.BOLD, 13));
+
+		JLabel maxRatingLabel = new JLabel("Max rating:");
+
+		JLabel minRatingLabel = new JLabel("Min rating:");
+
+		panel.add(filterByRatingLabel, "wrap");
+		panel.add(minRatingLabel, "split 2");
 		panel.add(minSlider, "wrap");
+		panel.add(maxRatingLabel, "split 2");
 		panel.add(maxSlider);
 
 		minSlider.addChangeListener(new ChangeListener() {

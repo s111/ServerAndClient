@@ -95,10 +95,14 @@ public class EditMetadataWindow {
 
 	private void setUpDescriptionField() {
 		JLabel descriptionLabel = new JLabel("Description");
-		descriptionField = new JTextField();
+		JLabel infoLabel = new JLabel(
+				"<html><p>This will update all selected images with the entered metadata.</p><p>Leave out the fields you don't want to change.</p><br /></html>");
 
+		descriptionField = new JTextField(16);
+
+		panel.add(infoLabel, "wrap");
 		panel.add(descriptionLabel, "wrap");
-		panel.add(descriptionField, "span, growx");
+		panel.add(descriptionField, "wrap");
 	}
 
 	private void setUpRatingButtons() {
@@ -119,15 +123,15 @@ public class EditMetadataWindow {
 		}
 
 		panel.add(ratingLabel, "wrap");
-		panel.add(rater, "span, growx");
+		panel.add(rater, "wrap");
 	}
 
 	private void setUpTagTextField() {
 		JLabel tagLabel = new JLabel("Tags");
-		tagTextField = new JTextField();
+		tagTextField = new JTextField(16);
 
 		panel.add(tagLabel, "wrap");
-		panel.add(tagTextField, "span 2, growx, pushx");
+		panel.add(tagTextField, "wrap");
 	}
 
 	private void setUpAddTagButton() {
@@ -146,7 +150,7 @@ public class EditMetadataWindow {
 			}
 		});
 
-		panel.add(addTagButton, "split 2, cell 3 5");
+		panel.add(addTagButton, "split 2");
 	}
 
 	private void setUpDeleteTagButton() {
@@ -169,7 +173,7 @@ public class EditMetadataWindow {
 		tagList = new JList<String>(tagListModel);
 		JScrollPane scrollPane = new JScrollPane(tagList);
 
-		panel.add(scrollPane, "span, growx");
+		panel.add(scrollPane, "growx, wrap");
 	}
 
 	private void setUpSaveButton() {
@@ -224,7 +228,7 @@ public class EditMetadataWindow {
 			}
 		});
 
-		panel.add(saveButton, "split 2, cell 3 7, gapleft 42");
+		panel.add(saveButton, "split 2, align right");
 	}
 
 	private void setUpCloseButton() {

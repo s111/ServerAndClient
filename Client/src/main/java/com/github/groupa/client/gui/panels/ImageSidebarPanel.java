@@ -68,7 +68,7 @@ public class ImageSidebarPanel implements SidebarPanel {
 
 	private void setUpTagTable() {
 		tagTableModel = new DefaultTableModel();
-		tagTableModel.addColumn("Tags");
+		tagTableModel.addColumn("Tags (double-click to edit)");
 
 		JTable jTable = new JTable(tagTableModel);
 
@@ -206,7 +206,8 @@ public class ImageSidebarPanel implements SidebarPanel {
 
 				if (savingDescription) {
 					setDescriptionSaveMode();
-					modifyImage.describe(null, activeImage, descriptionField.getText());
+					modifyImage.describe(null, activeImage,
+							descriptionField.getText());
 				} else {
 					setDescriptionEditMode();
 				}

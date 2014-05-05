@@ -1,5 +1,6 @@
 package com.github.groupa.client.gui.panels;
 
+import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -44,12 +45,11 @@ public class GridSidebarPanel implements SidebarPanel {
 
 		panel.setBorder(BorderFactory.createEtchedBorder(EtchedBorder.LOWERED));
 
-		setUpRatingFilterPanel();
 		setUpSortComponents();
 		setUpTagComponents();
+		setUpRatingFilterPanel();
 		setUpZoomComponents();
 		setUpEditMetadataComponent();
-
 	}
 
 	private void setUpRatingFilterPanel() {
@@ -57,7 +57,16 @@ public class GridSidebarPanel implements SidebarPanel {
 	}
 
 	private void setUpZoomComponents() {
-		panel.add(zoomSlider.getPanel(), "align center, wrap");
+		JLabel thumbSizeLabel = new JLabel("Thumbnail size");
+		thumbSizeLabel.setFont(new Font(thumbSizeLabel.getFont().getName(),
+				Font.BOLD, 13));
+
+		JPanel zoomPanel = new JPanel();
+		zoomPanel.setLayout(new MigLayout());
+		zoomPanel.add(thumbSizeLabel, "wrap");
+		zoomPanel.add(zoomSlider.getPanel(), "align center");
+
+		panel.add(zoomPanel, "wrap");
 	}
 
 	private void setUpTagComponents() {
@@ -65,7 +74,6 @@ public class GridSidebarPanel implements SidebarPanel {
 	}
 
 	private void setUpSortComponents() {
-		panel.add(new JLabel("Sort"), "wrap");
 		String[] sortTypes = { "ID", "Rating (desc)", "Rating (asc)",
 				"Upload date (asc)", "Upload date (desc)" };
 
@@ -89,13 +97,22 @@ public class GridSidebarPanel implements SidebarPanel {
 				});
 			}
 		});
-		panel.add(comboBox, "width 128, wrap");
+
+		JPanel comboPanel = new JPanel();
+		comboPanel.setLayout(new MigLayout());
+		JLabel sortLabel = new JLabel("Sort");
+		sortLabel
+				.setFont(new Font(sortLabel.getFont().getName(), Font.BOLD, 13));
+		comboPanel.add(sortLabel, "wrap");
+		comboPanel.add(comboBox, "width 128, wrap");
+
+		panel.add(comboPanel, "wrap");
 	}
 
 	private void setUpEditMetadataComponent() {
 		JButton editMetadataButton;
 
-		editMetadataButton = new JButton("Edit Metadata");
+		editMetadataButton = new JButton("Edit selected images");
 
 		editMetadataButton.addActionListener(new ActionListener() {
 
@@ -105,7 +122,7 @@ public class GridSidebarPanel implements SidebarPanel {
 			}
 		});
 
-		panel.add(editMetadataButton);
+		panel.add(editMetadataButton, "align right");
 	}
 
 	@Override
