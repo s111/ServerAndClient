@@ -140,7 +140,7 @@ public class ImageObject {
 
 	@SuppressWarnings("unchecked")
 	public void loadImage(final Callback<BufferedImage> callback,
-			final String size) {
+			final String size, int priority) {
 		if (_hasImage(size)) {
 			if (callback != null)
 				callback.success(_getImage(size));
@@ -164,6 +164,7 @@ public class ImageObject {
 					oldJob.addCallback(callback);
 				}
 			} else {
+				job.setPriority(priority);
 				if (callback != null) {
 					job.addCallback(callback);
 				}

@@ -20,6 +20,7 @@ import javax.swing.border.Border;
 import javax.swing.event.AncestorEvent;
 import javax.swing.event.AncestorListener;
 
+import com.github.groupa.client.BackgroundJob;
 import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.events.ImageAvailableEvent;
 import com.github.groupa.client.events.ImageInfoChangedEvent;
@@ -142,7 +143,7 @@ public abstract class Thumb extends MouseAdapter implements AncestorListener {
 				public void run() {
 					if (label.getBounds()
 							.intersects(rootPanel.getVisibleRect())) {
-						imageObject.loadImage(null, lastSize);
+						imageObject.loadImage(null, lastSize, BackgroundJob.MEDIUM_PRIORITY);
 					}
 				}
 			});

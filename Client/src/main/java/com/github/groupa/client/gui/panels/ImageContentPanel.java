@@ -22,6 +22,7 @@ import net.miginfocom.swing.MigLayout;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.github.groupa.client.BackgroundJob;
 import com.github.groupa.client.Callback;
 import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.events.ImageModifiedEvent;
@@ -47,7 +48,8 @@ public class ImageContentPanel implements ContentPanel {
 
 	@Inject
 	public ImageContentPanel(ModifyImage modifyImage, EventBus eventBus,
-			ImagePanel imagePanel, ImageSidebarPanel imageSidebarPanel, Library library) {
+			ImagePanel imagePanel, ImageSidebarPanel imageSidebarPanel,
+			Library library) {
 		this.modifyImage = modifyImage;
 		this.eventBus = eventBus;
 		this.imagePanel = imagePanel;
@@ -144,8 +146,10 @@ public class ImageContentPanel implements ContentPanel {
 			}
 		}
 		setImage(newImage);
+		if (!eagerLoad(1))
+			eagerLoad(2);
 	}
-	
+
 	private void previousImage() {
 		ImageObject newImage = null;
 		if (images == null) {
@@ -158,23 +162,42 @@ public class ImageContentPanel implements ContentPanel {
 			}
 		}
 		setImage(newImage);
+		if (!eagerLoad(-1))
+			eagerLoad(-2);
+
 	}
-	
+
+	private boolean eagerLoad(int offset) {
+		ImageObject newImage = null;
+		if (images == null) {
+			newImage = library.getNextImage(activeImageObject);
+		} else {
+			int idx = images.indexOf(activeImageObject);
+			int size = images.size();
+			if (idx != -1 && size > 1) {
+				newImage = images.get((idx + size + offset) % size);
+			}
+		}
+		if (newImage == null || newImage.hasImage())
+			return false;
+		
+		newImage.loadImage(null, "compressed", BackgroundJob.LOW_PRIORITY);
+		return true;
+	}
+
 	private void setImage(ImageObject img) {
 		if (img == null)
 			return;
 		activeImageObject = img;
 		img.loadImage(new Callback<BufferedImage>() {
-			@Override
 			public void success(BufferedImage image) {
 				imagePanel.setImage(activeImageObject);
 				imageSidebarPanel.setImage(activeImageObject);
 			}
 
-			@Override
 			public void failure() {
 			}
-		}, "compressed");
+		}, "compressed", BackgroundJob.HIGH_PRIORITY);
 	}
 
 	@Override
@@ -192,6 +215,8 @@ public class ImageContentPanel implements ContentPanel {
 					images = null;
 				}
 				setImage(img);
+				eagerLoad(1);
+				eagerLoad(-1);
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
