@@ -4,6 +4,7 @@ import java.net.ConnectException;
 
 import retrofit.client.Response;
 import retrofit.http.Body;
+import retrofit.http.DELETE;
 import retrofit.http.Field;
 import retrofit.http.FormUrlEncoded;
 import retrofit.http.GET;
@@ -90,4 +91,8 @@ public interface RESTService {
 	public Response cropImage(@Path("id") long id, @Field("x") int x,
 			@Field("y") int y, @Field("width") int width,
 			@Field("height") int height) throws ConnectException;
+
+	@DELETE("/images/{id}/tag/{name}")
+	public Response deleteTag(@Path("id") long id, @Path("name") String name)
+			throws ConnectException;
 }

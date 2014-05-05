@@ -111,10 +111,10 @@ public class ImageSidebarPanel implements SidebarPanel {
 					if (newValue == null || newValue.trim().equals("")) {
 						tagTableModel.removeRow(cell.getRow());
 
-						// TODO Send tag delete request
+						modifyImage.deleteTag(null, activeImage, oldValue);
 					} else if (!newValue.equals(oldValue)) {
-						// TODO Send tag update request or delete old tag and
-						// add new tag
+						modifyImage.deleteTag(null, activeImage, oldValue);
+						modifyImage.addTag(null, activeImage, newValue);
 					}
 				}
 			}

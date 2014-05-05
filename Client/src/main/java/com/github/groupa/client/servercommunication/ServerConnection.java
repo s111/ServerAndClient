@@ -109,6 +109,21 @@ public class ServerConnection {
 		return false;
 	}
 
+	public boolean deleteTag(long id, String tag) {
+		try {
+			Response response = restService.deleteTag(id, tag);
+			if (response.getStatus() == 200)
+				return true;
+		} catch (ConnectException e) {
+			logger.warn("Could not connect to server to delete tag from image("
+					+ id + "): " + e.getMessage());
+		} catch (Exception e) {
+			logger.warn("Unknown server error when deleting tag from image("
+					+ id + "): " + e.getMessage());
+		}
+		return false;
+	}
+
 	public boolean describe(long id, String description) {
 		try {
 			Response response = restService.describeImage(id, description);

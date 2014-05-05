@@ -103,6 +103,24 @@ public class ModifyImage {
 		threadPool.add(new WorkerThread<ImageObject>(callback, image, job));
 	}
 
+	public void deleteTag(final Callback<ImageObject> callback,
+			final ImageObject image, final String tag) {
+		Job job = new Job() {
+
+			public void run() {
+				if (serverConnection.deleteTag(image.getId(), tag)) {
+					success = true;
+				}
+			}
+
+			public void success() {
+				// TODO need a image.deleteTag(tag) (like image.addTag(tag) but
+				// for removing a tag)
+			}
+		};
+		threadPool.add(new WorkerThread<ImageObject>(callback, image, job));
+	}
+
 	public void updateMultipleImages(final ImagesUpdate imagesUpdate) {
 		Job job = new Job() {
 			public void run() {
