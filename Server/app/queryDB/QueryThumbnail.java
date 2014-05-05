@@ -15,12 +15,24 @@ import utils.HibernateUtil;
 public class QueryThumbnail {
 	private SessionFactory sessionFactory;
 
+	private static boolean staticLock;
+
 	public QueryThumbnail(SessionFactory sessionFactory) {
 		this.sessionFactory = sessionFactory;
 	}
 
 	public void addThumbnail(final long id, final int size,
 			final String filename) {
+		while (staticLock) {
+			try {
+				// Sleep so we don't have two requests trying to create a
+				// thumbnail at the same time
+				Thread.sleep(200);
+			} catch (InterruptedException e) {
+			}
+		}
+		staticLock = true;
+
 		HibernateUtil.performAction(new HibernateStrategy<Void>() {
 			@Override
 			public Void execute(Session session) {
@@ -45,6 +57,8 @@ public class QueryThumbnail {
 				return null;
 			}
 		}, sessionFactory);
+
+		staticLock = false;
 	}
 
 	public Thumbnail getThumbnail(final long id, final int size) {
