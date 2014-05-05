@@ -1,10 +1,15 @@
 package com.github.groupa.client.servercommunication;
 
 import java.awt.Rectangle;
+import java.util.List;
 
 import com.github.groupa.client.Callback;
 import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.ThreadPool;
+import com.github.groupa.client.jsonobjects.ImagesUpdate;
+import com.github.groupa.client.library.Library;
+import com.github.groupa.client.main.Main;
+import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.inject.Inject;
 
@@ -98,15 +103,47 @@ public class ModifyImage {
 		threadPool.add(new WorkerThread<ImageObject>(callback, image, job));
 	}
 
-	public void updateMultipleImages(final JsonObject jsonObject) {
-		Runnable job = new Runnable() {
-			@Override
+	public void updateMultipleImages(final ImagesUpdate imagesUpdate) {
+		Job job = new Job() {
 			public void run() {
-				serverConnection.updateMultipleImages(jsonObject);
+				JsonObject jsonObject = imagesUpdateToJson(imagesUpdate);
+
+				if (serverConnection.updateMultipleImages(jsonObject)) {
+					success = true;
+				}
+			}
+
+			public void success() {
+				List<Long> ids = imagesUpdate.getIds();
+
+				Library library = Main.injector.getInstance(Library.class);
+				List<ImageObject> images = library.getImages();
+
+				for (ImageObject image : images) {
+					if (ids.contains(image.getId())) {
+						image.refreshImages();
+					}
+				}
+			}
+
+			private JsonObject imagesUpdateToJson(ImagesUpdate imagesUpdate) {
+				Gson gson = new Gson();
+
+				String json = gson.toJson(imagesUpdate);
+
+				JsonObject jsonObject = gson.fromJson(json, JsonObject.class);
+				JsonObject metadataWithoutId = jsonObject.get("metadata")
+						.getAsJsonObject();
+				metadataWithoutId.remove("id");
+
+				jsonObject.remove("metadata");
+				jsonObject.add("metadata", metadataWithoutId);
+
+				return jsonObject;
 			}
 		};
 
-		threadPool.add(job);
+		threadPool.add(new WorkerThread<Void>(null, null, job));
 	}
 
 	private class WorkerThread<T> implements Runnable {

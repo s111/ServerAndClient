@@ -23,8 +23,6 @@ import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.jsonobjects.ImageFull;
 import com.github.groupa.client.jsonobjects.ImagesUpdate;
 import com.github.groupa.client.servercommunication.ModifyImage;
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
 
 public class EditMetadataWindow {
 	private JPanel panel = new JPanel();
@@ -183,11 +181,7 @@ public class EditMetadataWindow {
 			public void actionPerformed(ActionEvent e) {
 				ImagesUpdate imagesUpdate = createImagesUpdate();
 
-				JsonObject jsonObject = imagesUpdateToJson(imagesUpdate);
-
-				modifyImage.updateMultipleImages(jsonObject);
-
-				System.out.println(jsonObject.toString());
+				modifyImage.updateMultipleImages(imagesUpdate);
 
 				dialog.setVisible(false);
 			}
@@ -227,22 +221,6 @@ public class EditMetadataWindow {
 
 				imageFull.setTags(tags);
 				return imageFull;
-			}
-
-			private JsonObject imagesUpdateToJson(ImagesUpdate imagesUpdate) {
-				Gson gson = new Gson();
-
-				String json = gson.toJson(imagesUpdate);
-
-				JsonObject jsonObject = gson.fromJson(json, JsonObject.class);
-				JsonObject metadataWithoutId = jsonObject.get("metadata")
-						.getAsJsonObject();
-				metadataWithoutId.remove("id");
-
-				jsonObject.remove("metadata");
-				jsonObject.add("metadata", metadataWithoutId);
-
-				return jsonObject;
 			}
 		});
 

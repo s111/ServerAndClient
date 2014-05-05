@@ -139,7 +139,8 @@ public class ImageObject {
 							callback.success(image);
 					} else if (callback != null)
 						callback.failure();
-					eventBus.post(new ImageAvailableEvent(ImageObject.this, size));
+					eventBus.post(new ImageAvailableEvent(ImageObject.this,
+							size));
 				}
 			});
 		}
