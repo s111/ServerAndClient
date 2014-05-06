@@ -3,7 +3,6 @@ package com.github.groupa.client.gui.panels;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,8 +22,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.github.groupa.client.BackgroundJob;
-import com.github.groupa.client.Callback;
 import com.github.groupa.client.ImageObject;
+import com.github.groupa.client.events.ImageAvailableEvent;
 import com.github.groupa.client.events.ImageModifiedEvent;
 import com.github.groupa.client.events.SwitchViewEvent;
 import com.github.groupa.client.library.Library;
@@ -189,15 +188,12 @@ public class ImageContentPanel implements ContentPanel {
 		if (img == null)
 			return;
 		activeImageObject = img;
-		img.loadImage(new Callback<BufferedImage>() {
-			public void success(BufferedImage image) {
-				imagePanel.setImage(activeImageObject);
-				imageSidebarPanel.setImage(activeImageObject);
-			}
-
-			public void failure() {
-			}
-		}, "compressed", BackgroundJob.HIGH_PRIORITY);
+		if (img.hasImage()) {
+			imagePanel.setImage(activeImageObject);
+			imageSidebarPanel.setImage(activeImageObject);
+		} else {
+			img.loadImage(null, "compressed", BackgroundJob.HIGH_PRIORITY);
+		}
 	}
 
 	@Override
@@ -221,6 +217,13 @@ public class ImageContentPanel implements ContentPanel {
 
 	@Subscribe
 	public void imageModifiedListener(ImageModifiedEvent event) {
+		if (event.getImageObject() == activeImageObject) {
+			setImage(activeImageObject);
+		}
+	}
+
+	@Subscribe
+	public void imageAvailableListener(ImageAvailableEvent event) {
 		if (event.getImageObject() == activeImageObject) {
 			setImage(activeImageObject);
 		}
