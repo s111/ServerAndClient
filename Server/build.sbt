@@ -1,6 +1,6 @@
 name := "Server"
 
-version := "1.0-SNAPSHOT"
+version := "1.0-RELEASE"
 
 libraryDependencies ++= Seq(
   javaJdbc,
