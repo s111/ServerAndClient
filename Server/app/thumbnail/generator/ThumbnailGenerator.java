@@ -20,6 +20,8 @@ import utils.HibernateUtil;
 import com.google.common.collect.ImmutableMap;
 
 public class ThumbnailGenerator {
+	private static final Object staticLock = new Object();
+
 	private static final Map<Integer, Dimension> THUMBNAIL_SIZES = ImmutableMap
 			.of(0, new Dimension(48, 48), 1, new Dimension(64, 64), 2,
 					new Dimension(128, 128), 3, new Dimension(192, 192), 4,
@@ -44,7 +46,13 @@ public class ThumbnailGenerator {
 	}
 
 	private Dimension getImageSize() throws IOException {
-		BufferedImage bufferedImage = ImageIO.read(file);
+		BufferedImage bufferedImage = null;
+
+		while (bufferedImage == null) {
+			synchronized (staticLock) {
+				bufferedImage = ImageIO.read(file);
+			}
+		}
 
 		return new Dimension(bufferedImage.getWidth(),
 				bufferedImage.getHeight());
@@ -70,7 +78,9 @@ public class ThumbnailGenerator {
 			height = imageSize.height;
 		}
 
-		Thumbnails.of(file).size(width, height).toFile(filename);
+		synchronized (staticLock) {
+			Thumbnails.of(file).size(width, height).toFile(filename);
+		}
 	}
 
 	public void saveThumbnailToDatabase() {

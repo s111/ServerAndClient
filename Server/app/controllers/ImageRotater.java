@@ -14,6 +14,8 @@ import queryDB.QueryThumbnail;
 import utils.HibernateUtil;
 
 public class ImageRotater extends Controller {
+	private static final Object staticLock = new Object();
+
 	public static Result rotate(long id, int angle) {
 		QueryImage queryImage = new QueryImage(
 				HibernateUtil.getSessionFactory());
@@ -27,8 +29,10 @@ public class ImageRotater extends Controller {
 		File file = new File(image.getFilename());
 
 		try {
-			Thumbnails.of(file).scale(1).rotate(angle).allowOverwrite(true)
-					.toFile(file);
+			synchronized (staticLock) {
+				Thumbnails.of(file).scale(1).rotate(angle).allowOverwrite(true)
+						.toFile(file);
+			}
 		} catch (IOException e) {
 			Logger.warn("Could not rotate image");
 

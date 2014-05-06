@@ -159,7 +159,11 @@ public class ServerConnection {
 
 	public boolean rotate(long id, int angle) {
 		try {
-			Response response = restService.rotateImage(id, angle);
+			Response response = null;
+			
+			synchronized (staticLock) {
+				response = restService.rotateImage(id, angle);
+			}
 
 			if (response != null && response.getStatus() == 200) {
 				return true;
