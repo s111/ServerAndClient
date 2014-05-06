@@ -20,7 +20,6 @@ import org.apache.tika.mime.MimeTypeException;
 import play.Logger;
 import play.mvc.Http.Request;
 import queryDB.QueryImage;
-import queryDB.QueryTag;
 import url.generators.ImageInfoURLGenerator;
 import utils.HibernateUtil;
 
@@ -86,15 +85,6 @@ public class Uploader {
 				HibernateUtil.getSessionFactory());
 
 		queryImage.addImage(image);
-
-		long id = image.getId();
-
-		QueryTag queryTag = new QueryTag(HibernateUtil.getSessionFactory());
-		/* TODO Remove the id:{id} tag before release */
-		queryTag.tagImage(id, "id:" + id);
-
-		// Get the new image after it has been tagged
-		image = queryImage.getImage(id);
 
 		return image;
 	}

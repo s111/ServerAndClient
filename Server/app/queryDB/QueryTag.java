@@ -111,7 +111,7 @@ public class QueryTag {
 			}
 		};
 
-		// TODO Try to do this without the Object[] workaround
+		// Try to do this without the Object[] workaround
 		Object[] imageAndTag = HibernateUtil.performAction(strategy,
 				sessionFactory);
 

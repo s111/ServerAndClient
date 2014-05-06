@@ -7,7 +7,6 @@ import play.Application;
 import play.GlobalSettings;
 import play.Logger;
 import queryDB.QueryImage;
-import queryDB.QueryTag;
 import upload.Uploader;
 import utils.HibernateUtil;
 
@@ -68,11 +67,6 @@ public class Global extends GlobalSettings {
 							.getCreationDate(new File(filenameInDatabase))));
 
 					queryImage.addImage(image);
-
-					QueryTag queryTag = new QueryTag(
-							HibernateUtil.getSessionFactory());
-					/* TODO Remove the id:{id} tag before release */
-					queryTag.tagImage(image.getId(), "id:" + image.getId());
 				}
 			}
 		}
