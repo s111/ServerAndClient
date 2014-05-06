@@ -44,15 +44,11 @@ public class ImageObject {
 
 	private boolean valid = true;
 
-	@SuppressWarnings("rawtypes")
 	private BackgroundImageFetcher backgroundImageFetcher;
 
 	@Inject
-	public ImageObject(
-			EventBus eventBus,
-			ServerConnection serverConnection,
-			@SuppressWarnings("rawtypes") BackgroundImageFetcher backgroundImageFetcher,
-			@Assisted long id) {
+	public ImageObject(EventBus eventBus, ServerConnection serverConnection,
+			BackgroundImageFetcher backgroundImageFetcher, @Assisted long id) {
 		this.eventBus = eventBus;
 		this.serverConnection = serverConnection;
 		this.backgroundImageFetcher = backgroundImageFetcher;
@@ -140,36 +136,21 @@ public class ImageObject {
 		return _getImage(size);
 	}
 
-	@SuppressWarnings("unchecked")
-	public void loadImage(final Callback<BufferedImage> callback,
-			final String size, int priority) {
-		if (_hasImage(size)) {
-			if (callback != null)
-				callback.success(_getImage(size));
-		} else {
-			BackgroundImageFetch<BufferedImage> job = new BackgroundImageFetch<>(
-					new Runnable() {
-						public void run() {
-							BufferedImage image = serverConnection.getImage(id,
-									size);
-							if (image != null) {
-								ImageObject.this.images.put(size, image);
-								eventBus.post(new ImageAvailableEvent(
-										ImageObject.this, size));
-							}
-						}
-					}, this, size);
-			BackgroundJob<BufferedImage> oldJob = backgroundImageFetcher
-					.getJob(job);
-			if (oldJob != null) {
-				if (callback != null) {
-					oldJob.addCallback(callback);
+	public void loadImage(final String size, int priority) {
+		if (!_hasImage(size)) {
+			BackgroundImageFetch job = new BackgroundImageFetch(new Runnable() {
+				public void run() {
+					BufferedImage image = serverConnection.getImage(id, size);
+					if (image != null) {
+						ImageObject.this.images.put(size, image);
+						eventBus.post(new ImageAvailableEvent(ImageObject.this,
+								size));
+					}
 				}
-			} else {
+			}, this, size);
+			BackgroundJob oldJob = backgroundImageFetcher.getJob(job);
+			if (oldJob == null) {
 				job.setPriority(priority);
-				if (callback != null) {
-					job.addCallback(callback);
-				}
 				backgroundImageFetcher.addJob(job);
 			}
 		}

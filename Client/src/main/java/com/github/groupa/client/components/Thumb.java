@@ -98,7 +98,7 @@ public abstract class Thumb extends MouseAdapter implements AncestorListener {
 				String size = entry.getKey();
 				if (!setIcon(label, size)) {
 					label.setIcon(null);
-					imageObject.loadImage(null, size, BackgroundJob.HIGH_PRIORITY);
+					imageObject.loadImage(size, BackgroundJob.HIGH_PRIORITY);
 				}
 			}
 		}
@@ -149,7 +149,7 @@ public abstract class Thumb extends MouseAdapter implements AncestorListener {
 				public void run() {
 					if (label.getBounds()
 							.intersects(rootPanel.getVisibleRect())) {
-						imageObject.loadImage(null, lastSize, BackgroundJob.MEDIUM_PRIORITY);
+						imageObject.loadImage(lastSize, BackgroundJob.MEDIUM_PRIORITY);
 					}
 				}
 			});

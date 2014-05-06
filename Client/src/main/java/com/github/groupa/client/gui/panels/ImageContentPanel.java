@@ -99,7 +99,7 @@ public class ImageContentPanel implements ContentPanel {
 	}
 
 	private void rotateImage(ImageObject image, int angle) {
-		modifyImage.rotate(null, image, angle);
+		modifyImage.rotate(image, angle);
 	}
 
 	@SuppressWarnings("serial")
@@ -180,7 +180,7 @@ public class ImageContentPanel implements ContentPanel {
 		if (newImage == null || newImage.hasImage())
 			return false;
 
-		newImage.loadImage(null, "compressed", BackgroundJob.LOW_PRIORITY);
+		newImage.loadImage("compressed", BackgroundJob.LOW_PRIORITY);
 		return true;
 	}
 
@@ -192,7 +192,7 @@ public class ImageContentPanel implements ContentPanel {
 			imagePanel.setImage(activeImageObject);
 			imageSidebarPanel.setImage(activeImageObject);
 		} else {
-			img.loadImage(null, "compressed", BackgroundJob.HIGH_PRIORITY);
+			img.loadImage("compressed", BackgroundJob.HIGH_PRIORITY);
 		}
 	}
 

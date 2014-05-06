@@ -1,15 +1,10 @@
 package com.github.groupa.client;
 
-import java.util.ArrayList;
-import java.util.List;
-
-public class BackgroundImageFetch<T> implements BackgroundJob<T> {
+public class BackgroundImageFetch implements BackgroundJob {
 	private ImageObject imageObject;
 	private String size;
 	private int priority = MEDIUM_PRIORITY;
 	private Runnable runnable;
-
-	private List<Callback<T>> callbacks = new ArrayList<>();
 
 	public BackgroundImageFetch(Runnable runnable, ImageObject imageObject,
 			String size) {
@@ -33,18 +28,8 @@ public class BackgroundImageFetch<T> implements BackgroundJob<T> {
 		return size + imageObject.getId();
 	}
 
-	@SuppressWarnings("unchecked")
 	public void run() {
 		runnable.run();
-		if (imageObject.hasImage(size)) {
-			for (Callback<T> callback : callbacks) {
-				callback.success((T) imageObject.getImage(size));
-			}
-		} else {
-			for (Callback<T> callback : callbacks) {
-				callback.failure();
-			}
-		}
 	}
 
 	public void setPriority(int priority) {
@@ -53,9 +38,5 @@ public class BackgroundImageFetch<T> implements BackgroundJob<T> {
 
 	public int getPriority() {
 		return priority;
-	}
-
-	public void addCallback(Callback<T> callback) {
-		callbacks.add(callback);
 	}
 }

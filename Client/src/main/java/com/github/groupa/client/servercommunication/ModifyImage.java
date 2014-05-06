@@ -3,7 +3,6 @@ package com.github.groupa.client.servercommunication;
 import java.awt.Rectangle;
 import java.util.List;
 
-import com.github.groupa.client.Callback;
 import com.github.groupa.client.ImageObject;
 import com.github.groupa.client.ThreadPool;
 import com.github.groupa.client.jsonobjects.ImagesUpdate;
@@ -25,8 +24,7 @@ public class ModifyImage {
 		this.library = library;
 	}
 
-	public void rotate(final Callback<ImageObject> callback,
-			final ImageObject image, final int angle) {
+	public void rotate(final ImageObject image, final int angle) {
 		Job job = new Job() {
 
 			public void run() {
@@ -38,11 +36,10 @@ public class ModifyImage {
 				image.refreshImages();
 			}
 		};
-		threadPool.add(new WorkerThread<ImageObject>(callback, image, job));
+		threadPool.add(new WorkerThread(job));
 	}
 
-	public void crop(final Callback<ImageObject> callback,
-			final ImageObject image, final Rectangle rectangle) {
+	public void crop(final ImageObject image, final Rectangle rectangle) {
 		Job job = new Job() {
 
 			public void run() {
@@ -54,11 +51,10 @@ public class ModifyImage {
 				image.refreshImages();
 			}
 		};
-		threadPool.add(new WorkerThread<ImageObject>(callback, image, job));
+		threadPool.add(new WorkerThread(job));
 	}
 
-	public void rate(final Callback<ImageObject> callback,
-			final ImageObject image, final int rating) {
+	public void rate(final ImageObject image, final int rating) {
 		Job job = new Job() {
 
 			public void run() {
@@ -70,11 +66,10 @@ public class ModifyImage {
 				image.rate(rating);
 			}
 		};
-		threadPool.add(new WorkerThread<ImageObject>(callback, image, job));
+		threadPool.add(new WorkerThread(job));
 	}
 
-	public void describe(final Callback<ImageObject> callback,
-			final ImageObject image, final String description) {
+	public void describe(final ImageObject image, final String description) {
 		Job job = new Job() {
 
 			public void run() {
@@ -86,11 +81,10 @@ public class ModifyImage {
 				image.describe(description);
 			}
 		};
-		threadPool.add(new WorkerThread<ImageObject>(callback, image, job));
+		threadPool.add(new WorkerThread(job));
 	}
 
-	public void addTag(final Callback<ImageObject> callback,
-			final ImageObject image, final String tag) {
+	public void addTag(final ImageObject image, final String tag) {
 		Job job = new Job() {
 
 			public void run() {
@@ -102,11 +96,10 @@ public class ModifyImage {
 				image.addTag(tag);
 			}
 		};
-		threadPool.add(new WorkerThread<ImageObject>(callback, image, job));
+		threadPool.add(new WorkerThread(job));
 	}
 
-	public void deleteTag(final Callback<ImageObject> callback,
-			final ImageObject image, final String tag) {
+	public void deleteTag(final ImageObject image, final String tag) {
 		Job job = new Job() {
 
 			public void run() {
@@ -119,7 +112,7 @@ public class ModifyImage {
 				image.deleteTag(tag);
 			}
 		};
-		threadPool.add(new WorkerThread<ImageObject>(callback, image, job));
+		threadPool.add(new WorkerThread(job));
 	}
 
 	public void updateMultipleImages(final ImagesUpdate imagesUpdate) {
@@ -161,17 +154,13 @@ public class ModifyImage {
 			}
 		};
 
-		threadPool.add(new WorkerThread<Void>(null, null, job));
+		threadPool.add(new WorkerThread(job));
 	}
 
-	private class WorkerThread<T> implements Runnable {
-		private Callback<T> callback;
-		private T param;
+	private class WorkerThread implements Runnable {
 		private Job job;
 
-		public WorkerThread(Callback<T> callback, T param, Job job) {
-			this.callback = callback;
-			this.param = param;
+		public WorkerThread(Job job) {
 			this.job = job;
 		}
 
@@ -179,13 +168,8 @@ public class ModifyImage {
 			job.run();
 			if (job.success) {
 				job.success();
-				if (callback != null) {
-					callback.success(param);
-				}
 			} else {
 				job.failure();
-				if (callback != null)
-					callback.failure();
 			}
 		}
 	}

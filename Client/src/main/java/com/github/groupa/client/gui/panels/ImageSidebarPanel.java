@@ -98,7 +98,7 @@ public class ImageSidebarPanel implements SidebarPanel {
 						Object[] emptyRow = {};
 						tagTableModel.addRow(emptyRow);
 
-						modifyImage.addTag(null, activeImage, newValue);
+						modifyImage.addTag(activeImage, newValue);
 					}
 				}
 				// You are editing a tag
@@ -111,10 +111,10 @@ public class ImageSidebarPanel implements SidebarPanel {
 					if (newValue == null || newValue.trim().equals("")) {
 						tagTableModel.removeRow(cell.getRow());
 
-						modifyImage.deleteTag(null, activeImage, oldValue);
+						modifyImage.deleteTag(activeImage, oldValue);
 					} else if (!newValue.equals(oldValue)) {
-						modifyImage.deleteTag(null, activeImage, oldValue);
-						modifyImage.addTag(null, activeImage, newValue);
+						modifyImage.deleteTag(activeImage, oldValue);
+						modifyImage.addTag(activeImage, newValue);
 					}
 				}
 			}
@@ -163,7 +163,7 @@ public class ImageSidebarPanel implements SidebarPanel {
 					int selected = setRatingSaveMode();
 
 					if (selected != -1) {
-						modifyImage.rate(null, activeImage, selected + 1);
+						modifyImage.rate(activeImage, selected + 1);
 					}
 				} else {
 					setRatingEditMode();
@@ -206,7 +206,7 @@ public class ImageSidebarPanel implements SidebarPanel {
 
 				if (savingDescription) {
 					setDescriptionSaveMode();
-					modifyImage.describe(null, activeImage,
+					modifyImage.describe(activeImage,
 							descriptionField.getText());
 				} else {
 					setDescriptionEditMode();

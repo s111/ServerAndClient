@@ -2,17 +2,20 @@ package com.github.groupa.client;
 
 import java.util.LinkedList;
 
-public class BackgroundImageFetcher<T> {
-	private LinkedList<BackgroundJob<T>> hiJobs = new LinkedList<>();
-	private LinkedList<BackgroundJob<T>> midJobs = new LinkedList<>();
-	private LinkedList<BackgroundJob<T>> lowJobs = new LinkedList<>();
+public class BackgroundImageFetcher {
+	private LinkedList<BackgroundJob> hiJobs = new LinkedList<>();
+	private LinkedList<BackgroundJob> midJobs = new LinkedList<>();
+	private LinkedList<BackgroundJob> lowJobs = new LinkedList<>();
 
 	private Thread workThread = null;
 
 	public BackgroundImageFetcher() {
 	}
 
-	public void addJob(BackgroundJob<T> job) {
+	public void addJob(BackgroundJob job) {
+		if (hiJobs.contains(job) || midJobs.contains(job)
+				|| lowJobs.contains(job))
+			return;
 		if (job.getPriority() == BackgroundJob.HIGH_PRIORITY)
 			hiJobs.add(job);
 		else if (job.getPriority() == BackgroundJob.MEDIUM_PRIORITY)
@@ -32,12 +35,12 @@ public class BackgroundImageFetcher<T> {
 
 			public void run() {
 				while (true) {
-					BackgroundJob<T> job;
+					BackgroundJob job;
 
 					job = hiJobs.poll();
 					if (job == null)
 						job = midJobs.poll();
-					
+
 					if (job == null)
 						job = lowJobs.poll();
 
@@ -60,8 +63,7 @@ public class BackgroundImageFetcher<T> {
 		workThread.start();
 	}
 
-	public BackgroundJob<T> getJob(
-			BackgroundImageFetch<T> job) {
+	public BackgroundJob getJob(BackgroundImageFetch job) {
 		if (hiJobs.contains(job)) {
 			int idx = hiJobs.indexOf(job);
 			return hiJobs.get(idx);

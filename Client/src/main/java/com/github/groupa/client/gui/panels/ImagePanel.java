@@ -101,7 +101,7 @@ public class ImagePanel extends JComponent {
 			return;
 		}
 
-		modifyImage.crop(null, imageObject, absoluteClip);
+		modifyImage.crop(imageObject, absoluteClip);
 
 		absoluteClip = new Rectangle();
 	}
