@@ -11,6 +11,7 @@ import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import com.github.groupa.client.ImageListFetcher;
 import com.github.groupa.client.ImageUploader;
 import com.github.groupa.client.ThreadPool;
 import com.github.groupa.client.events.SwitchViewEvent;
@@ -25,30 +26,37 @@ public class MenuBar {
 	private ThreadPool threadPool;
 	private ImageUploader imageUploader;
 
+	private JMenuItem refreshItem = new JMenuItem("Referesh");
 	private JMenuItem uploadImageItem = new JMenuItem("Upload images");
 	private JMenuItem cropImage = new JMenuItem("Toggle cropping");
 	private JMenuItem crop = new JMenuItem("Crop Image");
 
 	private ImagePanel imagePanel;
 
+	private ImageListFetcher imageListFetcher;
+
 	private JMenu edit;
 	private JMenu fileMenu;
 
 	@Inject
 	public MenuBar(EventBus eventBus, ImagePanel imagePanel,
-			ThreadPool threadPool, ImageUploader imageUploader) {
+			ThreadPool threadPool, ImageUploader imageUploader,
+			ImageListFetcher imageListFetcher) {
 		this.imagePanel = imagePanel;
 		this.threadPool = threadPool;
 		this.imageUploader = imageUploader;
+		this.imageListFetcher = imageListFetcher;
 
 		eventBus.register(this);
 
+		setUpRefresh();
 		setUpUploadImage();
 		setUpToggleCropping();
 		setUpCrop();
 
 		fileMenu = new JMenu("File");
 		fileMenu.add(uploadImageItem);
+		fileMenu.add(refreshItem);
 
 		edit = new JMenu("Edit");
 		edit.setEnabled(false);
@@ -57,6 +65,19 @@ public class MenuBar {
 
 		menuBar.add(fileMenu);
 		menuBar.add(edit);
+	}
+
+	private void setUpRefresh() {
+		refreshItem.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent action) {
+				threadPool.add(new Runnable() {
+					public void run() {
+						imageListFetcher.importAllImages();
+					}
+				});
+			}
+		});
 	}
 
 	private void setUpUploadImage() {

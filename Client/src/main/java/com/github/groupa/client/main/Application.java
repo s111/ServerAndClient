@@ -25,11 +25,12 @@ public class Application {
 	}
 
 	public void run() {
+		imageListFetcher.importAllImages();
+
 		SwingUtilities.invokeLater(new Runnable() {
 			@Override
 			public void run() {
 				mainFrame.display();
-				imageListFetcher.importAllImages();
 			}
 		});
 	}
