@@ -2,6 +2,7 @@ package com.github.groupa.client;
 
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -94,7 +95,8 @@ public class ImageObject {
 
 	public List<String> getTags() {
 		if (loadImage())
-			return imageInfo.getImage().getTags();
+			return (List<String>) Collections.unmodifiableList(imageInfo
+					.getImage().getTags());
 		return new ArrayList<String>();
 	}
 
@@ -197,6 +199,14 @@ public class ImageObject {
 		eventBus.post(new ImageInfoChangedEvent(this));
 	}
 
+	public void deleteTag(final String tag) {
+		if (imageInfo == null)
+			loadImage();
+		else
+			imageInfo.getImage().getTags().remove(tag);
+		eventBus.post(new ImageInfoChangedEvent(this));
+	}
+
 	private boolean _hasImage(String img) {
 		return images.containsKey(img);
 	}
@@ -211,7 +221,7 @@ public class ImageObject {
 		imageInfo = serverConnection.getImageInfo(id);
 		return imageInfo != null;
 	}
-	
+
 	public void reloadImageInfo() {
 		ImageInfo newImageInfo = serverConnection.getImageInfo(id);
 		if (newImageInfo != null) {

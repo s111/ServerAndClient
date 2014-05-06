@@ -2,11 +2,11 @@ package com.github.groupa.client.gui.panels;
 
 import java.awt.Font;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TreeSet;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JLabel;
@@ -28,7 +28,6 @@ import com.google.inject.Inject;
 public class TagFilterPanel implements Panel {
 	private JPanel panel = new JPanel(new MigLayout());
 	DefaultListModel<String> listModel = new DefaultListModel<>();
-	private Set<String> knownTags = new TreeSet<>();
 	private Map<String, TagConstraint> selectedTags = new HashMap<>();
 
 	private Library library;
@@ -90,14 +89,17 @@ public class TagFilterPanel implements Panel {
 	@Subscribe
 	public void knownTagListener(KnownTagsChangedEvent event) {
 		Set<String> tags = event.getTags();
-		for (String tag : knownTags) {
+
+		List<Object> tagList = Arrays.asList(listModel.toArray());
+
+		for (Object tag : tagList) {
 			if (!tags.contains(tag)) {
-				removeTag(tag);
+				removeTag(tag.toString());
 			}
 		}
-		for (String tag : tags) {
-			if (!knownTags.contains(tag)) {
-				addTag(tag);
+		for (Object tag : tags) {
+			if (!tagList.contains(tag)) {
+				addTag(tag.toString());
 			}
 		}
 	}
@@ -107,11 +109,11 @@ public class TagFilterPanel implements Panel {
 			library.removeConstraint(selectedTags.get(tag));
 			selectedTags.remove(tag);
 		}
-		knownTags.remove(tag);
+
+		listModel.removeElement(tag);
 	}
 
 	private void addTag(String tag) {
-		knownTags.add(tag);
 		listModel.addElement(tag);
 	}
 }

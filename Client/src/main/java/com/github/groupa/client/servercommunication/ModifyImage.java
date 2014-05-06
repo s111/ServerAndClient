@@ -18,7 +18,8 @@ public class ModifyImage {
 	private Library library;
 
 	@Inject
-	public ModifyImage(ServerConnection serverConnection, ThreadPool threadPool, Library library) {
+	public ModifyImage(ServerConnection serverConnection,
+			ThreadPool threadPool, Library library) {
 		this.serverConnection = serverConnection;
 		this.threadPool = threadPool;
 		this.library = library;
@@ -115,8 +116,7 @@ public class ModifyImage {
 			}
 
 			public void success() {
-				// TODO need a image.deleteTag(tag) (like image.addTag(tag) but
-				// for removing a tag)
+				image.deleteTag(tag);
 			}
 		};
 		threadPool.add(new WorkerThread<ImageObject>(callback, image, job));
