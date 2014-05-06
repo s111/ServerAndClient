@@ -47,6 +47,7 @@ public class TagFilterPanel implements Panel {
 				.setToolTipText("ctrl click to select and deselect multiple tags");
 		panel.add(filterByTagsLabel, "wrap");
 		final JList<String> list = new JList<>(listModel);
+		list.setToolTipText("ctrl click to select and deselect multiple tags");
 		JScrollPane scrollPane = new JScrollPane(list);
 		panel.add(scrollPane, "grow, push, wrap");
 
