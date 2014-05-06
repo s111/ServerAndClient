@@ -64,7 +64,7 @@ public class Library {
 		addImages(list);
 	}
 
-	public void checkTags(ImageObject TODO) {
+	public void checkTags() {
 		Set<String> set = new HashSet<String>();
 		synchronized (allImages) {
 			for (ImageObject img : allImages) {
@@ -79,7 +79,7 @@ public class Library {
 		list.addAll(constrainedImages);
 		return list;
 	}
-	
+
 	public List<ImageObject> getAllImages() {
 		List<ImageObject> list = new ArrayList<>();
 		list.addAll(allImages);
@@ -90,8 +90,8 @@ public class Library {
 		if (!allImages.contains(img)) {
 			allImages.add(img);
 			addImage(img);
+			checkTags();
 		}
-		checkTags(img);
 	}
 
 	public void addAll(List<ImageObject> list) {
@@ -100,9 +100,7 @@ public class Library {
 		newList.removeAll(allImages);
 		allImages.addAll(newList);
 		addImages(newList);
-		for (ImageObject img : list) {
-			checkTags(img);
-		}
+		checkTags();
 	}
 
 	public void remove(ImageObject img) {
@@ -110,7 +108,7 @@ public class Library {
 			allImages.remove(img);
 			removeImage(img);
 		}
-		checkTags(img);
+		checkTags();
 	}
 
 	public void removeAll(List<ImageObject> list) {
@@ -121,9 +119,7 @@ public class Library {
 			allImages.removeAll(newList);
 			removeImages(newList);
 		}
-		for (ImageObject img : list) {
-			checkTags(img);
-		}
+		checkTags();
 	}
 
 	public int allImagesCount() {
@@ -144,11 +140,13 @@ public class Library {
 			return constrainedImages.get(0);
 		return constrainedImages.get(idx + 1);
 	}
-	
+
 	public ImageObject getPrevImage(ImageObject img) {
 		int size = constrainedImages.size();
-		if (size == 0) return null;
-		else if (size == 1) return img;
+		if (size == 0)
+			return null;
+		else if (size == 1)
+			return img;
 		int idx = constrainedImages.indexOf(img) - 1;
 		if (idx < 0)
 			return constrainedImages.get(size - 1);
@@ -166,7 +164,7 @@ public class Library {
 		if (hasImage && !satisfied) {
 			removeImage(img);
 		}
-		checkTags(img);
+		checkTags();
 	}
 
 	private void addImages(List<ImageObject> list) {
