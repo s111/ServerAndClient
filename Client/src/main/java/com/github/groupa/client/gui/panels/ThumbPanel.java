@@ -171,6 +171,7 @@ public class ThumbPanel extends JPanel implements Scrollable {
 		layout = new GridLayout(0, columns, 0, 0);
 		setLayout(layout);
 		revalidate();
+		repaint();
 	}
 
 	private void reAddThumbsToPanel() {
@@ -180,6 +181,7 @@ public class ThumbPanel extends JPanel implements Scrollable {
 			add(thumb.getThumb(thumbSize));
 		}
 		revalidate();
+		repaint();
 	}
 
 	private void removeImages(List<ImageObject> list) {
@@ -187,6 +189,7 @@ public class ThumbPanel extends JPanel implements Scrollable {
 			removeImage(img);
 		}
 		revalidate();
+		repaint();
 	}
 
 	private void removeImage(ImageObject img) {
@@ -196,6 +199,8 @@ public class ThumbPanel extends JPanel implements Scrollable {
 				activeImage = null;
 			remove(thumbs.get(img).getThumb(thumbSize));
 		}
+		revalidate();
+		repaint();
 	}
 
 	private void addImages(List<ImageObject> list) {
@@ -203,6 +208,7 @@ public class ThumbPanel extends JPanel implements Scrollable {
 			addImage(img);
 		}
 		revalidate();
+		repaint();
 	}
 
 	private void addImage(final ImageObject image) {
@@ -249,6 +255,7 @@ public class ThumbPanel extends JPanel implements Scrollable {
 		thumbs.put(image, thumb);
 		add(thumb.getThumb(thumbSize));
 		revalidate();
+		repaint();
 	}
 
 	private void deselectImages() {
