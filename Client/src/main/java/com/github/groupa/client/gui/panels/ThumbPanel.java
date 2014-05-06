@@ -71,20 +71,44 @@ public class ThumbPanel extends JPanel implements Scrollable {
 		setLayout(layout);
 		InputMap inputMap = getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
 		ActionMap actionMap = getActionMap();
+
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT, 0), "keyLeft");
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), "keyRight");
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_UP, 0), "keyUp");
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN, 0), "keyDown");
 		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "enter");
 		actionMap.put("enter", new AbstractAction() {
 			public void actionPerformed(ActionEvent e) {
 				openSelectedImages(activeImage);
 			}
 		});
+		actionMap.put("keyLeft", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				arrowKeyClicked(KeyEvent.VK_LEFT);
+			}
+		});
+		actionMap.put("keyRight", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				arrowKeyClicked(KeyEvent.VK_RIGHT);
+			}
+		});
+		actionMap.put("keyUp", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				arrowKeyClicked(KeyEvent.VK_UP);
+			}
+		});
+		actionMap.put("keyDown", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				arrowKeyClicked(KeyEvent.VK_DOWN);
+			}
+		});
+
 	}
 
-	@Override
 	public Dimension getPreferredScrollableViewportSize() {
 		return new Dimension(640, 480);
 	}
 
-	@Override
 	public int getScrollableBlockIncrement(Rectangle visibleRect,
 			int orientation, int direction) {
 		if (orientation == SwingConstants.VERTICAL) {
@@ -93,17 +117,14 @@ public class ThumbPanel extends JPanel implements Scrollable {
 		return 0;
 	}
 
-	@Override
 	public boolean getScrollableTracksViewportHeight() {
 		return false;
 	}
 
-	@Override
 	public boolean getScrollableTracksViewportWidth() {
 		return false;
 	}
 
-	@Override
 	public int getScrollableUnitIncrement(Rectangle arg0, int arg1, int arg2) {
 		return 10;
 	}
@@ -139,7 +160,9 @@ public class ThumbPanel extends JPanel implements Scrollable {
 			}
 		}
 		activeImage = image;
-		thumbs.get(activeImage).setBorder(activeThumbBorder);
+		Thumb thumb = thumbs.get(activeImage);
+		thumb.setBorder(activeThumbBorder);
+		scrollRectToVisible(thumb.getThumb(thumbSize).getBounds());
 	}
 
 	public void setPanelThumbSize(String size) {
@@ -171,12 +194,60 @@ public class ThumbPanel extends JPanel implements Scrollable {
 		}
 		sort();
 	}
-	
+
 	@Subscribe
 	public void switchViewListener(SwitchViewEvent event) {
 		if (event.getView() == View.GRID_VIEW) {
 			requestFocus();
 		}
+	}
+
+	private void arrowKeyClicked(int key) {
+		if (activeImage == null)
+			return;
+		int imageNum = images.indexOf(activeImage);
+		if (imageNum == -1)
+			return;
+		int imageCount = images.size();
+		if (imageCount <= 1)
+			return;
+		int colCount = layout.getColumns();
+
+		switch (key) {
+		case KeyEvent.VK_LEFT: {
+			if (imageNum > 0 && imageNum % colCount > 0) {
+				selectSingleImage(images.get(imageNum - 1));
+			}
+			break;
+		}
+		case KeyEvent.VK_RIGHT: {
+			if (imageNum < imageCount - 1 && imageNum % colCount < colCount - 1) {
+				selectSingleImage(images.get(imageNum + 1));
+			}
+			break;
+		}
+		case KeyEvent.VK_DOWN: {
+			if (imageNum == imageCount - 1) break;
+			int wanted = imageNum + colCount;
+			if (wanted >= imageCount) wanted = imageCount - 1;
+			if (wanted < imageCount) {
+				selectSingleImage(images.get(wanted));
+			}
+			break;
+		}
+		case KeyEvent.VK_UP: {
+			int wanted = imageNum - colCount;
+			if (wanted >= 0) {
+				selectSingleImage(images.get(wanted));
+			}
+			break;
+		}
+		}
+	}
+	
+	private void selectSingleImage(ImageObject image) {
+		deselectImages();
+		setActiveImage(image);
 	}
 
 	private int roomForColumns() {
@@ -239,8 +310,7 @@ public class ThumbPanel extends JPanel implements Scrollable {
 			@Override
 			public void singleClick() {
 				requestFocus();
-				ThumbPanel.this.deselectImages();
-				ThumbPanel.this.setActiveImage(getImageObject());
+				selectSingleImage(getImageObject());
 			}
 
 			@Override

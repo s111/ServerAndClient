@@ -8,6 +8,8 @@ import javax.inject.Inject;
 import javax.swing.BorderFactory;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
+import javax.swing.UIDefaults;
+import javax.swing.UIManager;
 import javax.swing.border.EtchedBorder;
 
 import net.miginfocom.swing.MigLayout;
@@ -63,6 +65,9 @@ public class GridContentPanel implements ContentPanel {
 	private JPanel getThumbPanel() {
 		MigLayout layout = new MigLayout("fill");
 		panel = new JPanel(layout);
+		// Done to allow thumbPanel to get arrow key events
+		UIManager.getDefaults().put("ScrollPane.ancestorInputMap",
+				new UIDefaults.LazyInputMap(new Object[] {}));
 		final JScrollPane thumbScroll = new JScrollPane(thumbPanel);
 		thumbScroll.addComponentListener(new ComponentAdapter() {
 			@Override
