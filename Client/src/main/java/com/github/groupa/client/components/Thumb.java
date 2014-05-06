@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 
 import javax.swing.BorderFactory;
 import javax.swing.ImageIcon;
@@ -92,9 +93,14 @@ public abstract class Thumb extends MouseAdapter implements AncestorListener {
 	public void modifyImageListener(ImageModifiedEvent event) {
 		ImageObject img = event.getImageObject();
 		if (img.equals(imageObject)) {
-			// TODO: Remove ImageModifiedEvent. ImageAvailableEvent is
-			// sufficient
-
+			for (Map.Entry<String, JLabel> entry : labels.entrySet()) {
+				JLabel label = entry.getValue();
+				String size = entry.getKey();
+				if (!setIcon(label, size)) {
+					label.setIcon(null);
+					imageObject.loadImage(null, size, BackgroundJob.HIGH_PRIORITY);
+				}
+			}
 		}
 	}
 
