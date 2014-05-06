@@ -26,7 +26,7 @@ public class MenuBar {
 	private ThreadPool threadPool;
 	private ImageUploader imageUploader;
 
-	private JMenuItem refreshItem = new JMenuItem("Referesh");
+	private JMenuItem refreshItem = new JMenuItem("Refresh");
 	private JMenuItem uploadImageItem = new JMenuItem("Upload images");
 	private JMenuItem cropImage = new JMenuItem("Toggle cropping");
 	private JMenuItem crop = new JMenuItem("Crop Image");
