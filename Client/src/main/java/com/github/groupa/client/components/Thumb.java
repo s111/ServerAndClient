@@ -142,7 +142,7 @@ public abstract class Thumb extends MouseAdapter implements AncestorListener {
 		checkLoad();
 	}
 
-	private void checkLoad() {
+	public void checkLoad() {
 		final JLabel label = labels.get(lastSize);
 		if (label != null && label.getIcon() == null) {
 			SwingUtilities.invokeLater(new Runnable() {

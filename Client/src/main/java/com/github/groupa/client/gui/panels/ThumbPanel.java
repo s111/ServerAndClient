@@ -227,9 +227,11 @@ public class ThumbPanel extends JPanel implements Scrollable {
 			break;
 		}
 		case KeyEvent.VK_DOWN: {
-			if (imageNum == imageCount - 1) break;
+			if (imageNum == imageCount - 1)
+				break;
 			int wanted = imageNum + colCount;
-			if (wanted >= imageCount) wanted = imageCount - 1;
+			if (wanted >= imageCount)
+				wanted = imageCount - 1;
 			if (wanted < imageCount) {
 				selectSingleImage(images.get(wanted));
 			}
@@ -244,7 +246,7 @@ public class ThumbPanel extends JPanel implements Scrollable {
 		}
 		}
 	}
-	
+
 	private void selectSingleImage(ImageObject image) {
 		deselectImages();
 		setActiveImage(image);
@@ -306,7 +308,7 @@ public class ThumbPanel extends JPanel implements Scrollable {
 
 	private void addImage(final ImageObject image) {
 		images.add(image);
-		Thumb thumb = new Thumb(image, this) {
+		final Thumb thumb = new Thumb(image, this) {
 			@Override
 			public void singleClick() {
 				requestFocus();
@@ -352,6 +354,18 @@ public class ThumbPanel extends JPanel implements Scrollable {
 		add(thumb.getThumb(thumbSize));
 		revalidate();
 		repaint();
+		new Thread(new Runnable() { // Needed since a label is not viewable
+									// until some time after it is added to the
+									// gui
+					@Override
+					public void run() {
+						try {
+							Thread.sleep(200);
+						} catch (InterruptedException e) {
+						}
+						thumb.checkLoad();
+					}
+				}).start();
 	}
 
 	private void openSelectedImages(ImageObject image) {
