@@ -75,7 +75,7 @@ public class GridSidebarPanel implements SidebarPanel {
 
 	private void setUpSortComponents() {
 		String[] sortTypes = { "ID", "Rating (desc)", "Rating (asc)",
-				"Upload date (asc)", "Upload date (desc)" };
+				"Creation date (asc)", "Creation date (desc)" };
 
 		final JComboBox<String> comboBox = new JComboBox<>(sortTypes);
 		comboBox.addActionListener(new ActionListener() {
