@@ -258,6 +258,15 @@ public class EditMetadataWindow {
 	}
 
 	public void display() {
+		resetWindow();
+
 		dialog.setVisible(true);
+	}
+
+	private void resetWindow() {
+		tagTextField.setText("");
+		descriptionField.setText("");
+		ratingButtonGroup.clearSelection();
+		tagListModel.removeAllElements();
 	}
 }
