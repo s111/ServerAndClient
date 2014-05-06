@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -12,9 +14,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.AbstractAction;
+import javax.swing.ActionMap;
 import javax.swing.BorderFactory;
+import javax.swing.InputMap;
+import javax.swing.JComponent;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
+import javax.swing.KeyStroke;
 import javax.swing.Scrollable;
 import javax.swing.SwingConstants;
 import javax.swing.border.Border;
@@ -62,6 +69,14 @@ public class ThumbPanel extends JPanel implements Scrollable {
 		this.eventBus = eventBus;
 		eventBus.register(this);
 		setLayout(layout);
+		InputMap inputMap = getInputMap(JComponent.WHEN_IN_FOCUSED_WINDOW);
+		ActionMap actionMap = getActionMap();
+		inputMap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0), "enter");
+		actionMap.put("enter", new AbstractAction() {
+			public void actionPerformed(ActionEvent e) {
+				openSelectedImages(activeImage);
+			}
+		});
 	}
 
 	@Override
@@ -156,6 +171,13 @@ public class ThumbPanel extends JPanel implements Scrollable {
 		}
 		sort();
 	}
+	
+	@Subscribe
+	public void switchViewListener(SwitchViewEvent event) {
+		if (event.getView() == View.GRID_VIEW) {
+			requestFocus();
+		}
+	}
 
 	private int roomForColumns() {
 		int size = ImageObject.thumbSize.get(this.thumbSize) + 4;
@@ -216,12 +238,14 @@ public class ThumbPanel extends JPanel implements Scrollable {
 		Thumb thumb = new Thumb(image, this) {
 			@Override
 			public void singleClick() {
+				requestFocus();
 				ThumbPanel.this.deselectImages();
 				ThumbPanel.this.setActiveImage(getImageObject());
 			}
 
 			@Override
 			public void ctrlClick() {
+				requestFocus();
 				if (ThumbPanel.this.activeImage != null
 						&& ThumbPanel.this.selectedImages.isEmpty()) {
 					ThumbPanel.this.selectImage(ThumbPanel.this.activeImage);
@@ -236,12 +260,14 @@ public class ThumbPanel extends JPanel implements Scrollable {
 
 			@Override
 			public void doubleClick() {
+				requestFocus();
 				eventBus.post(new SwitchViewEvent(View.IMAGE_VIEW,
 						getImageObject(), images));
 			}
 
 			@Override
 			public void rightClick(MouseEvent event) {
+				requestFocus();
 				if (!ThumbPanel.this.selectedImages.contains(getImageObject())) {
 					ThumbPanel.this.deselectImages();
 					ThumbPanel.this.setActiveImage(getImageObject());
@@ -256,6 +282,11 @@ public class ThumbPanel extends JPanel implements Scrollable {
 		add(thumb.getThumb(thumbSize));
 		revalidate();
 		repaint();
+	}
+
+	private void openSelectedImages(ImageObject image) {
+		eventBus.post(new SwitchViewEvent(View.IMAGE_VIEW, image,
+				getSelectedImages()));
 	}
 
 	private void deselectImages() {
